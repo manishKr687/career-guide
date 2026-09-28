@@ -21,7 +21,6 @@ import { cn } from "@/lib/utils";
  */
 const CATEGORY_TO_CLUSTER: Record<string, string> = {
   "engineering-technology": "cluster-tech",
-  "emerging-careers": "cluster-tech",
   "science-research": "cluster-science-health",
   "medical-healthcare": "cluster-science-health",
   agriculture: "cluster-science-health",
@@ -31,7 +30,6 @@ const CATEGORY_TO_CLUSTER: Record<string, string> = {
   "commerce-finance": "cluster-business",
   "banking-insurance": "cluster-business",
   "management-business": "cluster-business",
-  entrepreneurship: "cluster-business",
   "government-civil-services": "cluster-public-service",
   defence: "cluster-public-service",
   law: "cluster-public-service",

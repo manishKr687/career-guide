@@ -506,6 +506,16 @@ start fresh at 0 too -- no gap risk either way.
 
 ### V23-V25: the Data Model Roadmap's Phases 1-3 (branches, skills, industries)
 
+> **Branch was removed in V116.** The rest of this section is kept as the
+> record of what V23 did, but `branches` and `careers.branch_slug` no longer
+> exist. The 13 careers V23 assigned a branch to were all later deleted and
+> re-created under different slugs (`mechanical-engineer` ->
+> `mechanical-engineering`); the assignments were never redone, so by V116 the
+> table had 12 rows and no career referenced any of them. Category (coarse)
+> and Specialization (fine) cover the grouping between them, and Branch had no
+> admin form field, so it could only ever be populated by hand-written SQL.
+> See V116's migration header.
+
 These three migrations implement the additive first slice of a much larger
 proposal for reshaping the catalog (taxonomy, entities, relationships,
 Career vs. Job Role, hierarchical courses, and so on) -- see the "Data
@@ -560,6 +570,7 @@ in place rather than dropped -- nothing reads `career_skills`/
 `GET /industries` mirror the existing `/specializations` controller shape;
 `CareerDto` gains `branchSlug`, `relatedSkillSlugs` and
 `relatedIndustrySlugs`, following the existing `relatedXSlugs` pattern
+(`GET /branches` and `CareerDto.branchSlug` were both removed in V116)
 (the javadoc on `CareerDto` notes that the skill/industry lists, unlike
 every other `relatedXSlugs` field, carry no meaningful order).
 

@@ -25,7 +25,6 @@ import { getManySpecializations } from "@/data/specializations";
 import { getManyExams } from "@/data/exams";
 import { getManyColleges } from "@/data/colleges";
 import { getCategory } from "@/data/categories";
-import { getBranch } from "@/data/branches";
 import { getManySkills } from "@/data/skills";
 import { getManyIndustries } from "@/data/industries";
 
@@ -91,7 +90,6 @@ export default async function CareerDetailPage({
 
   const [
     category,
-    branch,
     exams,
     colleges,
     careersInCategory,
@@ -102,7 +100,6 @@ export default async function CareerDetailPage({
     allDegrees,
   ] = await Promise.all([
     getCategory(career.categorySlug),
-    career.branchSlug ? getBranch(career.branchSlug) : Promise.resolve(undefined),
     getManyExams(career.relatedExamSlugs),
     getManyColleges(career.relatedCollegeSlugs),
     getCareersByCategory(career.categorySlug),
@@ -139,7 +136,7 @@ export default async function CareerDetailPage({
         }));
   const education = exactDegrees.length > 0 ? exactDegrees : heuristicDegrees;
 
-  const tags = [category, branch].filter((t) => t);
+  const tags = [category].filter((t) => t);
 
   // Only facts the catalog can prove. A metric with nothing behind it is left
   // out entirely rather than shown as "--", which would imply the number

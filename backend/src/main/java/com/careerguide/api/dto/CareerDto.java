@@ -27,9 +27,7 @@ import java.util.List;
  * populated for Aerospace Engineer -- every other career returns an empty
  * list.
  *
- * <p>{@code branchSlug} was added in V23 and is only populated for the 13
- * careers currently in Engineering & Technology -- every other career
- * returns null. {@code relatedSkillSlugs} (V24) and {@code relatedIndustrySlugs}
+ * <p>{@code relatedSkillSlugs} (V24) and {@code relatedIndustrySlugs}
  * (V25) are populated for every career backfilled from its {@code skills} /
  * former {@code topRecruiters} arrays, but unlike every other {@code relatedXSlugs}
  * field above, their order is not meaningful (no {@code @OrderColumn} backs
@@ -65,7 +63,6 @@ public record CareerDto(
         String description,
         List<String> relatedCollegeSlugs,
         List<String> relatedSpecializationSlugs,
-        String branchSlug,
         List<String> relatedSkillSlugs,
         List<String> relatedIndustrySlugs,
         List<String> relatedJobRoleSlugs,

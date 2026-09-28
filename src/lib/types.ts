@@ -38,17 +38,6 @@ export interface Category {
   color: string;
 }
 
-// Added in V23 -- a grouping layer between category and career (e.g.
-// "Computing & IT" within Engineering & Technology). Only Engineering &
-// Technology has branches seeded so far; every other category's careers
-// have no branch yet, hence `branchSlug` on Career being nullable.
-export interface Branch {
-  slug: string;
-  name: string;
-  icon: string;
-  categorySlug: string;
-}
-
 // Added in V24 -- backfilled from each career's old `skills` text array, so
 // for now every Skill's `name` duplicates a string already in that array.
 // Kept minimal (no description/icon) since the source data has none.
@@ -263,9 +252,6 @@ export interface Career {
   // Added in V16 -- for now only populated for Aerospace Engineer, empty
   // for every other career.
   relatedSpecializationSlugs: string[];
-  // Added in V23 -- null for the 43/56 careers outside Engineering &
-  // Technology, which don't have a branch yet. See Branch above.
-  branchSlug: string | null;
   // Added in V24/V25 -- normalized versions of `skills`/the former
   // `topRecruiters` (dropped in V41; the career detail page's "Top
   // Recruiters" section now reads relatedIndustrySlugs directly), unordered

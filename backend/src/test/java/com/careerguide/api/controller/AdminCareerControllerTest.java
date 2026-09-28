@@ -164,7 +164,7 @@ class AdminCareerControllerTest {
                 slug, "Data Scientist", "engineering-technology", "Tagline", "High",
                 List.of(), "Typical work", "5-10 LPA", new BigDecimal("5"), new BigDecimal("10"), List.of("Junior"),
                 List.of(), List.of(), "icon", "Description",
-                List.of(), List.of(), null, List.of(), List.of(), List.of(), null,
+                List.of(), List.of(), List.of(), List.of(), List.of(), null,
                 List.of(), List.of(), List.of(), List.of(), null, null, null);
     }
 }

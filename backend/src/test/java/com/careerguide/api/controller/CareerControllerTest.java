@@ -137,7 +137,6 @@ class CareerControllerTest {
                 "A software engineer designs and builds applications.",
                 List.of(),
                 List.of(),
-                null,
                 List.of(),
                 List.of(),
                 List.of(),

@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * Serves the top-level classification (slug/name/icon/color), which every career has
- * always had 100% coverage under (unlike {@link BranchController}'s branches, which
- * only cover the 13 Engineering &amp; Technology careers so far).
+ * Serves the top-level classification (slug/name/icon/color), which every career
+ * has 100% coverage under -- it is the only grouping above Career, since V116
+ * dropped the Branch layer that briefly sat between the two.
  *
  * <p>Phase 4 (see backend/README.md) temporarily also exposed this at
  * {@code /api/career-directions}, on the theory that Category was standing in for the

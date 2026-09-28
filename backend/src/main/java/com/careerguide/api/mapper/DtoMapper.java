@@ -2,7 +2,6 @@ package com.careerguide.api.mapper;
 
 import com.careerguide.api.dto.AssessmentOptionDto;
 import com.careerguide.api.dto.AssessmentQuestionDto;
-import com.careerguide.api.dto.BranchDto;
 import com.careerguide.api.dto.CareerDto;
 import com.careerguide.api.dto.CategoryDto;
 import com.careerguide.api.dto.CertificationDto;
@@ -31,7 +30,6 @@ import com.careerguide.api.dto.UserProfileDto;
 import com.careerguide.api.dto.UserSkillDto;
 import com.careerguide.api.entity.AssessmentOption;
 import com.careerguide.api.entity.AssessmentQuestion;
-import com.careerguide.api.entity.Branch;
 import com.careerguide.api.entity.Career;
 import com.careerguide.api.entity.CareerSalaryBand;
 import com.careerguide.api.entity.CareerGrowthStage;
@@ -119,7 +117,6 @@ public final class DtoMapper {
                 c.getDescription(),
                 slugs(c.getRelatedColleges(), College::getSlug),
                 slugs(c.getRelatedSpecializations(), Specialization::getSlug),
-                c.getBranch() == null ? null : c.getBranch().getSlug(),
                 slugs(c.getRelatedSkills(), Skill::getSlug),
                 slugs(c.getRelatedIndustries(), Industry::getSlug),
                 slugs(c.getJobRoles(), JobRole::getSlug),
@@ -385,10 +382,6 @@ public final class DtoMapper {
 
     private static <T> List<String> slugs(Collection<T> entities, java.util.function.Function<T, String> slugFn) {
         return entities.stream().map(slugFn).toList();
-    }
-
-    public static BranchDto toDto(Branch b) {
-        return new BranchDto(b.getSlug(), b.getName(), b.getIcon(), b.getCategory().getSlug());
     }
 
     public static SkillDto toDto(Skill s) {

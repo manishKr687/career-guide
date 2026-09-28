@@ -37,14 +37,6 @@ public class Career {
     @JoinColumn(name = "category_slug", nullable = false)
     private Category category;
 
-    // Added in V23 -- see Branch.java and the Data Model Roadmap doc's
-    // Phase 1. Nullable and independent of category: only Engineering &
-    // Technology's 13 careers have one so far, every other career is null
-    // until its own category gets branches.
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "branch_slug")
-    private Branch branch;
-
     // Added in V47 as a *-to-one column, replaced in V51 with a real
     // many-to-many relation -- same shape as relatedSpecializations below.
     // V47 assumed "each Career has at most one primary degree path", but
@@ -306,10 +298,6 @@ public class Career {
         return stages;
     }
 
-    public Branch getBranch() {
-        return branch;
-    }
-
     public List<CareerDegree> getEducation() {
         return education;
     }
@@ -389,10 +377,6 @@ public class Career {
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public void setBranch(Branch branch) {
-        this.branch = branch;
     }
 
     // No setEducation(): the collection is orphanRemoval=true, so replacing

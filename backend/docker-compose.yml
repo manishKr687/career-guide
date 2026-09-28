@@ -6,9 +6,16 @@ services:
     environment:
       POSTGRES_DB: careerguide
       POSTGRES_USER: careerguide
-      POSTGRES_PASSWORD: careerguide
+      # Overridable for the same reason as the admin secrets below; the
+      # fallback is a development convenience, not a password.
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-careerguide}
     ports:
-      - "5432:5432"
+      # Bound to loopback rather than 0.0.0.0: publishing Postgres to every
+      # interface exposes it to anything that can reach this host, and only
+      # tools on this machine (psql, the backup scripts) need it. Docker
+      # publishes to all interfaces when the host IP is omitted, which also
+      # bypasses the host firewall.
+      - "127.0.0.1:5432:5432"
     volumes:
       - careerguide-postgres-data:/var/lib/postgresql/data
       # Bind-mounted so backup/restore scripts can read and write files here
@@ -33,13 +40,21 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/careerguide
       SPRING_DATASOURCE_USERNAME: careerguide
-      SPRING_DATASOURCE_PASSWORD: careerguide
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-careerguide}
       CAREERGUIDE_CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:3311
-      # Override both in a backend/.env file (gitignored) rather than editing
+      # Override these in a backend/.env file (gitignored) rather than editing
       # this file -- docker compose loads backend/.env automatically. See the
       # "Admin panel" section of README.md.
+      #
+      # The fallbacks below are published in a public repository, so they are
+      # known values rather than weak ones. Set SPRING_PROFILES_ACTIVE=prod for
+      # any deployment reachable from outside this machine: the prod profile
+      # declares all of them with no default, so the app refuses to start on a
+      # fallback instead of silently accepting one. See application-prod.yml.
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-}
       CAREERGUIDE_ADMIN_PASSWORD: ${CAREERGUIDE_ADMIN_PASSWORD:-admin123}
       CAREERGUIDE_ADMIN_TOKEN_SECRET: ${CAREERGUIDE_ADMIN_TOKEN_SECRET:-dev-only-change-this-admin-token-secret}
+      CAREERGUIDE_USER_TOKEN_SECRET: ${CAREERGUIDE_USER_TOKEN_SECRET:-dev-only-change-this-user-token-secret}
     ports:
       - "8081:8080"
 

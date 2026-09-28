@@ -156,6 +156,46 @@ defaults baked into `application.yml`/`docker-compose.yml`
 (`admin123` / a fixed placeholder secret) are fine for local development
 only -- anyone who can reach the API can read/write your catalog with them.
 
+### Deploying: use the prod profile
+
+This repository is public, so those defaults are not merely weak, they are
+*known*. Set `SPRING_PROFILES_ACTIVE=prod` on any instance reachable from
+outside your own machine, along with:
+
+| Variable | Notes |
+|---|---|
+| `CAREERGUIDE_ADMIN_PASSWORD` | Compared by `AdminAuthService`; rate-limited. |
+| `CAREERGUIDE_ADMIN_TOKEN_SECRET` | Signs admin sessions. At least 32 chars. |
+| `CAREERGUIDE_USER_TOKEN_SECRET` | Signs user sessions. At least 32 chars. |
+| `SPRING_DATASOURCE_PASSWORD` | Also picked up by Postgres in `docker-compose.yml`. |
+| `CAREERGUIDE_CORS_ALLOWED_ORIGINS` | The real frontend origin; must not be localhost. |
+
+Generate the two signing keys, don't invent them:
+
+```bash
+openssl rand -base64 48
+```
+
+`application-prod.yml` declares each of these with **no default**, so an unset
+variable fails at startup instead of falling back. Two things make that alone
+insufficient, and `ProdSecretsCheck` covers both:
+
+- `docker-compose.yml` supplies its own `:-` fallbacks, so the variables are
+  always *present* in the container and the placeholders always resolve. The
+  check rejects a value that is still one of the published defaults, not just a
+  missing one.
+- It runs as a `BeanFactoryPostProcessor`, before Flyway opens a connection, so
+  a misconfigured deployment is told its secrets are wrong rather than being
+  handed a database error first.
+
+**The signing keys matter more than the password.** An admin token is an HMAC
+over an expiry timestamp and nothing else, so whoever holds
+`CAREERGUIDE_ADMIN_TOKEN_SECRET` mints a valid 24-hour admin session offline --
+no login request, so the rate limiter never sees it and rotating the password
+changes nothing. `UserTokenService` signs `"<userId>.<expiry>"`, so its key
+forges a session for any user. Rotate a leaked key; a leaked password is the
+lesser problem.
+
 **Deleting** a career/course/exam/college also removes it from every other
 record's related-items list (related courses, exams, stages, etc.) --
 that's enforced by `ON DELETE CASCADE` on the join tables in

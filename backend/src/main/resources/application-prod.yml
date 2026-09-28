@@ -1,0 +1,45 @@
+# Activated with SPRING_PROFILES_ACTIVE=prod. Its only job is to remove the
+# development defaults, so a misconfigured deployment fails at boot instead of
+# running on published credentials.
+#
+# WHY THIS FILE EXISTS.
+#
+# application.yml gives every secret a working fallback -- admin123, and two
+# HMAC signing keys named "dev-only-change-this-...". That is right for local
+# development: clone, `docker compose up`, log into /admin, done.
+#
+# It is dangerous the moment this repository is public, because the fallbacks
+# are not merely weak, they are *known*. The signing keys are the sharp edge,
+# not the password:
+#
+#   - AdminTokenService signs a token over nothing but an expiry timestamp.
+#     Anyone holding careerguide.admin.token-secret mints a valid 24-hour
+#     admin token offline. No login request is made, so the rate limiter never
+#     sees it and changing the admin password does not help.
+#   - UserTokenService signs "<userId>.<expiry>", so the same trick forges a
+#     session for any user id.
+#
+# The failure mode without this file is silent: a deployment that forgets the
+# environment variables boots happily on the published keys and looks fine.
+# Each property below is declared with NO default, so an unresolved
+# placeholder makes Spring refuse to start and say which one is missing.
+#
+# application.yml is deliberately left alone, so local development keeps
+# working exactly as before. Set SPRING_PROFILES_ACTIVE=prod anywhere this is
+# reachable from outside your own machine.
+
+careerguide:
+  cors:
+    # Also required: the dev default allows localhost:3000, which in a real
+    # deployment is either useless or wrong.
+    allowed-origins: ${CAREERGUIDE_CORS_ALLOWED_ORIGINS}
+  admin:
+    password: ${CAREERGUIDE_ADMIN_PASSWORD}
+    token-secret: ${CAREERGUIDE_ADMIN_TOKEN_SECRET}
+  user:
+    token-secret: ${CAREERGUIDE_USER_TOKEN_SECRET}
+
+spring:
+  datasource:
+    # The dev fallback here is the literal password "careerguide".
+    password: ${SPRING_DATASOURCE_PASSWORD}

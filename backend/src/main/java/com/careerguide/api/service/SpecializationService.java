@@ -89,6 +89,7 @@ public class SpecializationService {
         applyRequest(specialization, request);
         specializationRepository.save(specialization);
         syncCareerLinks(specialization, request.careerSlugs());
+        resolvePrimaryCareer(specialization, request);
         return DtoMapper.toDto(specialization);
     }
 
@@ -98,6 +99,7 @@ public class SpecializationService {
                 .orElseThrow(() -> NotFoundException.forSlug("Specialization", slug));
         applyRequest(specialization, request);
         syncCareerLinks(specialization, request.careerSlugs());
+        resolvePrimaryCareer(specialization, request);
         return DtoMapper.toDto(specialization);
     }
 
@@ -187,8 +189,7 @@ public class SpecializationService {
         for (Career career : current) {
             boolean stillRequested = requested.stream().anyMatch(c -> c.getSlug().equals(career.getSlug()));
             if (!stillRequested) {
-                career.getRelatedSpecializations().removeIf(s -> s.getSlug().equals(specialization.getSlug()));
-                careerRepository.save(career);
+                unlink(career, specialization);
                 specialization.getCareers().removeIf(c -> c.getSlug().equals(career.getSlug()));
             }
         }
@@ -200,6 +201,81 @@ public class SpecializationService {
                 specialization.getCareers().add(career);
             }
         }
+    }
+
+    /**
+     * Settles which career is this specialization's canonical parent, after
+     * {@link #syncCareerLinks} has established what the parents are.
+     *
+     * <p>Runs second on purpose: the primary has to be one of the links, and the
+     * database enforces that with a composite foreign key into
+     * career_specializations (see V117). That constraint is DEFERRABLE, so a
+     * violation would otherwise surface as an opaque error at commit rather than
+     * as a message naming the field -- hence the explicit check here.
+     *
+     * <p>An omitted {@code primaryCareerSlug} is not an error. It keeps whatever
+     * was primary if that career is still linked, and otherwise falls to the
+     * first requested career, so an editor who only wanted to add a second
+     * parent does not have to restate the first.
+     */
+    private void resolvePrimaryCareer(Specialization specialization, SpecializationUpsertRequest request) {
+        List<String> linked = specialization.getCareers().stream().map(Career::getSlug).toList();
+        if (linked.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "A specialization needs at least one career: it is the parent its page is reached "
+                            + "through and the source of the data it falls back to.");
+        }
+
+        String requested = request.primaryCareerSlug();
+        if (requested != null && !requested.isBlank()) {
+            if (!linked.contains(requested)) {
+                throw new IllegalArgumentException(
+                        "primaryCareerSlug '" + requested + "' is not one of this specialization's careers "
+                                + linked + ". The canonical parent has to be an actual parent.");
+            }
+            specialization.setPrimaryCareerSlug(requested);
+            return;
+        }
+
+        String current = specialization.getPrimaryCareerSlug();
+        specialization.setPrimaryCareerSlug(
+                current != null && linked.contains(current) ? current : linked.get(0));
+    }
+
+    /**
+     * Removes one specialization from a career's ordered list.
+     *
+     * <p>Not a plain {@code removeIf}, which was silently broken. The relation
+     * carries {@code @OrderColumn(name = "sort_order")} while the join table's
+     * primary key is (career_slug, specialization_slug), so Hibernate maintains
+     * the list index by UPDATEing the row <em>at each position</em>:
+     *
+     * <pre>update career_specializations set specialization_slug = ? where career_slug = ? and sort_order = ?</pre>
+     *
+     * <p>Removing from anywhere but the end therefore shifts every later element
+     * down one slot, and the first such UPDATE rewrites a row into a
+     * (career, specialization) pair that already exists further down the list --
+     * a duplicate key on the primary key, even though the final state would have
+     * been perfectly valid. Removing Cloud Computing from Information Technology
+     * failed this way, colliding with Network Administration.
+     *
+     * <p>So the list is rebuilt rather than patched: clear it, flush so the
+     * DELETEs land, then re-add what remains. Hibernate assigns sort_order 0..n-1
+     * on the way back in, which is what {@code @OrderColumn} wants anyway. Two
+     * extra statements per edit, on lists of at most a couple of dozen rows.
+     *
+     * <p>The same mapping shape exists on other relations in this schema, so the
+     * same latent bug is likely reachable through them; this fixes the one path
+     * that is demonstrably hit.
+     */
+    private void unlink(Career career, Specialization specialization) {
+        List<Specialization> remaining = career.getRelatedSpecializations().stream()
+                .filter(s -> !s.getSlug().equals(specialization.getSlug()))
+                .toList();
+        career.getRelatedSpecializations().clear();
+        careerRepository.saveAndFlush(career);
+        career.getRelatedSpecializations().addAll(remaining);
+        careerRepository.saveAndFlush(career);
     }
 
     private <T> List<T> resolveEach(List<String> slugs, Function<String, Optional<T>> lookup, String entityName) {

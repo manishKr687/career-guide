@@ -92,6 +92,16 @@ public class Specialization {
     @ManyToMany(mappedBy = "relatedSpecializations", fetch = FetchType.LAZY)
     private List<Career> careers = new ArrayList<>();
 
+    // V117 -- which of `careers` is the canonical parent: the one the
+    // breadcrumb shows and the one whose data this specialization borrows when
+    // it has none of its own. Held as a plain slug rather than a @ManyToOne
+    // because the constraint behind it is composite -- (slug,
+    // primary_career_slug) references career_specializations, so the database
+    // guarantees the primary parent is genuinely one of the parents, which no
+    // JPA association can express. Never null; see V117's header.
+    @Column(name = "primary_career_slug", nullable = false)
+    private String primaryCareerSlug;
+
     // --- V40: "career path" fields, modeled on the reference image's per-path
     // Key Roles / Responsibilities / Hard Skills / Soft Skills / Salary blocks.
 
@@ -232,6 +242,14 @@ public class Specialization {
 
     public List<Career> getCareers() {
         return careers;
+    }
+
+    public String getPrimaryCareerSlug() {
+        return primaryCareerSlug;
+    }
+
+    public void setPrimaryCareerSlug(String primaryCareerSlug) {
+        this.primaryCareerSlug = primaryCareerSlug;
     }
 
     public List<JobRole> getRelatedJobRoles() {

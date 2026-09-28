@@ -137,8 +137,8 @@ export default function SpecializationsExplorer({
       case "career":
         return list.sort(
           (a, b) =>
-            (careersBySlug.get(a.careerSlugs[0])?.title ?? "").localeCompare(
-              careersBySlug.get(b.careerSlugs[0])?.title ?? ""
+            (careersBySlug.get(a.primaryCareerSlug)?.title ?? "").localeCompare(
+              careersBySlug.get(b.primaryCareerSlug)?.title ?? ""
             ) || a.name.localeCompare(b.name)
         );
       default:
@@ -251,7 +251,7 @@ export default function SpecializationsExplorer({
                   <SpecializationListCard
                     key={s.slug}
                     specialization={s}
-                    parent={careersBySlug.get(s.careerSlugs[0])}
+                    parent={careersBySlug.get(s.primaryCareerSlug)}
                     view={view}
                   />
                 ))}

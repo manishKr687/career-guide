@@ -8,4 +8,7 @@ import java.util.List;
 public interface SpecializationRepository extends JpaRepository<Specialization, String> {
 
     List<Specialization> findAllByOrderByNameAsc();
+
+    /** V117 -- the specializations a given career is the canonical parent of. */
+    List<Specialization> findAllByPrimaryCareerSlug(String careerSlug);
 }

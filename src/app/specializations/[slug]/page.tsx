@@ -106,7 +106,8 @@ export default async function SpecializationDetailPage({
   // Wave 1: the parent careers, because every fallback below is drawn from
   // them and the page cannot know what to fetch until it has them.
   const careers = await getManyCareers(specialization.careerSlugs);
-  const parent = careers[0];
+  // The canonical parent, not simply the first one returned (V117).
+  const parent = careers.find((c) => c.slug === specialization.primaryCareerSlug) ?? careers[0];
   const parentNames = careers.map((c) => c.title).join(" & ");
 
   // Union across parents, order preserved, duplicates dropped -- a

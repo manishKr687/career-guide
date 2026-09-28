@@ -166,11 +166,53 @@ public class CareerService {
         if (!careerRepository.existsById(slug)) {
             throw NotFoundException.forSlug("Career", slug);
         }
+        repointOrRefuseSpecializations(slug);
         // Every join table referencing careers.slug (career_exams,
         // exam_careers, career_stages, stage_careers) has ON DELETE CASCADE,
         // so this cleans up all of a career's relations on every side
         // automatically -- see V1__schema.sql.
         careerRepository.deleteById(slug);
+    }
+
+    /**
+     * Repoints, or refuses, before a career is deleted (V117).
+     *
+     * <p>career_specializations cascades on career deletion, so deleting a
+     * career silently removes its specialization links. Since V117 each
+     * specialization also records which of those careers is its canonical
+     * parent, guaranteed by a composite foreign key -- so deleting a career
+     * that is some specialization's primary parent would break that guarantee.
+     * The constraint is DEFERRABLE, which means the database would reject the
+     * whole transaction at COMMIT with an error naming a constraint rather than
+     * a specialization.
+     *
+     * <p>A specialization with another parent is simply repointed at it. One
+     * whose only parent is the career being deleted cannot be: it would be left
+     * unreachable, in the state V117's header describes as needing a fix rather
+     * than a relaxed column. Deleting it silently is worse -- it is content
+     * somebody wrote, and the cascade would take its overview, education routes
+     * and job roles with it. So the delete is refused and names them, which is
+     * the same repoint-verify-delete sequence the degree relations use.
+     */
+    private void repointOrRefuseSpecializations(String careerSlug) {
+        List<String> stranded = new ArrayList<>();
+        for (Specialization specialization : specializationRepository.findAllByPrimaryCareerSlug(careerSlug)) {
+            Optional<Career> replacement = specialization.getCareers().stream()
+                    .filter(c -> !c.getSlug().equals(careerSlug))
+                    .findFirst();
+            if (replacement.isPresent()) {
+                specialization.setPrimaryCareerSlug(replacement.get().getSlug());
+                specializationRepository.save(specialization);
+            } else {
+                stranded.add(specialization.getName() + " (" + specialization.getSlug() + ")");
+            }
+        }
+        if (!stranded.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Cannot delete this career: " + stranded.size() + " specialization(s) have it as their "
+                            + "only parent and would be left unreachable -- " + String.join(", ", stranded)
+                            + ". Give each another career first, or delete them.");
+        }
     }
 
     private void applyRequest(Career career, CareerUpsertRequest request) {

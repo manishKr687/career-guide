@@ -22,6 +22,13 @@ public record SpecializationUpsertRequest(
         @NotBlank @Size(max = 32) String icon,
         List<String> relatedExamSlugs,
         List<String> careerSlugs,
+        /**
+         * Which of {@code careerSlugs} is the canonical parent (V117). Optional
+         * in the request: when omitted, the service keeps the existing primary
+         * if it is still among the requested careers, otherwise it takes the
+         * first. Must be one of {@code careerSlugs} when given.
+         */
+        String primaryCareerSlug,
         List<String> relatedJobRoleSlugs,
         List<String> relatedHardSkillSlugs,
         List<String> relatedSoftSkillSlugs,

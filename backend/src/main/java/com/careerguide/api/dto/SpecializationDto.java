@@ -10,6 +10,17 @@ public record SpecializationDto(
         String icon,
         List<String> relatedExamSlugs,
         List<String> careerSlugs,
+
+        /**
+         * The canonical parent among {@code careerSlugs} (V117). A
+         * specialization may legitimately sit under more than one career --
+         * Cloud Computing under both CSE and IT -- so consumers that need
+         * exactly one parent (the breadcrumb, the borrowed-data fallback) read
+         * this instead of taking {@code careerSlugs[0]}, which was whichever
+         * career happened to come back first. Guaranteed non-null and
+         * guaranteed present in {@code careerSlugs}.
+         */
+        String primaryCareerSlug,
         List<String> relatedJobRoleSlugs,
         List<String> relatedHardSkillSlugs,
         List<String> relatedSoftSkillSlugs,

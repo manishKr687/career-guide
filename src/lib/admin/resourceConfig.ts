@@ -752,6 +752,7 @@ export const specializationConfig: ResourceConfig = {
     { key: "highlights", label: "Key Highlights", type: "tags", helpText: "Comma-separated short claims about the field, e.g. \"Applied across almost every industry\"." },
     { key: "icon", label: "Icon", type: "select", required: true, staticOptions: ICON_OPTIONS },
     { key: "careerSlugs", label: "Careers", type: "multiselect", optionsKey: "careers", helpText: "Which career(s) this specialization belongs under. Also drives Related Specializations on the page -- siblings are read from here rather than listed a second time." },
+    { key: "primaryCareerSlug", label: "Primary Career", type: "select", optionsKey: "careers", helpText: "Which of the careers above is the canonical parent: the one the breadcrumb shows, and the one whose data this page borrows where it has none of its own. Must be one of them. Leave as-is when adding a second career -- the existing primary is kept." },
     {
       key: "education",
       label: "Education (Degree + Subject)",

@@ -515,6 +515,13 @@ export interface Specialization {
   icon: string;
   relatedExamSlugs: string[];
   careerSlugs: string[];
+  // V117 -- the canonical parent among `careerSlugs`. A specialization can sit
+  // under more than one career (Cloud Computing under both CSE and IT), so
+  // anything that needs exactly one parent reads this rather than
+  // `careerSlugs[0]`, which is whichever career the API returned first --
+  // for Cloud Computing that was IT, while its primary is CSE. Always set, and
+  // always one of `careerSlugs` (enforced by a composite FK, see V117).
+  primaryCareerSlug: string;
   relatedJobRoleSlugs: string[];
   relatedHardSkillSlugs: string[];
   relatedSoftSkillSlugs: string[];

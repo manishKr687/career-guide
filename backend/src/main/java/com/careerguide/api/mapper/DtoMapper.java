@@ -298,6 +298,7 @@ public final class DtoMapper {
                 s.getIcon(),
                 slugs(s.getRelatedExams(), Exam::getSlug),
                 slugs(s.getCareers(), Career::getSlug),
+                s.getPrimaryCareerSlug(),
                 slugs(s.getRelatedJobRoles(), JobRole::getSlug),
                 slugs(s.getRelatedHardSkills(), Skill::getSlug),
                 slugs(s.getRelatedSoftSkills(), Skill::getSlug),

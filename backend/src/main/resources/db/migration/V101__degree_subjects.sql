@@ -103,9 +103,54 @@ ON CONFLICT DO NOTHING;
 DO $$
 DECLARE bad int;
 BEGIN
+    -- Originally `IF bad <> 42`. That number was a snapshot of one database,
+    -- not a property of the migration: the pair set is derived from which
+    -- product degree rows are UNREFERENCED, and a database where an editor has
+    -- linked one of them to a career or college legitimately yields fewer pairs
+    -- than one where nobody has. On a pristine replay the answer is 44, so the
+    -- absolute count made the history unreplayable -- a fresh environment could
+    -- not be built from these migrations at all.
+    --
+    -- Replaced with the invariant the count was standing in for. The comment on
+    -- the INSERT says it plainly: dropping the dual degrees and arts-humanities
+    -- is intended, and the check exists to stop anything ELSE being dropped
+    -- silently. So assert exactly that -- every candidate whose computed subject
+    -- is a real subject produced a pair -- which holds on any database.
+    SELECT count(*) INTO bad
+    FROM (
+        SELECT
+            CASE WHEN d.slug LIKE 'bsc-%' THEN 'b-sc'
+                 WHEN d.slug LIKE 'msc-%' THEN 'msc'
+                 WHEN d.slug LIKE 'ba-%'  THEN 'ba'
+                 WHEN d.slug LIKE 'ma-%'  THEN 'ma'
+                 WHEN d.slug LIKE 'phd-%' THEN 'phd' END AS degree_slug,
+            CASE WHEN d.slug LIKE 'bsc-%' THEN substr(d.slug, 5)
+                 WHEN d.slug LIKE 'msc-%' THEN substr(d.slug, 5)
+                 WHEN d.slug LIKE 'ba-%'  THEN substr(d.slug, 4)
+                 WHEN d.slug LIKE 'ma-%'  THEN substr(d.slug, 4)
+                 WHEN d.slug LIKE 'phd-%' THEN substr(d.slug, 5) END AS subject_slug
+        FROM degrees d
+        WHERE (d.slug LIKE 'bsc-%' OR d.slug LIKE 'msc-%' OR d.slug LIKE 'ba-%'
+               OR d.slug LIKE 'ma-%' OR d.slug LIKE 'phd-%')
+          AND NOT EXISTS (SELECT 1 FROM career_degrees x        WHERE x.degree_slug = d.slug)
+          AND NOT EXISTS (SELECT 1 FROM college_degrees x       WHERE x.degree_slug = d.slug)
+          AND NOT EXISTS (SELECT 1 FROM degree_exams x          WHERE x.degree_slug = d.slug)
+          AND NOT EXISTS (SELECT 1 FROM degree_skills x         WHERE x.degree_slug = d.slug)
+          AND NOT EXISTS (SELECT 1 FROM degree_resources x      WHERE x.degree_slug = d.slug)
+          AND NOT EXISTS (SELECT 1 FROM college_career_degrees x WHERE x.degree_slug = d.slug)
+          AND NOT EXISTS (SELECT 1 FROM exam_career_degrees x   WHERE x.degree_slug = d.slug)
+    ) p
+    JOIN subjects s ON s.slug = p.subject_slug
+    WHERE NOT EXISTS (
+        SELECT 1 FROM degree_subjects ds
+        WHERE ds.degree_slug = p.degree_slug AND ds.subject_slug = p.subject_slug);
+    IF bad > 0 THEN
+        RAISE EXCEPTION '% unreferenced product degree(s) with a known subject produced no pair', bad;
+    END IF;
+
     SELECT count(*) INTO bad FROM degree_subjects;
-    IF bad <> 42 THEN
-        RAISE EXCEPTION 'expected 42 degree/subject pairs, found %', bad;
+    IF bad = 0 THEN
+        RAISE EXCEPTION 'degree_subjects is empty -- the derivation matched nothing';
     END IF;
 
     -- Every degree named here must be a real qualification type that takes a

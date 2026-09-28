@@ -107,13 +107,29 @@ BEGIN
         RAISE EXCEPTION '% career_degrees row(s) name a subject that does not exist', bad;
     END IF;
 
-    -- 13 + 54 + 2 = 69 rows should now carry a subject.
+    -- Originally `IF bad <> 69` (13 + 54 + 2 on the database this was written
+    -- against). How many rows carry a subject depends on how many product
+    -- degree rows were referenced in the first place, which differs between a
+    -- pristine replay and a database an editor has worked on -- so the absolute
+    -- total made the history unreplayable. On a clean replay it is 67.
+    --
+    -- The invariant that matters is the one above and below this: a subject must
+    -- exist, and may only sit on a degree that takes one. What this adds is that
+    -- the repointing actually happened rather than silently matching nothing.
     SELECT (SELECT count(*) FROM career_degrees      WHERE subject_slug IS NOT NULL)
          + (SELECT count(*) FROM college_degrees     WHERE subject_slug IS NOT NULL)
          + (SELECT count(*) FROM exam_career_degrees WHERE subject_slug IS NOT NULL)
       INTO bad;
-    IF bad <> 69 THEN
-        RAISE EXCEPTION 'expected 69 repointed rows, found %', bad;
+    IF bad = 0 THEN
+        RAISE EXCEPTION 'no rows carry a subject -- the repointing matched nothing';
+    END IF;
+
+    -- And no reference may still point at a deleted product row, which is what
+    -- the repointing was for.
+    SELECT count(*) INTO bad FROM career_degrees cd
+    WHERE NOT EXISTS (SELECT 1 FROM degrees d WHERE d.slug = cd.degree_slug);
+    IF bad > 0 THEN
+        RAISE EXCEPTION '% career_degrees row(s) still name a degree that no longer exists', bad;
     END IF;
 
     -- A subject may only be attached to a degree that takes one, or the row

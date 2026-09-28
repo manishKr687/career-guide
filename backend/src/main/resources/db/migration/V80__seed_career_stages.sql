@@ -98,12 +98,28 @@ JOIN stages st ON st.slug = p.stage_slug;
 -- Guard: every stage page must now have something on it. The whole point of
 -- this migration is that "Choose Your Stage" stops being a dead end, so an
 -- empty stage means the rules above missed one.
+--
+-- after-10th is EXEMPT, and this is the exemption that made the whole history
+-- replayable again. The after-10th rule above derives from careers linked to an
+-- exam categorised 'After 10th' -- polytechnic-cet. Those links were created by
+-- V12/V14 against the pre-V49 job-role-grain slugs (chemical-engineer,
+-- mechatronics-engineer), and V49's taxonomy rebuild deleted the careers they
+-- named, taking the links with them. So on a clean replay this derivation
+-- matches nothing and after-10th is empty here -- which made `docker compose up`
+-- against a fresh database fail at this migration, meaning no new environment
+-- could be built from this repository at all.
+--
+-- It is not a defect in the outcome: V98 links polytechnic-cet to the ten
+-- engineering careers with a diploma route and writes the career_stages rows
+-- itself, so after-10th is populated by the time the history finishes. The guard
+-- was simply asserting, at V80, something only true from V98 onward.
 DO $$
 DECLARE empty_stages text;
 BEGIN
     SELECT string_agg(s.slug, ', ' ORDER BY s.sort_order) INTO empty_stages
     FROM stages s
-    WHERE NOT EXISTS (SELECT 1 FROM career_stages cs WHERE cs.stage_slug = s.slug);
+    WHERE s.slug <> 'after-10th'
+      AND NOT EXISTS (SELECT 1 FROM career_stages cs WHERE cs.stage_slug = s.slug);
 
     IF empty_stages IS NOT NULL THEN
         RAISE EXCEPTION 'stage(s) still have no careers: %', empty_stages;

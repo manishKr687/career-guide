@@ -151,9 +151,24 @@ BEGIN
         RAISE EXCEPTION '% exam(s) have a frequency_type contradicting their frequency text: %', bad, missing;
     END IF;
 
-    SELECT count(*) INTO bad FROM exams;
-    IF bad <> 34 THEN
-        RAISE EXCEPTION 'expected 34 exams, found % -- the seed above is keyed by slug and would need updating', bad;
+    -- Originally `IF bad <> 34`. The concern was real -- the seed above is keyed
+    -- by slug, so an exam added later would silently get no facets -- but the
+    -- guard was the wrong shape: it fails on ANY change in the exam count,
+    -- including a pristine replay, which has 31. (The three extra in the
+    -- database this was written against were created through the admin rather
+    -- than by a migration, which is why they are absent from a replay.)
+    --
+    -- So assert the thing that was actually feared: no exam left without the
+    -- facets this migration exists to assign. That catches a newly added exam
+    -- precisely, and keeps working however many exams there are.
+    -- category_slug is deliberately NULL for cuet and ntse, which span every
+    -- discipline -- the check further down guards that no OTHER exam is null, and
+    -- the frontend has an explicit "none" filter value for them. So only level
+    -- and frequency_type are required of every exam.
+    SELECT count(*), string_agg(slug, ', ') INTO bad, missing FROM exams
+    WHERE level IS NULL OR frequency_type IS NULL;
+    IF bad > 0 THEN
+        RAISE EXCEPTION '% exam(s) have no level/frequency facets: % -- the seed above is keyed by slug and needs a row for each', bad, missing;
     END IF;
 
     -- Every level bucket must hold something; an empty facet is a dead

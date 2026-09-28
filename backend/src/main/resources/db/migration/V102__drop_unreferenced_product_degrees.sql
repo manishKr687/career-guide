@@ -78,9 +78,39 @@ WHERE (d.slug LIKE 'bsc-%' OR d.slug LIKE 'msc-%' OR d.slug LIKE 'ba-%'
 DO $$
 DECLARE bad int;
 BEGIN
-    SELECT count(*) INTO bad FROM degrees;
-    IF bad <> 100 THEN
-        RAISE EXCEPTION 'expected 100 degrees remaining, found %', bad;
+    -- Originally `IF bad <> 100`. Like V101's 42, that was a snapshot of one
+    -- database rather than a property of this migration: the delete set is
+    -- whichever product rows are unreferenced, so a database where an editor has
+    -- linked one of them keeps more rows than a pristine one. On a clean replay
+    -- 98 remain, which made the history unreplayable.
+    --
+    -- Replaced with the two invariants the count was standing in for: the delete
+    -- finished, and it did not take a pair's degree with it.
+    SELECT count(*) INTO bad FROM degrees d
+    WHERE (d.slug LIKE 'bsc-%' OR d.slug LIKE 'msc-%' OR d.slug LIKE 'ba-%'
+           OR d.slug LIKE 'ma-%' OR d.slug LIKE 'phd-%')
+      -- The same exclusion the DELETE carries: the dual degrees are kept
+      -- deliberately, since 'B.A. B.Ed' is one qualification rather than a
+      -- degree taken in a subject, so it cannot be expressed as a pair.
+      AND d.slug NOT IN ('ba-bed', 'bsc-bed', 'bsc-llb')
+      AND NOT EXISTS (SELECT 1 FROM career_degrees x        WHERE x.degree_slug = d.slug)
+      AND NOT EXISTS (SELECT 1 FROM college_degrees x       WHERE x.degree_slug = d.slug)
+      AND NOT EXISTS (SELECT 1 FROM degree_exams x          WHERE x.degree_slug = d.slug)
+      AND NOT EXISTS (SELECT 1 FROM degree_skills x         WHERE x.degree_slug = d.slug)
+      AND NOT EXISTS (SELECT 1 FROM degree_resources x      WHERE x.degree_slug = d.slug)
+      AND NOT EXISTS (SELECT 1 FROM college_career_degrees x WHERE x.degree_slug = d.slug)
+      AND NOT EXISTS (SELECT 1 FROM exam_career_degrees x   WHERE x.degree_slug = d.slug);
+    IF bad > 0 THEN
+        RAISE EXCEPTION '% unreferenced product degree row(s) survived the delete', bad;
+    END IF;
+
+    -- degree_subjects.degree_slug is ON DELETE CASCADE, so a delete that reached
+    -- a paired degree would have removed the pair silently. V101 ran first
+    -- precisely so this could not happen; this proves it did not.
+    SELECT count(*) INTO bad FROM degree_subjects ds
+    WHERE NOT EXISTS (SELECT 1 FROM degrees d WHERE d.slug = ds.degree_slug);
+    IF bad > 0 THEN
+        RAISE EXCEPTION '% degree/subject pair(s) lost their degree to the delete', bad;
     END IF;
 
     -- The generic families the pairs depend on must still exist -- deleting
@@ -111,9 +141,13 @@ BEGIN
         RAISE EXCEPTION '% degree/subject pair(s) were orphaned by the delete', bad;
     END IF;
 
+    -- Originally `IF bad <> 42`, and redundant as well as unreplayable: the
+    -- check immediately above already proves no pair was orphaned by the
+    -- delete, which is the actual risk. The absolute number only restated how
+    -- many pairs one particular database happened to have.
     SELECT count(*) INTO bad FROM degree_subjects;
-    IF bad <> 42 THEN
-        RAISE EXCEPTION 'expected 42 pairs to survive, found %', bad;
+    IF bad = 0 THEN
+        RAISE EXCEPTION 'every degree/subject pair disappeared during the delete';
     END IF;
 
     -- No live reference may have been cascaded away. Every remaining link

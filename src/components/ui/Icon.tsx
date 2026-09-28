@@ -65,6 +65,15 @@ const ICON_PATHS: Record<string, string> = {
     '<path d="M3.5 8h13.2M13.5 4.3 16.7 8l-3.2 3.7M20.5 16H7.3M10.5 12.3 7.3 16l3.2 3.7"/>',
   menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
   close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  // The three row actions every admin table needs. Added because the set had
+  // no pencil, eye or bin, and the list was standing in with `gear` for edit --
+  // which reads as "settings", not "change this record".
+  pencil:
+    '<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0 0-3l-1-1a2.1 2.1 0 0 0-3 0L4 16v4Z"/><path d="M14.5 6 18 9.5"/>',
+  eye:
+    '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12Z"/><circle cx="12" cy="12" r="3.2"/>',
+  trash:
+    '<path d="M4 7h16"/><path d="M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.9 12.1A1.9 1.9 0 0 0 9.3 21h5.4a1.9 1.9 0 0 0 1.9-1.9L17.5 7"/><path d="M10.5 11v6M13.5 11v6"/>',
   external: '<path d="M14 5h5v5"/><path d="M19 5 10 14"/><path d="M18 13v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   user: '<circle cx="12" cy="8.5" r="3.6"/><path d="M4.5 20c0-4 3.4-6.5 7.5-6.5s7.5 2.5 7.5 6.5"/>',
   building: '<path d="M3 21h18"/><path d="M5 21V6l7-3 7 3v15"/><path d="M9 21v-5h6v5"/><path d="M9 9h1.5M13.5 9H15M9 13h1.5M13.5 13H15"/>',

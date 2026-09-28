@@ -15,6 +15,7 @@ import {
 } from "@/lib/admin/resourceConfig";
 import AdminEntityForm, { type FieldValue } from "@/components/admin/AdminEntityForm";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
+import Modal from "@/components/ui/Modal";
 
 /**
  * The list screen every /admin/<resource> page renders.
@@ -83,6 +84,12 @@ export default function AdminResourceList({
         .slice(0, 4),
     [config]
   );
+
+  // Short fields pair up two to a row, long ones run full width -- so a dialog
+  // opens with Title and Level side by side and the description beneath, rather
+  // than four boxes in a column with a lot of empty space to their right.
+  const shortFields = useMemo(() => quickFields.filter((f) => f.type !== "textarea"), [quickFields]);
+  const longFields = useMemo(() => quickFields.filter((f) => f.type === "textarea"), [quickFields]);
 
   /** The first select field over a reference list doubles as the table filter. */
   const filterField = useMemo(
@@ -255,7 +262,7 @@ export default function AdminResourceList({
                           aria-label={`Quick edit ${slug}`}
                           className={`${iconButton} text-blue hover:border-blue/40`}
                         >
-                          <Icon name="gear" className="w-4 h-4" />
+                          <Icon name="pencil" className="w-4 h-4" />
                         </button>
                         <Link
                           href={`/admin/${resource}/${encodeURIComponent(slug)}/edit`}
@@ -263,7 +270,7 @@ export default function AdminResourceList({
                           aria-label={`Edit ${slug}`}
                           className={`${iconButton} text-muted hover:border-navy/30 hover:text-navy`}
                         >
-                          <Icon name="external" className="w-4 h-4" />
+                          <Icon name="eye" className="w-4 h-4" />
                         </Link>
                         <button
                           onClick={() => setConfirmSlug(slug)}
@@ -272,7 +279,7 @@ export default function AdminResourceList({
                           aria-label={`Delete ${slug}`}
                           className={`${iconButton} text-red hover:border-red/40`}
                         >
-                          <Icon name="close" className="w-4 h-4" />
+                          <Icon name="trash" className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
@@ -292,55 +299,73 @@ export default function AdminResourceList({
         )}
       </div>
 
-      {draft && (
-        <section className="bg-white rounded-2xl border border-line mt-6">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-line">
-            <h3 className="font-display font-extrabold text-navy text-[15px]">
-              Edit {config.label}
-              <span className="font-mono font-normal text-[12px] text-subtle ml-2">{String(draft.slug)}</span>
-            </h3>
-            <button
-              onClick={() => setDraft(null)}
-              aria-label="Close"
-              className="w-8 h-8 rounded-lg text-muted hover:text-navy hover:bg-bg-soft flex items-center justify-center transition-colors"
-            >
-              <Icon name="close" className="w-4 h-4" />
-            </button>
-          </div>
+      <Modal
+        open={draft !== null}
+        onClose={() => setDraft(null)}
+        title={`Edit ${config.label}`}
+        subtitle={draft ? String(draft.slug) : undefined}
+        size="lg"
+      >
+        {draft && (
+          <>
+            {shortFields.length > 0 && (
+              <AdminEntityForm
+                fields={shortFields}
+                values={draft}
+                onChange={(key: string, value: FieldValue) => setDraft({ ...draft, [key]: value })}
+                referenceOptions={referenceOptions}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5"
+              />
+            )}
 
-          <div className="px-5 py-5">
-            <AdminEntityForm
-              fields={quickFields}
-              values={draft}
-              onChange={(key: string, value: FieldValue) => setDraft({ ...draft, [key]: value })}
-              referenceOptions={referenceOptions}
-            />
+            {longFields.length > 0 && (
+              <div className={shortFields.length > 0 ? "mt-5" : undefined}>
+                <AdminEntityForm
+                  fields={longFields}
+                  values={draft}
+                  onChange={(key: string, value: FieldValue) => setDraft({ ...draft, [key]: value })}
+                  referenceOptions={referenceOptions}
+                />
+              </div>
+            )}
 
-            {/* Said plainly, because the panel shows four fields out of what is
-                often twenty, and an editor who assumes otherwise would go looking
+            {/* Said plainly, because the dialog shows four fields out of what is
+                often twenty, and an editor who assumed otherwise would go looking
                 for the relations and conclude they had been lost. */}
             <p className="text-[12px] text-muted mt-5">
-              Relations and ordered lists are edited on the full form. Saving here keeps them untouched.
+              Relations and ordered lists are edited on the{" "}
+              <Link
+                href={`/admin/${resource}/${encodeURIComponent(String(draft.slug))}/edit`}
+                className="font-bold text-blue hover:underline"
+              >
+                full form
+              </Link>
+              . Saving here keeps them untouched.
             </p>
-          </div>
 
-          <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-line bg-bg-soft">
-            <button
-              onClick={() => setDraft(null)}
-              className="text-[13px] font-bold text-navy bg-white px-4 py-2.5 rounded-xl border border-line hover:border-navy/30 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="text-[13px] font-bold text-white bg-blue px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Update"}
-            </button>
-          </div>
-        </section>
-      )}
+            {error && <p className="text-[12.5px] text-red mt-4">{error}</p>}
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={() => setDraft(null)}
+                disabled={saving}
+                className="text-[13px] font-bold text-navy bg-white px-4 py-2.5 rounded-xl border border-line hover:border-navy/30 transition-colors disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={saving}
+                className="text-[13px] font-bold text-white bg-blue px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
+              >
+                {saving ? "Saving..." : "Update"}
+              </button>
+            </div>
+          </>
+        )}
+      </Modal>
 
       <ConfirmDialog
         open={confirmSlug !== null}

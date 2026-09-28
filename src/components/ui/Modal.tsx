@@ -16,11 +16,17 @@ export default function Modal({
   open,
   onClose,
   title,
+  subtitle,
+  size = "md",
   children,
 }: {
   open: boolean;
   onClose: () => void;
   title: string;
+  /** Small print under the title -- the edit dialog shows the record's slug. */
+  subtitle?: string;
+  /** "lg" for forms; the default stays "md" so ConfirmDialog is unchanged. */
+  size?: "md" | "lg";
   children: React.ReactNode;
 }) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -50,11 +56,18 @@ export default function Modal({
         aria-modal="true"
         aria-labelledby="modal-title"
         tabIndex={-1}
-        className="relative bg-white rounded-2xl shadow-card w-full max-w-md p-6 outline-none"
+        className={`relative bg-white rounded-2xl shadow-card w-full p-6 outline-none max-h-[90vh] overflow-y-auto ${
+          size === "lg" ? "max-w-2xl" : "max-w-md"
+        }`}
       >
         <div className="flex items-start justify-between mb-4">
           <h2 id="modal-title" className="font-display font-bold text-navy text-[17px]">
             {title}
+            {subtitle && (
+              <span className="block font-sans font-normal font-mono text-[12px] text-subtle mt-1">
+                {subtitle}
+              </span>
+            )}
           </h2>
           <button
             type="button"

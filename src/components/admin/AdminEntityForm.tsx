@@ -540,15 +540,19 @@ export default function AdminEntityForm({
   onChange,
   referenceOptions,
   disabledFields = [],
+  className = "space-y-5",
 }: {
   fields: FieldConfig[];
   values: FormValues;
   onChange: (key: string, value: FieldValue) => void;
   referenceOptions: Record<string, FieldOption[]>;
   disabledFields?: string[];
+  /** Container layout. Each FieldInput renders a single div, so a grid works
+   *  here as well as the default stack -- the edit dialog uses two columns. */
+  className?: string;
 }) {
   return (
-    <div className="space-y-5">
+    <div className={className}>
       {fields.map((field) => (
         <FieldInput
           key={field.key}

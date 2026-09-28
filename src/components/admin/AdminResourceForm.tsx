@@ -7,6 +7,7 @@ import { ApiError } from "@/lib/api";
 import { FieldOption, FieldType, FormValues, RESOURCE_CONFIGS, toFormValues, toPayload } from "@/lib/admin/resourceConfig";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import { BTN_PRIMARY, BTN_SECONDARY, SURFACE, Toast } from "@/components/admin/AdminKit";
 import AdminEntityForm, { FieldValue } from "@/components/admin/AdminEntityForm";
 
@@ -19,16 +20,22 @@ import AdminEntityForm, { FieldValue } from "@/components/admin/AdminEntityForm"
  * express something the types already imply, so the split is computed: what the
  * entity IS, what it LINKS TO, and the structured tables that need room.
  */
-const SECTIONS: Array<{ title: string; blurb: string; types: FieldType[] }> = [
+const SECTIONS: Array<{ title: string; blurb: string; types: FieldType[]; aside?: boolean }> = [
   {
-    title: "Details",
-    blurb: "The entity's own fields.",
-    types: ["text", "textarea", "number", "select", "boolean", "date", "tags"],
+    title: "Basic Information",
+    blurb: "The core details of this record.",
+    types: ["text", "select", "number", "boolean", "date", "tags"],
+  },
+  {
+    title: "Description",
+    blurb: "The longer copy that the public pages render.",
+    types: ["textarea"],
   },
   {
     title: "Relationships",
     blurb: "Links to other entities. These drive what appears on the public pages.",
     types: ["multiselect"],
+    aside: true,
   },
   {
     title: "Structured data",
@@ -62,6 +69,7 @@ export default function AdminResourceForm({
   const [loadError, setLoadError] = useState<string | null>(null);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -171,64 +179,142 @@ export default function AdminResourceForm({
     fields: config.fields.filter((f) => section.types.includes(f.type)),
   })).filter((section) => section.fields.length > 0);
 
-  return (
-    <form onSubmit={handleSubmit} className="max-w-3xl pb-28">
-      <Link
-        href={listHref}
-        className="inline-flex items-center gap-1.5 text-[13px] font-bold text-muted hover:text-navy mb-4"
-      >
-        <Icon name="arrowRight" className="w-4 h-4 rotate-180" />
-        Back to {config.pluralLabel}
-      </Link>
+  // Split into the two columns. Relationships sit beside the form rather than
+  // under it: they are reference pickers rather than things you write, and on a
+  // record with twenty of them they would otherwise bury the fields you came to
+  // change.
+  const mainSections = sections.filter((s) => !s.aside);
+  const asideSections = sections.filter((s) => s.aside);
+  const tab = mainSections[Math.min(activeTab, mainSections.length - 1)];
 
-      <div className="flex flex-wrap items-baseline gap-3 mb-6">
-        <h2 className="font-display font-extrabold text-navy text-[22px]">
+  return (
+    <form onSubmit={handleSubmit} className="pb-4">
+      <Breadcrumb
+        items={[{ label: config.pluralLabel, href: listHref }, { label: `${mode === "create" ? "New" : "Edit"} ${config.label}` }]}
+      />
+
+      <div className="mb-6">
+        <h2 className="font-display font-extrabold text-navy text-[26px] leading-tight">
           {mode === "create" ? `New ${config.label}` : `Edit ${config.label}`}
         </h2>
-        {mode === "edit" && (
-          <span className="font-mono text-[12px] text-subtle bg-bg-soft border border-line rounded-lg px-2 py-1">
-            {slug}
-          </span>
-        )}
+        <p className="text-[13px] text-muted mt-1">
+          {mode === "create"
+            ? `Create a new ${config.label.toLowerCase()} and its related information.`
+            : `Update ${config.label.toLowerCase()} details, description, and related information.`}
+        </p>
       </div>
 
-      <div className="flex flex-col gap-5">
-        {sections.map((section) => (
-          <section key={section.title} className={SURFACE}>
-            <div className="px-5 py-4 border-b border-line">
-              <h3 className="font-display font-extrabold text-navy text-[14.5px]">{section.title}</h3>
-              <p className="text-[12px] text-muted mt-0.5">{section.blurb}</p>
-            </div>
-            <div className="px-5 py-5">
+      {/* Tabs only where there is more than one group to move between; on States
+          and Industries there is a single section and a tab strip of one is
+          furniture. */}
+      {mainSections.length > 1 && (
+        <div className={`${SURFACE} px-2 mb-6 overflow-x-auto`}>
+          <div className="flex items-center gap-1" role="tablist">
+            {mainSections.map((section, i) => (
+              <button
+                key={section.title}
+                type="button"
+                role="tab"
+                aria-selected={i === activeTab}
+                onClick={() => setActiveTab(i)}
+                className={`relative text-[13px] font-bold px-4 py-3.5 whitespace-nowrap transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/30 rounded-lg ${
+                  i === activeTab ? "text-blue" : "text-muted hover:text-navy"
+                }`}
+              >
+                {section.title}
+                {i === activeTab && (
+                  <span className="absolute left-3 right-3 -bottom-px h-0.5 bg-blue rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+        <div className="xl:col-span-2 flex flex-col gap-6">
+          {tab && (
+            <SectionCard
+              step={activeTab + 1}
+              title={tab.title}
+              blurb={tab.blurb}
+            >
+              <AdminEntityForm
+                fields={tab.fields}
+                values={values}
+                onChange={handleChange}
+                referenceOptions={referenceOptions}
+                disabledFields={mode === "edit" ? ["slug"] : []}
+                className={
+                  tab.types.includes("textarea") || tab.types.includes("pairs")
+                    ? "space-y-5"
+                    : "grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-5"
+                }
+              />
+            </SectionCard>
+          )}
+        </div>
+
+        <aside className="flex flex-col gap-6 xl:sticky xl:top-20">
+          {asideSections.map((section, i) => (
+            <SectionCard
+              key={section.title}
+              step={mainSections.length + i + 1}
+              title={section.title}
+              blurb={section.blurb}
+            >
               <AdminEntityForm
                 fields={section.fields}
                 values={values}
                 onChange={handleChange}
                 referenceOptions={referenceOptions}
-                disabledFields={mode === "edit" ? ["slug"] : []}
               />
+            </SectionCard>
+          ))}
+
+          <SectionCard step={mainSections.length + asideSections.length + 1} title="Actions" blurb="">
+            <div className="flex flex-wrap justify-end gap-3">
+              <button type="button" onClick={() => router.push(listHref)} className={BTN_SECONDARY}>
+                Cancel
+              </button>
+              <button type="submit" disabled={submitting} className={BTN_PRIMARY}>
+                {submitting ? "Saving..." : mode === "create" ? `Create ${config.label}` : `Update ${config.label}`}
+              </button>
             </div>
-          </section>
-        ))}
+          </SectionCard>
+        </aside>
       </div>
 
-      {/* Fixed rather than at the end of the form. On Careers the last field is
-          about two screens down, and a Save button you have to scroll to find is
-          a Save button people forget to press. */}
-      <div className="fixed bottom-0 left-0 right-0 lg:left-60 bg-white/95 backdrop-blur border-t border-line z-20">
-        <div className="max-w-3xl px-4 sm:px-6 py-3.5 flex items-center gap-3">
-          <button type="submit" disabled={submitting} className={BTN_PRIMARY}>
-            {submitting ? "Saving..." : mode === "create" ? `Create ${config.label}` : "Save changes"}
-          </button>
-          <button type="button" onClick={() => router.push(listHref)} className={BTN_SECONDARY}>
-            Cancel
-          </button>
-        </div>
-      </div>
-
-      {/* A save failure at the bottom of a long form is easy to scroll past, and
-          the reader's attention is on the action bar, not the page. */}
       {submitError && <Toast tone="error" message={submitError} onClose={() => setSubmitError(null)} />}
     </form>
+  );
+}
+
+/** A numbered panel. The step number is the design's main navigational cue on a
+ *  long form -- it tells you where you are without reading the heading. */
+function SectionCard({
+  step,
+  title,
+  blurb,
+  children,
+}: {
+  step: number;
+  title: string;
+  blurb: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className={SURFACE}>
+      <div className="flex items-start gap-3 px-5 py-4 border-b border-line">
+        <span className="w-7 h-7 rounded-full bg-blue text-white text-[12.5px] font-bold flex items-center justify-center shrink-0">
+          {step}
+        </span>
+        <div className="min-w-0">
+          <h3 className="font-display font-extrabold text-navy text-[15px]">{title}</h3>
+          {blurb && <p className="text-[12px] text-muted mt-0.5">{blurb}</p>}
+        </div>
+      </div>
+      <div className="px-5 py-5">{children}</div>
+    </section>
   );
 }

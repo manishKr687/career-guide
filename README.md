@@ -76,6 +76,33 @@ npm run lint                     # eslint
 npx tsc --noEmit                 # types
 ```
 
+## Tests
+
+```bash
+cd backend && mvn test           # unit + MockMvc, no database needed
+npm run smoke                    # renders every page in the catalog
+```
+
+The backend suite also runs during `docker compose up --build`, so a broken
+test fails the image build rather than waiting for someone to remember.
+
+`npm run smoke` needs the site and the API both running. It asks the API what
+exists, then renders every listing page and every detail page -- around 1,550
+of them -- and fails on a non-200, a missing or empty `<h1>`, or output
+containing `[object Object]`, `NaN` or a bare `undefined`. That is aimed
+squarely at this project's recurring bug: a section that renders empty, or a
+null reaching a formatter, neither of which a type check can see.
+
+The full pass takes about 14 minutes against `next dev`, which is too slow to
+run on every change -- most of that is the dev server re-rendering each page.
+Use `npm run smoke -- --sample 20` while working (a minute or so, and it still
+touches every route family), and keep the full run for CI or before a release.
+`CONCURRENCY`, `SITE` and `API` are all overridable by environment variable.
+
+`/admin/**` is deliberately not covered: it is a client component behind a
+token, so its server-rendered HTML is a placeholder and asserting on it would
+test the redirect rather than the page.
+
 ## Admin panel
 
 `/admin` is a CRUD interface over the whole catalog, behind a single shared
@@ -140,9 +167,9 @@ from anywhere but your own machine, set real values — see
 The catalog, both explorers and detail pages, user accounts, the assessment
 and the admin panel are all working. Known gaps, in rough priority order:
 
-- The backend `Dockerfile` still builds with `-DskipTests`, and there is no
-  frontend render test over the ~1,500 catalog slugs. That is the largest
-  hole.
+- Test coverage is thin beyond the render smoke test and 23 backend unit
+  tests: there is nothing exercising the admin write paths end to end, and no
+  regression test on the listing filters.
 - 262 of 263 specializations have no overview of their own and borrow the
   parent career's copy under a label saying so.
 - Salary bands (0/42 careers) and NIRF ranks (0/90 colleges) are unpopulated,

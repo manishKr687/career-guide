@@ -13,7 +13,15 @@ COPY pom.xml .
 RUN mvn -B -q dependency:go-offline
 
 COPY src ./src
-RUN mvn -B -q clean package -DskipTests
+
+# Tests run here rather than being skipped. They were skipped originally to keep
+# `docker compose up --build` fast, which meant the only thing that ever ran the
+# suite was someone remembering to. A broken test now fails the image build,
+# which is the point of having them.
+#
+# These are unit and MockMvc tests with mocked repositories -- no database, no
+# network -- so they work inside the build stage where neither is available.
+RUN mvn -B -q clean package
 
 FROM eclipse-temurin:21-jre-alpine AS runtime
 WORKDIR /app

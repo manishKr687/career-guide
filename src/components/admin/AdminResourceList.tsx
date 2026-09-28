@@ -1,24 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Icon from "@/components/ui/Icon";
-import { AdminResource, adminDelete, adminUpdate, AdminUnauthorizedError } from "@/lib/adminApi";
+import { AdminResource, adminDelete, AdminUnauthorizedError } from "@/lib/adminApi";
 import { ApiError } from "@/lib/api";
-import {
-  FieldOption,
-  FormValues,
-  RESOURCE_CONFIGS,
-  toFormValues,
-  toPayload,
-} from "@/lib/admin/resourceConfig";
-import AdminEntityForm, { type FieldValue } from "@/components/admin/AdminEntityForm";
+import { FormValues, RESOURCE_CONFIGS } from "@/lib/admin/resourceConfig";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
-import Modal from "@/components/ui/Modal";
 import {
-  BTN_PRIMARY,
-  BTN_SECONDARY,
   EmptyState,
   IconButton,
   PageHeader,
@@ -42,6 +31,26 @@ function formatUpdated(value: unknown): string {
   if (Number.isNaN(at.getTime())) return "—";
   return at.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
 }
+
+/**
+ * Where a record can be seen the way a visitor sees it.
+ *
+ * Not every admin resource has a public page: States, Cities and Universities
+ * are reference data that no route renders on its own, so the view action is
+ * hidden for them rather than linking somewhere that 404s.
+ */
+const PUBLIC_PATHS: Partial<Record<AdminResource, string>> = {
+  careers: "/careers",
+  degrees: "/degrees",
+  exams: "/exams",
+  colleges: "/colleges",
+  skills: "/skills",
+  "job-roles": "/job-roles",
+  industries: "/industries",
+  certifications: "/certifications",
+  resources: "/resources",
+  specializations: "/specializations",
+};
 
 /**
  * The list screen every /admin/<resource> page renders.
@@ -71,51 +80,6 @@ export default function AdminResourceList({
 
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState("");
-
-  // Quick-edit panel. `draft` holds a FULL copy of the row, not just the fields
-  // the panel shows -- the admin API is a PUT that replaces the whole record, so
-  // submitting a partial object would blank every field the panel omits. The
-  // panel renders a subset; the payload is built from all of it.
-  const [draft, setDraft] = useState<FormValues | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [referenceOptions, setReferenceOptions] = useState<Record<string, FieldOption[]>>({});
-
-  // Loaded once the first panel opens rather than on page load: most visits to a
-  // list page never open one, and these are a dozen parallel API calls.
-  useEffect(() => {
-    if (draft === null || Object.keys(referenceOptions).length > 0) return;
-    let cancelled = false;
-    config.loadReferenceOptions()
-      .then((opts) => {
-        if (!cancelled) setReferenceOptions(opts);
-      })
-      .catch(() => {
-        if (!cancelled) setToast({ tone: "error", message: "Could not load the dropdown options for this form." });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [draft, referenceOptions, config]);
-
-  /**
-   * The fields the inline panel shows: the plain scalar ones, capped at four.
-   * Relations -- multiselects, paired rows, ordered lists -- are deliberately
-   * left to the full edit page, where there is room to see what you are changing.
-   * A five-across grid of twenty-item multiselects is not a quick edit.
-   */
-  const quickFields = useMemo(
-    () =>
-      config.fields
-        .filter((f) => ["text", "textarea", "select", "number"].includes(f.type) && f.key !== "slug")
-        .slice(0, 4),
-    [config]
-  );
-
-  // Short fields pair up two to a row, long ones run full width -- so a dialog
-  // opens with Title and Level side by side and the description beneath, rather
-  // than four boxes in a column with a lot of empty space to their right.
-  const shortFields = useMemo(() => quickFields.filter((f) => f.type !== "textarea"), [quickFields]);
-  const longFields = useMemo(() => quickFields.filter((f) => f.type === "textarea"), [quickFields]);
 
   /** The first select field over a reference list doubles as the table filter. */
   const filterField = useMemo(
@@ -163,7 +127,6 @@ export default function AdminResourceList({
     setPendingDelete(slug);
     try {
       await adminDelete(resource, slug);
-      if (draft && draft.slug === slug) setDraft(null);
       await refresh();
       setToast({ tone: "success", message: `Deleted "${slug}".` });
     } catch (err) {
@@ -180,32 +143,11 @@ export default function AdminResourceList({
     }
   }
 
-  async function handleSave() {
-    if (!draft) return;
-    setSaving(true);
-    const savedSlug = String(draft.slug);
-    try {
-      await adminUpdate(resource, savedSlug, toPayload(config, draft));
-      setDraft(null);
-      await refresh();
-      setToast({ tone: "success", message: `Saved changes to "${savedSlug}".` });
-    } catch (err) {
-      if (err instanceof AdminUnauthorizedError) {
-        router.push("/admin/login");
-        return;
-      }
-      setToast({
-        tone: "error",
-        message: err instanceof ApiError ? err.message : "Save failed. Is the backend running?",
-      });
-    } finally {
-      setSaving(false);
-    }
-  }
-
   // Shown only where the resource actually has the column. States, Cities and
   // Universities were not part of V115, so their DTOs carry no updatedAt at all
   // and an always-empty column would be noise on those three pages.
+  const publicPath = PUBLIC_PATHS[resource];
+
   const hasUpdatedAt = useMemo(() => items.some((item) => "updatedAt" in item), [items]);
 
   return (
@@ -269,12 +211,8 @@ export default function AdminResourceList({
             <tbody>
               {visible.map((item, i) => {
                 const slug = String(item.slug ?? "");
-                const isEditing = draft !== null && draft.slug === slug;
                 return (
-                  <tr
-                    key={slug}
-                    className={`border-t border-line ${isEditing ? "bg-blue-soft/40" : "hover:bg-bg-soft"}`}
-                  >
+                  <tr key={slug} className="border-t border-line hover:bg-bg-soft transition-colors">
                     <td className="px-4 py-3 text-subtle tabular-nums">{i + 1}</td>
                     {config.columns.map((col) => (
                       <td key={col.label} className="px-4 py-3 text-ink">
@@ -291,15 +229,17 @@ export default function AdminResourceList({
                       <div className="flex items-center justify-end gap-2">
                         <IconButton
                           icon="pencil"
-                          label={`Quick edit ${slug}`}
+                          label={`Edit ${slug}`}
                           tone="primary"
-                          onClick={() => setDraft(toFormValues(config, item))}
-                        />
-                        <IconButton
-                          icon="eye"
-                          label={`Open the full form for ${slug}`}
                           href={`/admin/${resource}/${encodeURIComponent(slug)}/edit`}
                         />
+                        {publicPath && (
+                          <IconButton
+                            icon="eye"
+                            label={`View the public page for ${slug}`}
+                            href={`${publicPath}/${encodeURIComponent(slug)}`}
+                          />
+                        )}
                         <IconButton
                           icon="trash"
                           label={`Delete ${slug}`}
@@ -338,62 +278,6 @@ export default function AdminResourceList({
             />
           ))}
       </div>
-
-      <Modal
-        open={draft !== null}
-        onClose={() => setDraft(null)}
-        title={`Edit ${config.label}`}
-        subtitle={draft ? String(draft.slug) : undefined}
-        size="lg"
-      >
-        {draft && (
-          <>
-            {shortFields.length > 0 && (
-              <AdminEntityForm
-                fields={shortFields}
-                values={draft}
-                onChange={(key: string, value: FieldValue) => setDraft({ ...draft, [key]: value })}
-                referenceOptions={referenceOptions}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5"
-              />
-            )}
-
-            {longFields.length > 0 && (
-              <div className={shortFields.length > 0 ? "mt-5" : undefined}>
-                <AdminEntityForm
-                  fields={longFields}
-                  values={draft}
-                  onChange={(key: string, value: FieldValue) => setDraft({ ...draft, [key]: value })}
-                  referenceOptions={referenceOptions}
-                />
-              </div>
-            )}
-
-            {/* Said plainly, because the dialog shows four fields out of what is
-                often twenty, and an editor who assumed otherwise would go looking
-                for the relations and conclude they had been lost. */}
-            <p className="text-[12px] text-muted mt-5">
-              Relations and ordered lists are edited on the{" "}
-              <Link
-                href={`/admin/${resource}/${encodeURIComponent(String(draft.slug))}/edit`}
-                className="font-bold text-blue hover:underline"
-              >
-                full form
-              </Link>
-              . Saving here keeps them untouched.
-            </p>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button type="button" onClick={() => setDraft(null)} disabled={saving} className={BTN_SECONDARY}>
-                Cancel
-              </button>
-              <button type="button" onClick={handleSave} disabled={saving} className={BTN_PRIMARY}>
-                {saving ? "Saving..." : "Update"}
-              </button>
-            </div>
-          </>
-        )}
-      </Modal>
 
       {toast && <Toast tone={toast.tone} message={toast.message} onClose={() => setToast(null)} />}
 

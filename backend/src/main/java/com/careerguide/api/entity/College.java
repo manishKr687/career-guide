@@ -18,6 +18,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Instant;
 
 @Entity
 @Table(name = "colleges")
@@ -148,7 +149,13 @@ public class College {
     @OrderBy("sortOrder ASC")
     private List<CollegeCareerDegree> careerOfferings = new ArrayList<>();
 
-    // Public rather than protected -- see the equivalent note in Career.java.
+    // Public rather than protected -- see the equivalent note in Career.java.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public College() {
     }
 
@@ -311,5 +318,9 @@ public class College {
 
     public void setExams(List<Exam> exams) {
         this.exams = exams;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

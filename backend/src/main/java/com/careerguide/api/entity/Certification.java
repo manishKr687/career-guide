@@ -11,6 +11,7 @@ import jakarta.persistence.Table;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.time.Instant;
 
 // Added in V27 -- see the Data Model Roadmap doc's "Spec v1.0 Match" tab.
 // No content seeded (neither uploaded doc gives real certification data
@@ -66,6 +67,12 @@ public class Certification {
     // Public rather than protected -- same reasoning as the other entities
     // in this pass: the admin write path calls `new Certification()`
     // directly from CertificationService, a different package.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public Certification() {
     }
 
@@ -139,5 +146,9 @@ public class Certification {
 
     public void setRelatedSkills(Set<Skill> relatedSkills) {
         this.relatedSkills = relatedSkills;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

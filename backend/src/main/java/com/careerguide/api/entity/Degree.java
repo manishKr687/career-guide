@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Instant;
 
 /**
  * A degree/qualification type (B.Tech, M.Tech, Diploma, B.Ed, ...) -- added
@@ -147,7 +148,13 @@ public class Degree {
     @OrderBy("title ASC")
     private List<Subject> subjects = new ArrayList<>();
 
-    // Public rather than protected -- see the equivalent note in Career.java.
+    // Public rather than protected -- see the equivalent note in Career.java.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public Degree() {
     }
 
@@ -271,5 +278,9 @@ public class Degree {
 
     public void setSubjects(List<Subject> subjects) {
         this.subjects = subjects;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

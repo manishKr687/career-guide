@@ -18,6 +18,22 @@ import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Modal from "@/components/ui/Modal";
 
 /**
+ * Renders updated_at, or an em dash where there is none.
+ *
+ * Most rows have none, and that is correct rather than broken: the column is
+ * maintained by a trigger that fires on UPDATE, and V115 deliberately did not
+ * backfill the rows that already existed, so a row shows a date only once
+ * somebody has actually changed it. An em dash says "never edited here"; a
+ * fabricated date would have said something false.
+ */
+function formatUpdated(value: unknown): string {
+  if (typeof value !== "string" || value === "") return "—";
+  const at = new Date(value);
+  if (Number.isNaN(at.getTime())) return "—";
+  return at.toLocaleDateString(undefined, { day: "numeric", month: "short", year: "numeric" });
+}
+
+/**
  * The list screen every /admin/<resource> page renders.
  *
  * One component for all fifteen resources, the same reasoning as DetailKit and
@@ -168,6 +184,11 @@ export default function AdminResourceList({
     }
   }
 
+  // Shown only where the resource actually has the column. States, Cities and
+  // Universities were not part of V115, so their DTOs carry no updatedAt at all
+  // and an always-empty column would be noise on those three pages.
+  const hasUpdatedAt = useMemo(() => items.some((item) => "updatedAt" in item), [items]);
+
   const iconButton =
     "w-8 h-8 rounded-lg border border-line flex items-center justify-center transition-colors disabled:opacity-40";
 
@@ -235,6 +256,9 @@ export default function AdminResourceList({
                   </th>
                 ))}
                 <th className="px-4 py-3 font-bold text-ink whitespace-nowrap">Slug</th>
+                {hasUpdatedAt && (
+                  <th className="px-4 py-3 font-bold text-ink whitespace-nowrap">Updated On</th>
+                )}
                 <th className="px-4 py-3 font-bold text-ink text-right">Actions</th>
               </tr>
             </thead>
@@ -254,6 +278,11 @@ export default function AdminResourceList({
                       </td>
                     ))}
                     <td className="px-4 py-3 font-mono text-[12px] text-subtle">{slug}</td>
+                    {hasUpdatedAt && (
+                      <td className="px-4 py-3 text-muted whitespace-nowrap">
+                        {formatUpdated(item.updatedAt)}
+                      </td>
+                    )}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
                         <button

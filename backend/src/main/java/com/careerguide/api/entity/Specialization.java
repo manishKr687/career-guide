@@ -19,6 +19,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.Instant;
 
 /**
  * A sub-discipline within a career (e.g. Propulsion within Aerospace
@@ -216,7 +217,13 @@ public class Specialization {
     @ManyToMany(mappedBy = "specializations", fetch = FetchType.LAZY)
     private List<College> colleges = new ArrayList<>();
 
-    // Public rather than protected -- see the equivalent note in Career.java.
+    // Public rather than protected -- see the equivalent note in Career.java.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public Specialization() {
     }
 
@@ -388,4 +395,8 @@ public class Specialization {
     // the list instance detaches the old rows without deleting them, which
     // Hibernate rejects. SpecializationService.syncEducation mutates it in
     // place instead.
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
 }

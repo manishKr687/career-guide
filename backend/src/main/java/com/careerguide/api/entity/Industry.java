@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 
 // Added in V25 -- same shape and reasoning as Skill (see the Data Model
 // Roadmap doc's Phase 2 and the backend README). Backfilled from
@@ -30,6 +31,12 @@ public class Industry {
     // Public rather than protected -- same reasoning as Skill/Career's
     // public no-arg constructors: the admin write path calls `new Industry()`
     // directly from IndustryService, a different package.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public Industry() {
     }
 
@@ -55,5 +62,9 @@ public class Industry {
 
     public void setSector(boolean sector) {
         isSector = sector;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.time.Instant;
 
 // Added in V24 -- see the Data Model Roadmap doc's Phase 2 and the backend
 // README. Deliberately minimal (slug + name only, no description/icon like
@@ -46,6 +47,12 @@ public class Skill {
     // write path added for Skill Management also calls `new Skill()`
     // directly from SkillService, which is in a different package -- same
     // reasoning as Career's public no-arg constructor.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public Skill() {
     }
 
@@ -87,5 +94,9 @@ public class Skill {
 
     public void setSkillType(String skillType) {
         this.skillType = skillType;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

@@ -15,5 +15,14 @@ public record SkillDto(
 
         /** Null for every skill today -- see Skill.java. */
         String description
+,
+
+        /**
+         * When this record last changed, or null for a row seeded before V115
+         * added the column. Maintained by a database trigger, so it is accurate
+         * whichever service did the writing. Read-only: the upsert requests do
+         * not accept it.
+         */
+        java.time.Instant updatedAt
 ) {
 }

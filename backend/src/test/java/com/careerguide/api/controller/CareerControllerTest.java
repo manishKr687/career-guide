@@ -147,7 +147,8 @@ class CareerControllerTest {
                 List.of(),
                 null,
                 null,
-                null
+                null,
+                null // updatedAt -- set by a database trigger, never by a test
         );
     }
 }

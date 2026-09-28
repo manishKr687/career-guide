@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
+import java.time.Instant;
 
 // Added in V26, per both uploaded specs' "Career is not the same as a Job
 // Role" section -- see the Data Model Roadmap doc's "Spec v1.0 Match" /
@@ -107,7 +108,13 @@ public class JobRole {
 
     // Public rather than protected -- same reasoning as Skill/Career/
     // Industry's public no-arg constructors: the admin write path calls
-    // `new JobRole()` directly from JobRoleService, a different package.
+    // `new JobRole()` directly from JobRoleService, a different package.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public JobRole() {
     }
 
@@ -209,5 +216,9 @@ public class JobRole {
 
     public void setRelatedCertifications(Set<Certification> relatedCertifications) {
         this.relatedCertifications = relatedCertifications;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

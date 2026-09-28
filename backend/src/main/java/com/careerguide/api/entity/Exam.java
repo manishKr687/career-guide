@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.time.Instant;
 
 @Entity
 @Table(name = "exams")
@@ -147,6 +148,12 @@ public class Exam {
     private List<College> relatedColleges = new ArrayList<>();
 
     // Public rather than protected -- see the equivalent note in Career.java.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public Exam() {
     }
 
@@ -306,5 +313,9 @@ public class Exam {
 
     public void setRelatedColleges(List<College> relatedColleges) {
         this.relatedColleges = relatedColleges;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

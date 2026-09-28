@@ -129,6 +129,8 @@ public final class DtoMapper {
                 c.getExperienceMinYears(),
                 c.getExperienceMaxYears(),
                 c.getJobOpenings()
+        ,
+                c.getUpdatedAt()
         );
     }
 
@@ -203,6 +205,8 @@ public final class DtoMapper {
                 e.getFieldCategory() == null ? null : e.getFieldCategory().getSlug(),
                 e.getLevel(),
                 e.getFrequencyType()
+        ,
+                e.getUpdatedAt()
         );
     }
 
@@ -224,6 +228,8 @@ public final class DtoMapper {
                 d.getDurationMinYears(),
                 d.getDurationMaxYears(),
                 durationLabel(d)
+        ,
+                d.getUpdatedAt()
         );
     }
 
@@ -288,6 +294,8 @@ public final class DtoMapper {
                 c.getNirfCategory(),
                 c.getNirfYear(),
                 c.getNirfRank() == null ? null : "NIRF " + c.getNirfYear() + " \u00b7 " + c.getNirfCategory()
+        ,
+                c.getUpdatedAt()
         );
     }
 
@@ -315,6 +323,8 @@ public final class DtoMapper {
                 s.getSalaryMinLpa(),
                 s.getSalaryMaxLpa(),
                 SalaryRange.compose(s.getSalaryMinLpa(), s.getSalaryMaxLpa())
+        ,
+                s.getUpdatedAt()
         );
     }
 
@@ -396,11 +406,11 @@ public final class DtoMapper {
     }
 
     public static SkillDto toDto(Skill s) {
-        return new SkillDto(s.getSlug(), s.getName(), s.getSkillType(), s.getCategory(), s.getDescription());
+        return new SkillDto(s.getSlug(), s.getName(), s.getSkillType(), s.getCategory(), s.getDescription(), s.getUpdatedAt());
     }
 
     public static IndustryDto toDto(Industry i) {
-        return new IndustryDto(i.getSlug(), i.getName(), i.isSector());
+        return new IndustryDto(i.getSlug(), i.getName(), i.isSector(), i.getUpdatedAt());
     }
 
     public static StreamDto toDto(Stream s) {
@@ -445,6 +455,8 @@ public final class DtoMapper {
                 j.getSalaryMinLpa(),
                 j.getSalaryMaxLpa(),
                 SalaryRange.compose(j.getSalaryMinLpa(), j.getSalaryMaxLpa())
+        ,
+                j.getUpdatedAt()
         );
     }
 
@@ -459,6 +471,8 @@ public final class DtoMapper {
                 c.getOfficialUrl(),
                 slugs(c.getRelatedCareers(), Career::getSlug),
                 slugs(c.getRelatedSkills(), Skill::getSlug)
+        ,
+                c.getUpdatedAt()
         );
     }
 
@@ -474,6 +488,8 @@ public final class DtoMapper {
                 slugs(r.getRelatedCareers(), Career::getSlug),
                 slugs(r.getRelatedExams(), Exam::getSlug),
                 slugs(r.getRelatedSkills(), Skill::getSlug)
+        ,
+                r.getUpdatedAt()
         );
     }
 

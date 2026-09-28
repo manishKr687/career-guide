@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.time.Instant;
 
 // Added in V28 -- see the Data Model Roadmap doc's "Spec v1.0 Match" tab.
 // No content seeded yet, but this entity now has a real admin write path.
@@ -77,6 +78,12 @@ public class Resource {
     // Public rather than protected -- same reasoning as the other entities
     // in this pass: the admin write path calls `new Resource()` directly
     // from ResourceService, a different package.
+    // V115 added created_at/updated_at to this table; updated_at is
+    // maintained by a database trigger, not by the services, so it is
+    // mapped read-only -- Hibernate must never write it back.
+    @Column(name = "updated_at", insertable = false, updatable = false)
+    private Instant updatedAt;
+
     public Resource() {
     }
 
@@ -158,5 +165,9 @@ public class Resource {
 
     public void setRelatedSkills(Set<Skill> relatedSkills) {
         this.relatedSkills = relatedSkills;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
     }
 }

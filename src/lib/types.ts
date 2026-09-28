@@ -61,6 +61,11 @@ export interface Skill {
   category: "Soft" | "Programming" | "Tools" | "Analytical" | "Domain";
   // Null for every skill today; 413 descriptions is a content task.
   description: string | null;
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // Added in V25 -- same pattern as Skill, backfilled from `topRecruiters`, so
@@ -72,6 +77,11 @@ export interface Industry {
   slug: string;
   name: string;
   isSector: boolean;
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // Added in V26 -- per both uploaded specs' "Career is not the same as a Job
@@ -109,6 +119,11 @@ export interface JobRole {
   salaryMaxLpa: number | null;
   // Composed server-side by SalaryRange, exactly as Career does it.
   salaryRange: string | null;
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // Added in V27 -- see the Data Model Roadmap doc's "Spec v1.0 Match" tab.
@@ -127,6 +142,11 @@ export interface Certification {
   officialUrl: string;
   relatedCareerSlugs: string[];
   relatedSkillSlugs: string[];
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // Added in V28 -- see the Data Model Roadmap doc's "Resources should not be
@@ -146,6 +166,11 @@ export interface Resource {
   relatedCareerSlugs: string[];
   relatedExamSlugs: string[];
   relatedSkillSlugs: string[];
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // A field of study -- Physics, Computer Science, Nursing, Law. Added in V87.
@@ -299,6 +324,11 @@ export interface Career {
   experienceMinYears: number | null;
   experienceMaxYears: number | null;
   jobOpenings: number | null;
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 /** One rung of a career's progression ladder (V110). */
@@ -368,6 +398,11 @@ export interface Degree {
   durationMaxYears: number | null;
   // Composed server-side: "4 years", "3-5 years", "6 months", or null.
   durationLabel: string | null;
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // Added in V66 -- the specific degree this exam is the entry gate into a
@@ -420,6 +455,11 @@ export interface Exam {
   // `frequency` normalised to a filterable bucket. The prose column stays,
   // because "Once a year (state-wise)" says something the bucket cannot.
   frequencyType: "Annual" | "Biannual" | "Quarterly" | "Monthly" | "Rolling" | "As notified";
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // Added in V53 (College MVP) -- India's states/UTs and cities, used to
@@ -503,6 +543,11 @@ export interface College {
   nirfYear: number | null;
   // Composed server-side: "NIRF 2024 · Engineering", or null.
   nirfLabel: string | null;
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 // Added in V16 -- a sub-discipline within a career (e.g. Propulsion within
@@ -555,6 +600,11 @@ export interface Specialization {
   salaryMaxLpa: number | null;
   // Derived server-side from the two numbers above; null when they are.
   salaryRange: string | null;
+
+  // V115/V126 -- when the row last changed. Null for anything seeded before
+  // the column existed: it is maintained by a database trigger on UPDATE and
+  // was deliberately not backfilled, so most rows have none yet.
+  updatedAt?: string | null;
 }
 
 export interface AssessmentOption {

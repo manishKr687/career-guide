@@ -52,5 +52,14 @@ public record CollegeDto(
 
         /** Composed server-side: "NIRF 2024 · Engineering", or null. */
         String nirfLabel
+,
+
+        /**
+         * When this record last changed, or null for a row seeded before V115
+         * added the column. Maintained by a database trigger, so it is accurate
+         * whichever service did the writing. Read-only: the upsert requests do
+         * not accept it.
+         */
+        java.time.Instant updatedAt
 ) {
 }

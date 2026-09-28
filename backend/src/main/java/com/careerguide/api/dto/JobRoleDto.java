@@ -33,5 +33,14 @@ public record JobRoleDto(
         /** Composed by SalaryRange, exactly as CareerDto does it, so a career
          *  and a job role can never write the same figure two ways. */
         String salaryRange
+,
+
+        /**
+         * When this record last changed, or null for a row seeded before V115
+         * added the column. Maintained by a database trigger, so it is accurate
+         * whichever service did the writing. Read-only: the upsert requests do
+         * not accept it.
+         */
+        java.time.Instant updatedAt
 ) {
 }

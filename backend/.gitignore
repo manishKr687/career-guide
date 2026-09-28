@@ -14,3 +14,7 @@ target/
 backups/*.sql
 backups/*.tar.gz
 !backups/.gitkeep
+
+# Binary dumps from scripts/backup-db.* -- same reasoning as the .sql/.tar.gz
+# entries above: real data, and they go stale.
+backups/*.dump

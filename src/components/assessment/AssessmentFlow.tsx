@@ -21,10 +21,6 @@ import { cn } from "@/lib/utils";
  */
 const CATEGORY_TO_CLUSTER: Record<string, string> = {
   "engineering-technology": "cluster-tech",
-  // "it-software" restored in V21: its 4 careers (and the assessment
-  // scoring that pointed at them) moved back out of engineering-technology,
-  // so it's a live, recommendable category again and needs a cluster.
-  "it-software": "cluster-tech",
   "emerging-careers": "cluster-tech",
   "science-research": "cluster-science-health",
   "medical-healthcare": "cluster-science-health",

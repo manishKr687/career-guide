@@ -369,6 +369,13 @@ function SavedItemsTabs({
   useEffect(() => {
     const hash = window.location.hash.replace("#", "");
     if (tabs.some((t) => t.id === hash)) {
+      // Deliberately setState-in-effect, which the rule below flags. The
+      // alternative -- deriving the initial tab lazily in useState -- cannot
+      // work: a URL fragment is never sent to the server, so the server always
+      // renders the first tab, and computing a different one during the client's
+      // first render is a hydration mismatch. Reading location.hash after mount
+      // is the only correct point to do it.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setActiveId(hash);
     }
     // Intentionally only on mount: this is for landing on a quick-link's

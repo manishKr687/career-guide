@@ -1,0 +1,119 @@
+# Builds the whole application from nothing and checks it works.
+#
+# WHY THIS EXISTS, SPECIFICALLY. Two failures in one session went undetected
+# until they caused damage, and both are caught here:
+#
+#   1. The Flyway history could not replay from an empty database. It had been
+#      broken since V80 and nobody knew, because every existing database had
+#      been migrated forward step by step. It surfaced only when a volume was
+#      dropped -- by which point the data was gone. This workflow starts from an
+#      empty volume every run, so "can a new environment be built from this
+#      repository" is answered on every push instead of during a recovery.
+#
+#   2. GET /api/assessment/questions returned 500 for an unknown length of time
+#      while the /assessment page still rendered its heading, so nothing looked
+#      wrong. scripts/smoke.mjs now checks that endpoint's response is a
+#      non-empty array, and it runs here.
+#
+# The backend image build runs the test suite too, since V-era Dockerfile
+# dropped -DskipTests -- so a failing unit test fails this job at the build step.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-verify:
+    name: Replay migrations, build, smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      # Starts Postgres and builds the API image, which compiles the backend and
+      # runs its tests. The database volume does not exist on a fresh runner, so
+      # Flyway replays all migrations from zero -- the check that matters most.
+      - name: Start the backend from an empty database
+        working-directory: backend
+        run: docker compose up -d --build
+
+      - name: Wait for the API, and fail loudly if it never comes up
+        run: |
+          for i in $(seq 1 90); do
+            if curl -fsS -o /dev/null http://localhost:8081/api/careers; then
+              echo "API is up"
+              exit 0
+            fi
+            if docker logs careerguide-api 2>&1 | grep -q "APPLICATION FAILED TO START"; then
+              echo "::error::The API failed to start. Migration or startup check failure:"
+              docker logs careerguide-api 2>&1 | tail -60
+              exit 1
+            fi
+            sleep 5
+          done
+          echo "::error::The API did not become reachable within 7.5 minutes."
+          docker logs careerguide-api 2>&1 | tail -60
+          exit 1
+
+      # Proves the replay reached the head version rather than stopping early,
+      # and that the boot-time relationship integrity check passed. Both are
+      # stated in the log, and neither shows up as a failed HTTP request.
+      - name: Confirm the migration replay and integrity check
+        run: |
+          docker logs careerguide-api 2>&1 | grep -E "Successfully applied .* migrations|relationship integrity" || true
+          docker logs careerguide-api 2>&1 | grep -q "relationship integrity: OK" \
+            || { echo "::error::The boot-time relationship integrity check did not report OK."; exit 1; }
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      # Not `|| true`: lint failures should be visible. Kept as its own step so a
+      # lint error reads as a lint error rather than as a build failure.
+      - name: Lint
+        run: npm run lint
+
+      # Runs after the backend is up on purpose: the career and specialization
+      # routes use generateStaticParams, so the build fetches the API.
+      - name: Build
+        run: npm run build
+
+      - name: Start the site
+        run: |
+          npm start &
+          for i in $(seq 1 60); do
+            if curl -fsS -o /dev/null http://localhost:3000/; then
+              echo "Site is up"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "::error::The site did not start."
+          exit 1
+
+      # --sample 25 rather than the full ~1,550 pages: the full pass takes about
+      # fourteen minutes against a dev server and is slower than the rest of this
+      # workflow put together, while a sample still covers every route family and
+      # all four API endpoint checks, which run in full either way.
+      - name: Smoke test
+        run: npm run smoke -- --sample 25
+
+      - name: Backend logs on failure
+        if: failure()
+        run: docker logs careerguide-api 2>&1 | tail -100

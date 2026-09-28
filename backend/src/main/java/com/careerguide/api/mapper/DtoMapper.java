@@ -63,6 +63,7 @@ import com.careerguide.api.entity.UserSkill;
 
 import java.util.Collections;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -378,7 +379,16 @@ public final class DtoMapper {
     }
 
     public static AssessmentOptionDto toDto(AssessmentOption o) {
-        return new AssessmentOptionDto(o.getOptionKey(), o.getLabel(), o.getWeights());
+        // Copied, not passed by reference. getWeights() is a LAZY
+        // @ElementCollection, and with open-in-view disabled Jackson serializes
+        // the DTO after the transaction has closed -- handing it the live
+        // collection threw LazyInitializationException and made
+        // GET /api/assessment/questions a 500, so the assessment could not load
+        // its questions at all. Copying here forces initialization while the
+        // session is still open, which is what application.yml's note about
+        // mapping entities to DTOs inside @Transactional methods intends.
+        return new AssessmentOptionDto(
+                o.getOptionKey(), o.getLabel(), new LinkedHashMap<>(o.getWeights()));
     }
 
     private static <T> List<String> slugs(Collection<T> entities, java.util.function.Function<T, String> slugFn) {

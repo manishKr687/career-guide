@@ -125,8 +125,55 @@ async function runPool(urls, worker) {
   return failures;
 }
 
+/**
+ * The API endpoints pages depend on but that no page visibly fails without.
+ *
+ * Added after GET /api/assessment/questions returned 500 while this test stayed
+ * green: the /assessment page still rendered its shell and its heading, so a
+ * status-and-heading check passed it, and the quiz simply had no questions. A
+ * page can look fine and be useless.
+ */
+const API_ENDPOINTS = [
+  "/api/assessment/questions",
+  "/api/categories",
+  "/api/stages",
+  "/api/streams",
+];
+
+async function checkApi(path) {
+  let res;
+  try {
+    res = await fetch(`${API}${path}`);
+  } catch (err) {
+    return { url: `API ${path}`, problem: `request failed: ${err.message}` };
+  }
+  if (res.status !== 200) return { url: `API ${path}`, problem: `HTTP ${res.status}` };
+  let body;
+  try {
+    body = await res.json();
+  } catch {
+    return { url: `API ${path}`, problem: "response was not JSON" };
+  }
+  // Each of these returns a list. Checking the shape and not just the status is
+  // the point: an error body is an object, and reading len() of its five keys as
+  // "five questions" is exactly how the 500 above went unnoticed.
+  if (!Array.isArray(body)) return { url: `API ${path}`, problem: "expected a JSON array" };
+  if (body.length === 0) return { url: `API ${path}`, problem: "returned an empty list" };
+  return null;
+}
+
 async function main() {
   process.stderr.write(`site ${SITE}\napi  ${API}\n\n`);
+
+  const apiFailures = (await Promise.all(API_ENDPOINTS.map(checkApi))).filter(Boolean);
+  if (apiFailures.length > 0) {
+    process.stderr.write("API check failed:\n");
+    for (const f of apiFailures) process.stderr.write(`  ${f.url}: ${f.problem}\n`);
+    process.stderr.write("\n");
+    process.exitCode = 1;
+    return;
+  }
+  process.stderr.write(`${API_ENDPOINTS.length} API endpoints OK\n\n`);
 
   const urls = [...STATIC_PAGES];
   const families = [["static", STATIC_PAGES.length]];

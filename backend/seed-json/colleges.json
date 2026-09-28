@@ -1,0 +1,335 @@
+[
+  {
+    "slug": "iit-bombay",
+    "name": "IIT Bombay",
+    "location": "Mumbai, Maharashtra",
+    "type": "IIT",
+    "established": 1958,
+    "tags": [
+      "Engineering",
+      "Research",
+      "Design"
+    ],
+    "description": "One of India's premier engineering institutes, renowned for engineering, technology and design programs.",
+    "courseSlugs": [
+      "btech-cse",
+      "btech-mech",
+      "btech-electrical",
+      "bdes"
+    ],
+    "examSlugs": [
+      "jee-advanced",
+      "uceed"
+    ]
+  },
+  {
+    "slug": "iit-delhi",
+    "name": "IIT Delhi",
+    "location": "New Delhi",
+    "type": "IIT",
+    "established": 1961,
+    "tags": [
+      "Engineering",
+      "Research"
+    ],
+    "description": "A top-ranked IIT known for engineering research and strong industry connections.",
+    "courseSlugs": [
+      "btech-cse",
+      "btech-civil",
+      "btech-electrical"
+    ],
+    "examSlugs": [
+      "jee-advanced"
+    ]
+  },
+  {
+    "slug": "iit-madras",
+    "name": "IIT Madras",
+    "location": "Chennai, Tamil Nadu",
+    "type": "IIT",
+    "established": 1959,
+    "tags": [
+      "Engineering",
+      "Research",
+      "Innovation"
+    ],
+    "description": "India's top-ranked engineering institute, known for research output and its startup incubation ecosystem.",
+    "courseSlugs": [
+      "btech-cse",
+      "btech-mech",
+      "btech-ece"
+    ],
+    "examSlugs": [
+      "jee-advanced"
+    ]
+  },
+  {
+    "slug": "nit-trichy",
+    "name": "NIT Tiruchirappalli",
+    "location": "Tiruchirappalli, Tamil Nadu",
+    "type": "NIT",
+    "established": 1964,
+    "tags": [
+      "Engineering"
+    ],
+    "description": "One of the top NITs, offering strong undergraduate engineering programs across disciplines.",
+    "courseSlugs": [
+      "btech-cse",
+      "btech-mech",
+      "btech-civil",
+      "btech-electrical",
+      "btech-ece"
+    ],
+    "examSlugs": [
+      "jee-main"
+    ]
+  },
+  {
+    "slug": "nit-warangal",
+    "name": "NIT Warangal",
+    "location": "Warangal, Telangana",
+    "type": "NIT",
+    "established": 1959,
+    "tags": [
+      "Engineering"
+    ],
+    "description": "A leading NIT with a strong record in core engineering and computer science.",
+    "courseSlugs": [
+      "btech-cse",
+      "btech-civil",
+      "btech-ece"
+    ],
+    "examSlugs": [
+      "jee-main"
+    ]
+  },
+  {
+    "slug": "aiims-delhi",
+    "name": "AIIMS Delhi",
+    "location": "New Delhi",
+    "type": "Medical",
+    "established": 1956,
+    "tags": [
+      "Medical",
+      "Research",
+      "Clinical Care"
+    ],
+    "description": "India's foremost medical institute for undergraduate, postgraduate and clinical research training.",
+    "courseSlugs": [
+      "mbbs"
+    ],
+    "examSlugs": [
+      "neet-ug",
+      "neet-pg"
+    ]
+  },
+  {
+    "slug": "cmc-vellore",
+    "name": "Christian Medical College, Vellore",
+    "location": "Vellore, Tamil Nadu",
+    "type": "Medical",
+    "established": 1900,
+    "tags": [
+      "Medical",
+      "Clinical Care"
+    ],
+    "description": "A historic and highly respected medical college known for clinical training and community health.",
+    "courseSlugs": [
+      "mbbs",
+      "bsc-nursing"
+    ],
+    "examSlugs": [
+      "neet-ug"
+    ]
+  },
+  {
+    "slug": "nlsiu-bangalore",
+    "name": "National Law School of India University",
+    "location": "Bengaluru, Karnataka",
+    "type": "Law",
+    "established": 1987,
+    "tags": [
+      "Law",
+      "Litigation",
+      "Corporate Law"
+    ],
+    "description": "India's top-ranked National Law University, producing leading lawyers, judges and policy voices.",
+    "courseSlugs": [
+      "ballb"
+    ],
+    "examSlugs": [
+      "clat"
+    ]
+  },
+  {
+    "slug": "nalsar-hyderabad",
+    "name": "NALSAR University of Law",
+    "location": "Hyderabad, Telangana",
+    "type": "Law",
+    "established": 1998,
+    "tags": [
+      "Law",
+      "Corporate Law"
+    ],
+    "description": "A premier National Law University known for corporate law and academic excellence.",
+    "courseSlugs": [
+      "ballb"
+    ],
+    "examSlugs": [
+      "clat"
+    ]
+  },
+  {
+    "slug": "iim-ahmedabad",
+    "name": "IIM Ahmedabad",
+    "location": "Ahmedabad, Gujarat",
+    "type": "Management",
+    "established": 1961,
+    "tags": [
+      "Management",
+      "MBA",
+      "Leadership"
+    ],
+    "description": "India's most selective management institute, producing business leaders across every industry.",
+    "courseSlugs": [
+      "mba-general",
+      "mba-finance"
+    ],
+    "examSlugs": [
+      "cat"
+    ]
+  },
+  {
+    "slug": "iim-bangalore",
+    "name": "IIM Bangalore",
+    "location": "Bengaluru, Karnataka",
+    "type": "Management",
+    "established": 1973,
+    "tags": [
+      "Management",
+      "MBA"
+    ],
+    "description": "A top-tier IIM known for its rigorous general management and entrepreneurship programs.",
+    "courseSlugs": [
+      "mba-general"
+    ],
+    "examSlugs": [
+      "cat"
+    ]
+  },
+  {
+    "slug": "nid-ahmedabad",
+    "name": "National Institute of Design, Ahmedabad",
+    "location": "Ahmedabad, Gujarat",
+    "type": "University",
+    "established": 1961,
+    "tags": [
+      "Design",
+      "UX",
+      "Product Design"
+    ],
+    "description": "India's leading design institute, shaping the country's top UX, product and communication designers.",
+    "courseSlugs": [
+      "bdes"
+    ],
+    "examSlugs": [
+      "nid-dat"
+    ]
+  },
+  {
+    "slug": "du-delhi",
+    "name": "University of Delhi",
+    "location": "New Delhi",
+    "type": "University",
+    "established": 1922,
+    "tags": [
+      "Arts",
+      "Commerce",
+      "Science"
+    ],
+    "description": "One of India's largest and most prestigious universities, offering breadth across humanities, commerce and science.",
+    "courseSlugs": [
+      "ba-humanities",
+      "bcom",
+      "bjmc"
+    ],
+    "examSlugs": [
+      "cuet"
+    ]
+  },
+  {
+    "slug": "bhu-varanasi",
+    "name": "Banaras Hindu University",
+    "location": "Varanasi, Uttar Pradesh",
+    "type": "University",
+    "established": 1916,
+    "tags": [
+      "Arts",
+      "Science",
+      "Medical"
+    ],
+    "description": "A historic central university offering a wide range of undergraduate and postgraduate programs.",
+    "courseSlugs": [
+      "ba-humanities",
+      "msc-science"
+    ],
+    "examSlugs": [
+      "cuet"
+    ]
+  },
+  {
+    "slug": "govt-polytechnic-mumbai",
+    "name": "Government Polytechnic, Mumbai",
+    "location": "Mumbai, Maharashtra",
+    "type": "Polytechnic",
+    "established": 1887,
+    "tags": [
+      "Diploma",
+      "Engineering"
+    ],
+    "description": "One of India's oldest polytechnics, offering diploma programs across engineering trades after 10th.",
+    "courseSlugs": [
+      "diploma-cs",
+      "diploma-mech",
+      "diploma-civil",
+      "diploma-electrical",
+      "diploma-ece"
+    ],
+    "examSlugs": []
+  },
+  {
+    "slug": "iti-mumbai",
+    "name": "Government ITI, Mumbai",
+    "location": "Mumbai, Maharashtra",
+    "type": "ITI",
+    "established": 1950,
+    "tags": [
+      "Vocational",
+      "Skilled Trades"
+    ],
+    "description": "A government ITI offering hands-on vocational training in electrician, plumbing and allied trades.",
+    "courseSlugs": [
+      "iti-electrician",
+      "iti-plumber"
+    ],
+    "examSlugs": []
+  },
+  {
+    "slug": "nchm-pusa",
+    "name": "Institute of Hotel Management, Pusa",
+    "location": "New Delhi",
+    "type": "University",
+    "established": 1962,
+    "tags": [
+      "Hospitality",
+      "Hotel Management"
+    ],
+    "description": "A leading hotel management institute affiliated with NCHMCT, training hospitality professionals.",
+    "courseSlugs": [
+      "bhm"
+    ],
+    "examSlugs": [
+      "nchmct-jee"
+    ]
+  }
+]

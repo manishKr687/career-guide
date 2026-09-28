@@ -1,0 +1,77 @@
+spring:
+  application:
+    name: careerguide-api
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/careerguide}
+    username: ${SPRING_DATASOURCE_USERNAME:careerguide}
+    password: ${SPRING_DATASOURCE_PASSWORD:careerguide}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    # Off deliberately: services map entities to DTOs inside @Transactional
+    # methods, so lazy associations never need to stay open past the
+    # transaction. Flyway (not Hibernate) owns the schema.
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: false
+        # Without this, every lazy association (category, relatedCourses,
+        # relatedExams, stages, ...) triggers its own SELECT per row. A list
+        # endpoint like GET /api/careers loads ~30-40 careers and each one
+        # then fires 4 more queries when the mapper reads its lazy fields --
+        # 150+ round trips for a single page load, which is what made pages
+        # feel slow. This makes Hibernate batch those into a handful of
+        # "WHERE slug IN (...)" queries instead, globally, without touching
+        # entities or JPQL. 100 comfortably covers the whole ~150-row catalog
+        # in one batch per association.
+        default_batch_fetch_size: 100
+    show-sql: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+careerguide:
+  cors:
+    allowed-origins: ${CAREERGUIDE_CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3311}
+  admin:
+    # Single shared admin password, not a users table -- see AdminAuthService's
+    # javadoc for why. The defaults below are fine for local development only;
+    # override both via a backend/.env file (gitignored, docker compose loads
+    # it automatically) before this is ever reachable from outside your own
+    # machine. See the "Admin panel" section of README.md.
+    password: ${CAREERGUIDE_ADMIN_PASSWORD:admin123}
+    token-secret: ${CAREERGUIDE_ADMIN_TOKEN_SECRET:dev-only-change-this-admin-token-secret}
+  user:
+    # Signs consumer session tokens (UserTokenService) -- same mechanism as
+    # careerguide.admin.token-secret above, just a separate secret so
+    # rotating one doesn't invalidate the other. Override in a backend/.env
+    # file before this is reachable from outside your own machine.
+    token-secret: ${CAREERGUIDE_USER_TOKEN_SECRET:dev-only-change-this-user-token-secret}
+  rate-limit:
+    auth:
+      # Applies to POST /api/auth/login, /api/auth/register and
+      # /api/admin/login (see AuthRateLimiter/AuthRateLimitInterceptor):
+      # at most this many attempts per caller IP per endpoint within the
+      # window below, before a 429 is returned.
+      max-attempts: ${CAREERGUIDE_RATE_LIMIT_AUTH_MAX_ATTEMPTS:10}
+      window-seconds: ${CAREERGUIDE_RATE_LIMIT_AUTH_WINDOW_SECONDS:900}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

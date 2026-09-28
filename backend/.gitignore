@@ -1,0 +1,16 @@
+target/
+*.class
+.idea/
+*.iml
+.vscode/
+.DS_Store
+
+# Real admin credentials/secret go here (docker compose loads this
+# automatically) -- never commit them. See "Admin panel" in README.md.
+.env
+
+# Database backups (see scripts/backup-db.* and README.md "Backups") — these
+# contain real data and can get large, so they aren't committed.
+backups/*.sql
+backups/*.tar.gz
+!backups/.gitkeep

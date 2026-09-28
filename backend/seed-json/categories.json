@@ -1,0 +1,122 @@
+[
+  {
+    "slug": "engineering-technology",
+    "name": "Engineering & Technology",
+    "icon": "gear",
+    "color": "bg-blue-soft text-blue"
+  },
+  {
+    "slug": "medical-healthcare",
+    "name": "Medical & Healthcare",
+    "icon": "steth",
+    "color": "bg-pink-soft text-pink"
+  },
+  {
+    "slug": "science-research",
+    "name": "Science & Research",
+    "icon": "flask",
+    "color": "bg-green-soft text-green"
+  },
+  {
+    "slug": "commerce-finance",
+    "name": "Commerce & Finance",
+    "icon": "chart",
+    "color": "bg-amber-soft text-amber"
+  },
+  {
+    "slug": "management-business",
+    "name": "Management & Business",
+    "icon": "brief",
+    "color": "bg-purple-soft text-purple"
+  },
+  {
+    "slug": "arts-humanities",
+    "name": "Arts & Humanities",
+    "icon": "palette",
+    "color": "bg-amber-soft text-amber"
+  },
+  {
+    "slug": "law",
+    "name": "Law",
+    "icon": "scale",
+    "color": "bg-blue-soft text-blue"
+  },
+  {
+    "slug": "design-creative",
+    "name": "Design & Creative",
+    "icon": "palette",
+    "color": "bg-pink-soft text-pink"
+  },
+  {
+    "slug": "it-software",
+    "name": "IT & Software",
+    "icon": "code",
+    "color": "bg-blue-soft text-blue"
+  },
+  {
+    "slug": "government-civil-services",
+    "name": "Government & Civil Services",
+    "icon": "bank",
+    "color": "bg-slate-soft text-slate"
+  },
+  {
+    "slug": "defence",
+    "name": "Defence",
+    "icon": "shield",
+    "color": "bg-green-soft text-green"
+  },
+  {
+    "slug": "banking-insurance",
+    "name": "Banking & Insurance",
+    "icon": "bank",
+    "color": "bg-amber-soft text-amber"
+  },
+  {
+    "slug": "education-teaching",
+    "name": "Education & Teaching",
+    "icon": "teach",
+    "color": "bg-green-soft text-green"
+  },
+  {
+    "slug": "agriculture",
+    "name": "Agriculture",
+    "icon": "leaf",
+    "color": "bg-green-soft text-green"
+  },
+  {
+    "slug": "hospitality-tourism",
+    "name": "Hospitality & Tourism",
+    "icon": "plane",
+    "color": "bg-blue-soft text-blue"
+  },
+  {
+    "slug": "media-communication",
+    "name": "Media & Communication",
+    "icon": "mega",
+    "color": "bg-red-soft text-red"
+  },
+  {
+    "slug": "skilled-trades",
+    "name": "Skilled Trades",
+    "icon": "wrench",
+    "color": "bg-slate-soft text-slate"
+  },
+  {
+    "slug": "sports-fitness",
+    "name": "Sports & Fitness",
+    "icon": "trophy",
+    "color": "bg-green-soft text-green"
+  },
+  {
+    "slug": "entrepreneurship",
+    "name": "Entrepreneurship",
+    "icon": "rocket",
+    "color": "bg-amber-soft text-amber"
+  },
+  {
+    "slug": "emerging-careers",
+    "name": "Emerging Careers",
+    "icon": "bulb",
+    "color": "bg-purple-soft text-purple"
+  }
+]

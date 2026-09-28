@@ -1,0 +1,522 @@
+[
+  {
+    "slug": "polytechnic-cet",
+    "name": "Polytechnic CET",
+    "fullName": "Polytechnic Common Entrance Test",
+    "category": "After 10th",
+    "conductedBy": "State Technical Education Boards",
+    "frequency": "Once a year (state-wise)",
+    "description": "State-level entrance exam for admission to diploma (polytechnic) engineering programs straight after 10th standard.",
+    "careerSlugs": [
+      "software-engineer",
+      "mechanical-engineer",
+      "civil-engineer",
+      "electrical-engineer",
+      "electronics-engineer"
+    ],
+    "courseSlugs": [
+      "diploma-cs",
+      "diploma-mech",
+      "diploma-civil",
+      "diploma-electrical",
+      "diploma-ece"
+    ],
+    "icon": "cal"
+  },
+  {
+    "slug": "ntse",
+    "name": "NTSE",
+    "fullName": "National Talent Search Examination",
+    "category": "After 10th",
+    "conductedBy": "NCERT / State Councils of Educational Research and Training",
+    "frequency": "Once a year (Class 10)",
+    "description": "A prestigious two-stage scholarship exam for Class 10 students, recognizing academic talent with a scholarship that continues through higher education.",
+    "careerSlugs": [],
+    "courseSlugs": [],
+    "icon": "star"
+  },
+  {
+    "slug": "jee-main",
+    "name": "JEE Main",
+    "fullName": "Joint Entrance Examination (Main)",
+    "category": "After 12th",
+    "conductedBy": "National Testing Agency (NTA)",
+    "frequency": "Twice a year",
+    "description": "The primary gateway to NITs, IIITs and other engineering colleges, and a qualifier for JEE Advanced.",
+    "careerSlugs": [
+      "software-engineer",
+      "mechanical-engineer",
+      "civil-engineer",
+      "cybersecurity-analyst",
+      "ai-ml-engineer"
+    ],
+    "courseSlugs": [
+      "btech-cse",
+      "btech-mech",
+      "btech-civil"
+    ],
+    "icon": "cal"
+  },
+  {
+    "slug": "jee-advanced",
+    "name": "JEE Advanced",
+    "fullName": "Joint Entrance Examination (Advanced)",
+    "category": "After 12th",
+    "conductedBy": "IIT (rotating zone)",
+    "frequency": "Once a year",
+    "description": "The entrance exam for admission to the IITs, taken after qualifying JEE Main.",
+    "careerSlugs": [
+      "software-engineer",
+      "mechanical-engineer"
+    ],
+    "courseSlugs": [
+      "btech-cse",
+      "btech-mech"
+    ],
+    "icon": "cal"
+  },
+  {
+    "slug": "bitsat",
+    "name": "BITSAT",
+    "fullName": "Birla Institute of Technology and Science Admission Test",
+    "category": "After 12th",
+    "conductedBy": "BITS Pilani",
+    "frequency": "Once/twice a year",
+    "description": "Entrance exam for admission to BITS Pilani's engineering and science programs.",
+    "careerSlugs": [
+      "software-engineer"
+    ],
+    "courseSlugs": [
+      "btech-cse"
+    ],
+    "icon": "cal"
+  },
+  {
+    "slug": "neet-ug",
+    "name": "NEET-UG",
+    "fullName": "National Eligibility cum Entrance Test (Undergraduate)",
+    "category": "After 12th",
+    "conductedBy": "National Testing Agency (NTA)",
+    "frequency": "Once a year",
+    "description": "The single entrance exam for all undergraduate medical, dental, nursing and AYUSH courses in India.",
+    "careerSlugs": [
+      "doctor-mbbs",
+      "dentist",
+      "nurse",
+      "pharmacist"
+    ],
+    "courseSlugs": [
+      "mbbs",
+      "bds",
+      "bsc-nursing",
+      "bpharm"
+    ],
+    "icon": "steth"
+  },
+  {
+    "slug": "neet-pg",
+    "name": "NEET-PG",
+    "fullName": "National Eligibility cum Entrance Test (Postgraduate)",
+    "category": "Postgraduate Entrance",
+    "conductedBy": "National Board of Examinations",
+    "frequency": "Once a year",
+    "description": "Entrance exam for MD/MS specialization after MBBS.",
+    "careerSlugs": [
+      "doctor-mbbs"
+    ],
+    "courseSlugs": [],
+    "icon": "steth"
+  },
+  {
+    "slug": "cuet",
+    "name": "CUET",
+    "fullName": "Common University Entrance Test",
+    "category": "After 12th",
+    "conductedBy": "National Testing Agency (NTA)",
+    "frequency": "Once a year",
+    "description": "A common entrance test for undergraduate admission to central and many state universities.",
+    "careerSlugs": [
+      "data-analyst",
+      "business-analyst",
+      "historian",
+      "psychologist",
+      "journalist"
+    ],
+    "courseSlugs": [
+      "bba",
+      "bcom",
+      "ba-humanities",
+      "bjmc",
+      "mca"
+    ],
+    "icon": "cal"
+  },
+  {
+    "slug": "gate",
+    "name": "GATE",
+    "fullName": "Graduate Aptitude Test in Engineering",
+    "category": "Postgraduate Entrance",
+    "conductedBy": "IIT (rotating zone) / IISc",
+    "frequency": "Once a year",
+    "description": "Entrance for M.Tech admissions and a recruitment criterion for PSU engineering roles.",
+    "careerSlugs": [
+      "data-scientist",
+      "mechanical-engineer",
+      "civil-engineer",
+      "ai-ml-engineer"
+    ],
+    "courseSlugs": [],
+    "icon": "cal"
+  },
+  {
+    "slug": "csir-net",
+    "name": "CSIR-NET",
+    "fullName": "CSIR National Eligibility Test",
+    "category": "Postgraduate Entrance",
+    "conductedBy": "CSIR / NTA",
+    "frequency": "Twice a year",
+    "description": "Qualifies candidates for research fellowships and lectureship in the sciences.",
+    "careerSlugs": [
+      "research-scientist"
+    ],
+    "courseSlugs": [
+      "phd-science"
+    ],
+    "icon": "flask"
+  },
+  {
+    "slug": "ugc-net",
+    "name": "UGC-NET",
+    "fullName": "UGC National Eligibility Test",
+    "category": "Postgraduate Entrance",
+    "conductedBy": "National Testing Agency (NTA)",
+    "frequency": "Twice a year",
+    "description": "Qualifies candidates for Assistant Professor roles and JRF across humanities, commerce and sciences.",
+    "careerSlugs": [
+      "professor",
+      "historian"
+    ],
+    "courseSlugs": [
+      "ma-history"
+    ],
+    "icon": "cap"
+  },
+  {
+    "slug": "cat",
+    "name": "CAT",
+    "fullName": "Common Admission Test",
+    "category": "Postgraduate Entrance",
+    "conductedBy": "IIMs (rotating)",
+    "frequency": "Once a year",
+    "description": "India's premier MBA entrance exam, the gateway to the IIMs and top B-schools.",
+    "careerSlugs": [
+      "investment-banker",
+      "product-manager",
+      "business-analyst"
+    ],
+    "courseSlugs": [
+      "mba-finance",
+      "mba-general"
+    ],
+    "icon": "brief"
+  },
+  {
+    "slug": "uceed",
+    "name": "UCEED",
+    "fullName": "Undergraduate Common Entrance Exam for Design",
+    "category": "After 12th",
+    "conductedBy": "IIT Bombay",
+    "frequency": "Once a year",
+    "description": "Entrance for undergraduate design programs at IITs and IIITDM.",
+    "careerSlugs": [
+      "ux-designer"
+    ],
+    "courseSlugs": [
+      "bdes"
+    ],
+    "icon": "palette"
+  },
+  {
+    "slug": "nid-dat",
+    "name": "NID DAT",
+    "fullName": "National Institute of Design – Design Aptitude Test",
+    "category": "After 12th",
+    "conductedBy": "National Institute of Design",
+    "frequency": "Once a year",
+    "description": "Entrance exam for undergraduate and postgraduate design programs at NID.",
+    "careerSlugs": [
+      "ux-designer",
+      "graphic-designer"
+    ],
+    "courseSlugs": [
+      "bdes"
+    ],
+    "icon": "palette"
+  },
+  {
+    "slug": "upsc-cse",
+    "name": "UPSC CSE",
+    "fullName": "UPSC Civil Services Examination",
+    "category": "Government",
+    "conductedBy": "Union Public Service Commission",
+    "frequency": "Once a year",
+    "description": "India's premier civil services exam, the entry point to IAS, IPS, IFS and other central services.",
+    "careerSlugs": [
+      "ias-officer",
+      "ips-officer"
+    ],
+    "courseSlugs": [
+      "any-graduate-degree"
+    ],
+    "icon": "bank"
+  },
+  {
+    "slug": "nda-exam",
+    "name": "NDA",
+    "fullName": "National Defence Academy Examination",
+    "category": "Defence",
+    "conductedBy": "UPSC",
+    "frequency": "Twice a year",
+    "description": "Entry into the Army, Navy and Air Force wings of the NDA, straight after 12th.",
+    "careerSlugs": [
+      "army-officer"
+    ],
+    "courseSlugs": [
+      "any-graduate-degree"
+    ],
+    "icon": "shield"
+  },
+  {
+    "slug": "cds-exam",
+    "name": "CDS",
+    "fullName": "Combined Defence Services Examination",
+    "category": "Defence",
+    "conductedBy": "UPSC",
+    "frequency": "Twice a year",
+    "description": "Entry for graduates into the Indian Military Academy, Naval Academy and Air Force Academy.",
+    "careerSlugs": [
+      "army-officer"
+    ],
+    "courseSlugs": [
+      "any-graduate-degree"
+    ],
+    "icon": "shield"
+  },
+  {
+    "slug": "ibps-po",
+    "name": "IBPS PO",
+    "fullName": "Institute of Banking Personnel Selection – Probationary Officer",
+    "category": "Banking",
+    "conductedBy": "IBPS",
+    "frequency": "Once a year",
+    "description": "Recruitment exam for Probationary Officer roles across public sector banks.",
+    "careerSlugs": [
+      "bank-po"
+    ],
+    "courseSlugs": [
+      "bcom",
+      "bba"
+    ],
+    "icon": "bank"
+  },
+  {
+    "slug": "ctet",
+    "name": "CTET",
+    "fullName": "Central Teacher Eligibility Test",
+    "category": "Government",
+    "conductedBy": "CBSE",
+    "frequency": "Twice a year",
+    "description": "Qualifies candidates to teach in central government schools from classes I-VIII.",
+    "careerSlugs": [
+      "school-teacher"
+    ],
+    "courseSlugs": [
+      "bed"
+    ],
+    "icon": "teach"
+  },
+  {
+    "slug": "icar-aieea",
+    "name": "ICAR AIEEA",
+    "fullName": "All India Entrance Examination for Admission",
+    "category": "After 12th",
+    "conductedBy": "ICAR / NTA",
+    "frequency": "Once a year",
+    "description": "Entrance exam for undergraduate agricultural science programs across India.",
+    "careerSlugs": [
+      "agricultural-scientist"
+    ],
+    "courseSlugs": [
+      "bsc-agriculture"
+    ],
+    "icon": "leaf"
+  },
+  {
+    "slug": "nchmct-jee",
+    "name": "NCHMCT JEE",
+    "fullName": "National Council for Hotel Management Joint Entrance Exam",
+    "category": "After 12th",
+    "conductedBy": "NTA / NCHMCT",
+    "frequency": "Once a year",
+    "description": "Entrance exam for admission to hotel management institutes across India.",
+    "careerSlugs": [
+      "hotel-manager"
+    ],
+    "courseSlugs": [
+      "bhm"
+    ],
+    "icon": "building"
+  },
+  {
+    "slug": "ca-foundation",
+    "name": "CA Foundation",
+    "fullName": "Chartered Accountancy Foundation Course",
+    "category": "Professional",
+    "conductedBy": "ICAI",
+    "frequency": "Twice a year",
+    "description": "The entry-level exam that begins the Chartered Accountancy qualification.",
+    "careerSlugs": [
+      "chartered-accountant"
+    ],
+    "courseSlugs": [
+      "ca-course"
+    ],
+    "icon": "chart"
+  },
+  {
+    "slug": "cs-foundation",
+    "name": "CS Foundation",
+    "fullName": "Company Secretary Foundation Programme",
+    "category": "Professional",
+    "conductedBy": "Institute of Company Secretaries of India (ICSI)",
+    "frequency": "Twice a year",
+    "description": "The entry-level exam that begins the Company Secretary professional qualification.",
+    "careerSlugs": [
+      "company-secretary"
+    ],
+    "courseSlugs": [
+      "cs-course"
+    ],
+    "icon": "scale"
+  },
+  {
+    "slug": "clat",
+    "name": "CLAT",
+    "fullName": "Common Law Admission Test",
+    "category": "After 12th",
+    "conductedBy": "Consortium of NLUs",
+    "frequency": "Once a year",
+    "description": "The gateway to India's National Law Universities for undergraduate and postgraduate law.",
+    "careerSlugs": [
+      "lawyer"
+    ],
+    "courseSlugs": [
+      "ballb"
+    ],
+    "icon": "scale"
+  },
+  {
+    "slug": "judicial-services-exam",
+    "name": "State Judicial Services Exam",
+    "fullName": "State Judicial Services Examination",
+    "category": "Government",
+    "conductedBy": "State Public Service Commissions / High Courts",
+    "frequency": "As notified by each state",
+    "description": "The competitive exam that recruits law graduates directly into the judiciary as Civil Judges.",
+    "careerSlugs": [
+      "judge"
+    ],
+    "courseSlugs": [
+      "llb"
+    ],
+    "icon": "scale"
+  },
+  {
+    "slug": "ibps-so-it",
+    "name": "IBPS SO (IT)",
+    "fullName": "IBPS Specialist Officer – IT Officer Exam",
+    "category": "Banking",
+    "conductedBy": "Institute of Banking Personnel Selection (IBPS)",
+    "frequency": "Once a year",
+    "description": "Recruitment exam for Specialist Officer (IT) posts across public sector banks — a stable government-sector path for working IT and computer science professionals.",
+    "careerSlugs": [
+      "ibps-it-officer"
+    ],
+    "courseSlugs": [
+      "btech-cse",
+      "mca"
+    ],
+    "icon": "monitor"
+  },
+  {
+    "slug": "pmp",
+    "name": "PMP",
+    "fullName": "Project Management Professional",
+    "category": "Professional",
+    "conductedBy": "Project Management Institute (PMI)",
+    "frequency": "Rolling (computer-based, year-round)",
+    "description": "A globally recognized certification validating project and program management expertise — a common milestone for working professionals moving into leadership roles.",
+    "careerSlugs": [
+      "product-manager",
+      "cloud-architect"
+    ],
+    "courseSlugs": [
+      "product-management-cert"
+    ],
+    "icon": "clip"
+  },
+  {
+    "slug": "isro-icrb",
+    "name": "ISRO ICRB",
+    "fullName": "ISRO Centralised Recruitment Board Exam",
+    "category": "Government",
+    "conductedBy": "ISRO Centralised Recruitment Board (ICRB)",
+    "frequency": "As notified (typically annual)",
+    "description": "ISRO's own recruitment exam for Scientist/Engineer posts across Computer Science, Electronics, Mechanical and Electrical streams.",
+    "careerSlugs": [
+      "isro-scientist-engineer"
+    ],
+    "courseSlugs": [
+      "btech-cse",
+      "btech-electrical",
+      "btech-ece",
+      "btech-mech"
+    ],
+    "icon": "rocket"
+  },
+  {
+    "slug": "rrb-je",
+    "name": "RRB JE",
+    "fullName": "Railway Recruitment Board – Junior Engineer Exam",
+    "category": "Government",
+    "conductedBy": "Railway Recruitment Board (RRB)",
+    "frequency": "As notified",
+    "description": "Recruitment exam for Junior Engineer posts across Indian Railways' civil, mechanical, electrical and signalling departments.",
+    "careerSlugs": [
+      "rrb-junior-engineer"
+    ],
+    "courseSlugs": [
+      "diploma-mech",
+      "diploma-civil",
+      "diploma-electrical"
+    ],
+    "icon": "train"
+  },
+  {
+    "slug": "sebi-grade-a",
+    "name": "SEBI Grade A",
+    "fullName": "SEBI Officer Grade A Exam",
+    "category": "Government",
+    "conductedBy": "Securities and Exchange Board of India (SEBI)",
+    "frequency": "Once a year (as notified)",
+    "description": "SEBI's recruitment exam for Assistant Manager (Grade A) posts, including a dedicated IT stream for technology and cybersecurity roles.",
+    "careerSlugs": [
+      "sebi-grade-a-officer-it"
+    ],
+    "courseSlugs": [
+      "btech-cse",
+      "mca"
+    ],
+    "icon": "monitor"
+  }
+]

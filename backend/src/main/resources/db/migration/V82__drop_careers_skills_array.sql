@@ -1,0 +1,26 @@
+-- Step 2 of 2: drop careers.skills, leaving career_skills as the single
+-- source of truth for a career's skills.
+--
+-- V81 moved the last thing this column held that the relation did not -- the
+-- curated "most central skill first" ordering -- into career_skills.sort_order,
+-- and the result is byte-identical (law still reads "Legal Research | Legal
+-- Drafting | Litigation | Contract Law | Constitutional Law | Legal
+-- Reasoning"). The Java field, the DTO, the upsert request and the admin
+-- form's free-text "Skills" control are all gone as of that same change, so
+-- nothing reads or writes this column any more.
+--
+-- Verified running before this drop: /api/careers/law no longer returns a
+-- `skills` key, relatedSkillSlugs comes back in the curated order, and the
+-- career page renders every skill as a link to /skills/[slug] -- previously
+-- only the ones whose free-text spelling happened to match a Skill row did.
+--
+-- This also removes a dual-write path rather than just a duplicate column:
+-- CareerUpsertRequest used to accept `skills` and `relatedSkillSlugs`
+-- independently, and the admin form rendered both, so the two could be set to
+-- different values at any time. They never diverged only because V50's import
+-- wrote them consistently -- which is exactly why merging was still lossless.
+--
+-- Same consolidation V41 performed for topRecruiters -> relatedIndustrySlugs.
+-- V24 started this one and stopped halfway; this finishes it.
+
+ALTER TABLE careers DROP COLUMN skills;

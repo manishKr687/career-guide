@@ -1,0 +1,207 @@
+[
+  {
+    "slug": "after-10th",
+    "name": "After 10th",
+    "tagline": "Choose your stream, or a skill-first path",
+    "description": "The first big fork in the road: pick a stream for 11th & 12th, or move straight into a diploma, ITI or skill-led path toward a hands-on career.",
+    "badgeSoft": "bg-stage-10th-soft text-stage-10th",
+    "badgeSolid": "bg-stage-10th text-white",
+    "icon": "cap",
+    "highlights": [
+      "Choose Stream (Science / Commerce / Arts)",
+      "Diploma / ITI",
+      "Skill Courses",
+      "Junior-level Career Options"
+    ],
+    "relatedCareerSlugs": [
+      "electrician",
+      "plumber"
+    ],
+    "relatedCourseSlugs": [
+      "diploma-cs",
+      "diploma-mech",
+      "diploma-civil",
+      "diploma-electrical",
+      "diploma-ece",
+      "iti-electrician",
+      "iti-plumber"
+    ],
+    "relatedExamSlugs": [
+      "polytechnic-cet",
+      "ntse"
+    ]
+  },
+  {
+    "slug": "after-12th",
+    "name": "After 12th",
+    "tagline": "Pick your degree, diploma or entrance exam path",
+    "description": "With a stream behind you, this is where career direction sharpens — undergraduate degrees, professional courses, and the entrance exams that unlock them.",
+    "badgeSoft": "bg-stage-12th-soft text-stage-12th",
+    "badgeSolid": "bg-stage-12th text-white",
+    "icon": "book",
+    "highlights": [
+      "Science / Commerce / Arts & Humanities",
+      "Professional & Vocational Courses",
+      "Diploma Options",
+      "Entrance Exams"
+    ],
+    "relatedCareerSlugs": [
+      "software-engineer",
+      "doctor-mbbs",
+      "lawyer",
+      "graphic-designer",
+      "army-officer",
+      "hotel-manager"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "mbbs",
+      "ballb",
+      "bdes",
+      "bhm"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "neet-ug",
+      "clat",
+      "nda-exam",
+      "nchmct-jee"
+    ]
+  },
+  {
+    "slug": "graduation",
+    "name": "After Graduation",
+    "tagline": "Specialize, go for higher studies, or start working",
+    "description": "A bachelor's degree opens three roads at once: postgraduate study, competitive government exams, or stepping directly into a first job.",
+    "badgeSoft": "bg-stage-grad-soft text-stage-grad",
+    "badgeSolid": "bg-stage-grad text-white",
+    "icon": "trophy",
+    "highlights": [
+      "Higher Studies (MBA / MCA / M.Tech)",
+      "Government Exams",
+      "Professional Certifications",
+      "Jobs & Competitive Exams"
+    ],
+    "relatedCareerSlugs": [
+      "data-scientist",
+      "chartered-accountant",
+      "ias-officer",
+      "ux-designer",
+      "product-manager",
+      "ai-ml-engineer"
+    ],
+    "relatedCourseSlugs": [
+      "mca",
+      "ca-course",
+      "mba-general",
+      "bdes",
+      "data-science-cert"
+    ],
+    "relatedExamSlugs": [
+      "gate",
+      "ca-foundation",
+      "upsc-cse",
+      "cat"
+    ]
+  },
+  {
+    "slug": "post-graduation",
+    "name": "Post-Graduation",
+    "tagline": "Go deep: research, academia or specialized industry roles",
+    "description": "For those who want to specialize further — through a Ph.D., a teaching qualification, or a postgraduate entrance into judiciary or research careers.",
+    "badgeSoft": "bg-stage-pg-soft text-stage-pg",
+    "badgeSolid": "bg-stage-pg text-white",
+    "icon": "flask",
+    "highlights": [
+      "PhD & Research",
+      "Specialized Certifications",
+      "Teaching / Academia",
+      "Government & Industry Careers"
+    ],
+    "relatedCareerSlugs": [
+      "research-scientist",
+      "professor",
+      "judge",
+      "agricultural-scientist"
+    ],
+    "relatedCourseSlugs": [
+      "phd-science",
+      "bed"
+    ],
+    "relatedExamSlugs": [
+      "csir-net",
+      "ugc-net",
+      "judicial-services-exam"
+    ]
+  },
+  {
+    "slug": "working-professional",
+    "name": "Working Professional",
+    "tagline": "Upskill, grow, or move into a bigger role",
+    "description": "Already working? This is about deliberate growth — new certifications, salary progression, and moving into leadership or specialist tracks.",
+    "badgeSoft": "bg-stage-work-soft text-stage-work",
+    "badgeSolid": "bg-stage-work text-white",
+    "icon": "brief",
+    "highlights": [
+      "Upskilling & Certifications",
+      "Salary Improvement",
+      "Job Switch",
+      "Leadership Growth"
+    ],
+    "relatedCareerSlugs": [
+      "cloud-architect",
+      "product-manager",
+      "sustainability-consultant",
+      "ai-ml-engineer",
+      "cybersecurity-analyst",
+      "ibps-it-officer",
+      "hr-manager",
+      "digital-marketing-manager",
+      "company-secretary",
+      "school-principal"
+    ],
+    "relatedCourseSlugs": [
+      "cloud-computing-cert",
+      "product-management-cert",
+      "sustainability-cert",
+      "hr-management-cert",
+      "digital-marketing-cert",
+      "cs-course"
+    ],
+    "relatedExamSlugs": [
+      "gate",
+      "ibps-so-it",
+      "pmp",
+      "cs-foundation"
+    ]
+  },
+  {
+    "slug": "career-switch",
+    "name": "Career Switch",
+    "tagline": "Change direction with a plan, not a guess",
+    "description": "Switching careers doesn't mean starting over. Assess your transferable skills, find the right bridge course, and move into a new field with a clear roadmap.",
+    "badgeSoft": "bg-stage-switch-soft text-stage-switch",
+    "badgeSolid": "bg-stage-switch text-white",
+    "icon": "switch",
+    "highlights": [
+      "Career Assessment",
+      "Transferable Skills",
+      "New Courses & Industries",
+      "Personalized Roadmap"
+    ],
+    "relatedCareerSlugs": [
+      "ux-designer",
+      "product-manager",
+      "cybersecurity-analyst",
+      "entrepreneur",
+      "sustainability-consultant"
+    ],
+    "relatedCourseSlugs": [
+      "ux-design-cert",
+      "product-management-cert",
+      "cybersecurity-cert",
+      "entrepreneurship-cert"
+    ],
+    "relatedExamSlugs": []
+  }
+]

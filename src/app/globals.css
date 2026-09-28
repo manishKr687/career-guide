@@ -1,0 +1,85 @@
+@import "tailwindcss";
+
+:root {
+  /* Whole-page background -- same tone as --color-bg-soft below (kept as a
+     separate variable since --background predates it), applied everywhere
+     instead of only on alternating "soft" sections, so white cards get real
+     separation from the page instead of blending flat into it. */
+  --background: #f8fafc;
+  --foreground: #23293a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --font-sans: "Segoe UI", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Semibold", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* Brand */
+  --color-navy: #16213e;
+  --color-navy-2: #232f52;
+  --color-ink: #23293a;
+  --color-muted: #6b7280;
+  --color-subtle: #9199ae;
+  --color-line: #eef1f6;
+  --color-bg-soft: #f8fafc;
+
+  /* Accents */
+  --color-blue: #2563eb;
+  --color-blue-soft: #eaf2ff;
+  --color-teal: #0d9488;
+  --color-teal-soft: #d7f5f0;
+  --color-green: #16a34a;
+  --color-green-soft: #e7f8ed;
+  --color-amber: #d97706;
+  --color-amber-soft: #fff1d6;
+  --color-pink: #db2777;
+  --color-pink-soft: #fdeaf0;
+  --color-purple: #7c3aed;
+  --color-purple-soft: #ece4ff;
+  --color-slate: #475569;
+  --color-slate-soft: #eef0f3;
+  --color-red: #b91c1c;
+  --color-red-soft: #fbeaea;
+
+  /* Stage pastels */
+  --color-stage-10th: #16a34a;
+  --color-stage-10th-soft: #e4f8ea;
+  --color-stage-12th: #ec4899;
+  --color-stage-12th-soft: #fde5ee;
+  --color-stage-grad: #8b5cf6;
+  --color-stage-grad-soft: #ece4ff;
+  --color-stage-pg: #f59e0b;
+  --color-stage-pg-soft: #fff1d6;
+  --color-stage-work: #3b82f6;
+  --color-stage-work-soft: #deebff;
+  --color-stage-switch: #14b8a6;
+  --color-stage-switch-soft: #d7f5f0;
+
+  --shadow-card: 0 14px 34px -18px rgba(20,30,60,0.16);
+
+  --breakpoint-xs: 420px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--color-purple-soft);
+  color: var(--color-navy);
+}

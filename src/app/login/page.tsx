@@ -1,0 +1,82 @@
+"use client";
+
+import { Suspense, useState } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import Container from "@/components/ui/Container";
+import Input from "@/components/ui/Input";
+import Button from "@/components/ui/Button";
+import { useUser } from "@/components/providers/UserProvider";
+import { ApiError } from "@/lib/api";
+
+// useSearchParams() (for the post-login `?next=` redirect target) opts this
+// page out of static prerendering unless it's wrapped in Suspense -- see
+// https://nextjs.org/docs/messages/missing-suspense-with-csr-bailout.
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { login } = useUser();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      await login(email, password);
+      router.push(searchParams.get("next") || "/profile");
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Could not reach the API. Is the backend running?");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  return (
+    <Container className="max-w-sm py-20">
+      <h1 className="font-display font-extrabold text-navy text-2xl mb-1.5">Log in</h1>
+      <p className="text-[13.5px] text-subtle mb-6">
+        Save careers, colleges and exams to your account, and pick up your career journey from any device.
+      </p>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          label="Email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          autoFocus
+          required
+        />
+        <Input
+          label="Password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        {error && <p className="text-[13.5px] text-red">{error}</p>}
+        <Button type="submit" disabled={submitting} className="w-full justify-center">
+          {submitting ? "Logging in..." : "Log in"}
+        </Button>
+      </form>
+      <p className="text-[13.5px] text-subtle mt-6 text-center">
+        Don&rsquo;t have an account?{" "}
+        <Link href="/register" className="font-bold text-navy hover:underline">
+          Sign up
+        </Link>
+      </p>
+    </Container>
+  );
+}

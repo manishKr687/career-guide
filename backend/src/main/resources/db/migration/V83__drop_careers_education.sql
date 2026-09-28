@@ -1,0 +1,34 @@
+-- Drops careers.education, making the Degrees domain the single source of
+-- truth for what you study to enter a career.
+--
+-- This column held no information. Every one of the 42 rows was the same
+-- sentence with the career's own title substituted in:
+--
+--   "Bachelor's or professional degree in <title> or a closely related field
+--    (see individual specializations for specific entrance routes)."
+--
+-- 42 templated, 0 bespoke -- V50 import scaffolding that was never replaced
+-- with real content, the same artefact as the job-role descriptions V73
+-- rewrote ("X is a job role reached through Y"). It reported 42 distinct
+-- values only because the title differs, and it ended by telling the reader
+-- to look elsewhere.
+--
+-- So this is NOT a merge like V81/V82 did for skills: there was nothing to
+-- carry across. The career page already renders real degrees a few hundred
+-- pixels below where this sentence appeared -- career.relatedDegreeSlugs
+-- (career_degrees, V51), with filterDegreesRelevantToCareer as a fallback for
+-- careers that have no exact mapping. The Education field now reads from that
+-- instead.
+--
+-- Note career_degrees covers 29 of 42 careers directly; the rest fall back to
+-- the shared-entrance-exam heuristic, and a career matching neither shows an
+-- empty Education value. That is deliberate: an honest blank beats a sentence
+-- engineered to look like content while saying nothing.
+--
+-- Dropped in a single step rather than the usual stop-using-then-drop: the
+-- content is a pure formula of careers.title, so nothing is recoverable that
+-- could not be regenerated from the template above, and the column is NOT
+-- NULL with no default, which means the entity field and the column have to
+-- go together anyway.
+
+ALTER TABLE careers DROP COLUMN education;

@@ -1,0 +1,303 @@
+[
+  {
+    "id": "interest",
+    "question": "Which of these sounds most exciting to spend your day on?",
+    "options": [
+      {
+        "id": "a",
+        "label": "Building, fixing or designing physical things",
+        "weights": {
+          "engineering-technology": 2,
+          "skilled-trades": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "Helping people feel better, physically or mentally",
+        "weights": {
+          "medical-healthcare": 2
+        }
+      },
+      {
+        "id": "c",
+        "label": "Designing something people will see and use",
+        "weights": {
+          "design-creative": 2,
+          "media-communication": 1
+        }
+      },
+      {
+        "id": "d",
+        "label": "Telling stories or communicating ideas",
+        "weights": {
+          "media-communication": 2,
+          "arts-humanities": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "strength",
+    "question": "Which of these is closest to your biggest strength?",
+    "options": [
+      {
+        "id": "a",
+        "label": "Analytical thinking & solving complex problems",
+        "weights": {
+          "science-research": 2,
+          "it-software": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "Leading, organizing and motivating a team",
+        "weights": {
+          "management-business": 2
+        }
+      },
+      {
+        "id": "c",
+        "label": "Clear communication & persuasion",
+        "weights": {
+          "law": 2,
+          "arts-humanities": 1
+        }
+      },
+      {
+        "id": "d",
+        "label": "Practical, hands-on problem solving",
+        "weights": {
+          "skilled-trades": 2,
+          "agriculture": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "academics",
+    "question": "Which subjects do you enjoy or do best in?",
+    "options": [
+      {
+        "id": "a",
+        "label": "Physics, Chemistry & Mathematics",
+        "weights": {
+          "engineering-technology": 2,
+          "science-research": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "Biology & Life Sciences",
+        "weights": {
+          "medical-healthcare": 2,
+          "agriculture": 1
+        }
+      },
+      {
+        "id": "c",
+        "label": "Economics, Accounts & Business Studies",
+        "weights": {
+          "commerce-finance": 2,
+          "banking-insurance": 1
+        }
+      },
+      {
+        "id": "d",
+        "label": "History, Civics, Languages & the Arts",
+        "weights": {
+          "arts-humanities": 2,
+          "law": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "skills",
+    "question": "Which skill would you most like to get better at?",
+    "options": [
+      {
+        "id": "a",
+        "label": "Coding & building software",
+        "weights": {
+          "it-software": 2,
+          "emerging-careers": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "Visual design & creativity",
+        "weights": {
+          "design-creative": 2
+        }
+      },
+      {
+        "id": "c",
+        "label": "Working with numbers & financial models",
+        "weights": {
+          "commerce-finance": 2,
+          "banking-insurance": 1
+        }
+      },
+      {
+        "id": "d",
+        "label": "Working with your hands and real materials",
+        "weights": {
+          "skilled-trades": 2,
+          "agriculture": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "personality",
+    "question": "How would your friends describe you?",
+    "options": [
+      {
+        "id": "a",
+        "label": "Disciplined, structured and service-minded",
+        "weights": {
+          "government-civil-services": 2,
+          "defence": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "Independent, and comfortable with risk",
+        "weights": {
+          "entrepreneurship": 2
+        }
+      },
+      {
+        "id": "c",
+        "label": "Patient, nurturing and a natural mentor",
+        "weights": {
+          "education-teaching": 2
+        }
+      },
+      {
+        "id": "d",
+        "label": "Energetic, competitive and active",
+        "weights": {
+          "sports-fitness": 2,
+          "hospitality-tourism": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "goals",
+    "question": "What matters most to you in a career?",
+    "options": [
+      {
+        "id": "a",
+        "label": "Stability and serving the public",
+        "weights": {
+          "government-civil-services": 2,
+          "banking-insurance": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "Building something of my own",
+        "weights": {
+          "entrepreneurship": 2,
+          "management-business": 1
+        }
+      },
+      {
+        "id": "c",
+        "label": "Working at the cutting edge of technology",
+        "weights": {
+          "it-software": 2,
+          "emerging-careers": 1
+        }
+      },
+      {
+        "id": "d",
+        "label": "Making a direct difference in people's lives",
+        "weights": {
+          "medical-healthcare": 2,
+          "education-teaching": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "salary",
+    "question": "How do you feel about salary vs. passion trade-offs right now?",
+    "options": [
+      {
+        "id": "a",
+        "label": "I want the highest-paying path available",
+        "weights": {
+          "it-software": 1,
+          "commerce-finance": 1,
+          "management-business": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "I want steady, predictable income",
+        "weights": {
+          "government-civil-services": 1,
+          "banking-insurance": 1,
+          "education-teaching": 1
+        }
+      },
+      {
+        "id": "c",
+        "label": "I'm fine with variable income for the right work",
+        "weights": {
+          "entrepreneurship": 1,
+          "design-creative": 1,
+          "media-communication": 1
+        }
+      },
+      {
+        "id": "d",
+        "label": "I haven't thought about it much yet",
+        "weights": {
+          "emerging-careers": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "workstyle",
+    "question": "What kind of day-to-day work setting appeals to you?",
+    "options": [
+      {
+        "id": "a",
+        "label": "Desk-based, tech-forward, flexible",
+        "weights": {
+          "it-software": 2,
+          "emerging-careers": 1
+        }
+      },
+      {
+        "id": "b",
+        "label": "People-facing, active, always moving",
+        "weights": {
+          "hospitality-tourism": 2,
+          "sports-fitness": 1
+        }
+      },
+      {
+        "id": "c",
+        "label": "Outdoors or hands-on, tangible results",
+        "weights": {
+          "agriculture": 2,
+          "skilled-trades": 1
+        }
+      },
+      {
+        "id": "d",
+        "label": "Structured corporate or institutional setting",
+        "weights": {
+          "management-business": 2,
+          "banking-insurance": 1
+        }
+      }
+    ]
+  }
+]

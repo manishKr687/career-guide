@@ -1,0 +1,1804 @@
+[
+  {
+    "slug": "data-scientist",
+    "title": "Data Scientist",
+    "categorySlug": "it-software",
+    "tagline": "Analytics · AI · Machine Learning",
+    "demand": "High Demand",
+    "education": "B.Tech / B.Sc / MCA or a relevant degree",
+    "skills": [
+      "Python",
+      "SQL",
+      "Statistics",
+      "Machine Learning"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "cuet"
+    ],
+    "typicalWork": "Data analysis, building ML models, AI systems and business insights",
+    "salaryRange": "₹6L – ₹35L / year",
+    "growthPath": [
+      "Junior Analyst",
+      "Data Scientist",
+      "Senior Data Scientist",
+      "Lead",
+      "Manager"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "mca",
+      "data-science-cert"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "cuet",
+      "gate"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "post-graduation",
+      "working-professional"
+    ],
+    "icon": "chart",
+    "description": "Data Scientists turn raw data into decisions — building statistical models and machine-learning systems that power recommendations, forecasts and automated decisions across every industry."
+  },
+  {
+    "slug": "software-engineer",
+    "title": "Software Engineer",
+    "categorySlug": "it-software",
+    "tagline": "Core · Product · Systems",
+    "demand": "High Demand",
+    "education": "B.Tech / B.E in CSE, IT or related field",
+    "skills": [
+      "Data Structures",
+      "System Design",
+      "JavaScript / Java / Python",
+      "Git"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "jee-advanced",
+      "bitsat"
+    ],
+    "typicalWork": "Designing, building and maintaining software products and platforms",
+    "salaryRange": "₹5L – ₹40L / year",
+    "growthPath": [
+      "SDE I",
+      "SDE II",
+      "Senior SDE",
+      "Staff Engineer",
+      "Engineering Manager"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "diploma-cs",
+      "web-dev-bootcamp"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "jee-advanced",
+      "bitsat",
+      "polytechnic-cet"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "code",
+    "description": "Software Engineers design and build the applications, platforms and infrastructure that power modern products, from mobile apps to large-scale distributed systems."
+  },
+  {
+    "slug": "mechanical-engineer",
+    "title": "Mechanical Engineer",
+    "categorySlug": "engineering-technology",
+    "tagline": "Design · Manufacturing · R&D",
+    "demand": "Stable",
+    "education": "B.Tech / B.E in Mechanical Engineering",
+    "skills": [
+      "CAD/CAM",
+      "Thermodynamics",
+      "Manufacturing Processes",
+      "Project Management"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "jee-advanced"
+    ],
+    "typicalWork": "Designing machines, engines, tools and manufacturing systems",
+    "salaryRange": "₹4L – ₹18L / year",
+    "growthPath": [
+      "Graduate Engineer Trainee",
+      "Design Engineer",
+      "Senior Engineer",
+      "Project Lead",
+      "Plant Head"
+    ],
+    "relatedCourseSlugs": [
+      "btech-mech",
+      "diploma-mech"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "jee-advanced",
+      "gate",
+      "polytechnic-cet"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "gear",
+    "description": "Mechanical Engineers design, analyse and manufacture mechanical systems — from automotive components to industrial machinery and robotics."
+  },
+  {
+    "slug": "civil-engineer",
+    "title": "Civil Engineer",
+    "categorySlug": "engineering-technology",
+    "tagline": "Infrastructure · Construction · Planning",
+    "demand": "Stable",
+    "education": "B.Tech / B.E in Civil Engineering",
+    "skills": [
+      "Structural Analysis",
+      "AutoCAD",
+      "Project Management",
+      "Surveying"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "jee-advanced"
+    ],
+    "typicalWork": "Planning and overseeing construction of buildings, roads and infrastructure",
+    "salaryRange": "₹4L – ₹16L / year",
+    "growthPath": [
+      "Site Engineer",
+      "Project Engineer",
+      "Senior Engineer",
+      "Project Manager",
+      "Director"
+    ],
+    "relatedCourseSlugs": [
+      "btech-civil",
+      "diploma-civil"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "gate",
+      "polytechnic-cet"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "building",
+    "description": "Civil Engineers plan, design and supervise the construction of infrastructure that shapes cities — buildings, bridges, roads, dams and water systems."
+  },
+  {
+    "slug": "electrical-engineer",
+    "title": "Electrical Engineer",
+    "categorySlug": "engineering-technology",
+    "tagline": "Power Systems · Circuits · Automation",
+    "demand": "High Demand",
+    "education": "B.Tech / B.E in Electrical Engineering",
+    "skills": [
+      "Circuit Design",
+      "Power Systems",
+      "Control Systems",
+      "MATLAB/Simulink"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "jee-advanced"
+    ],
+    "typicalWork": "Designing, testing and maintaining electrical systems, power grids and machines",
+    "salaryRange": "₹4L – ₹20L / year",
+    "growthPath": [
+      "Graduate Engineer Trainee",
+      "Design Engineer",
+      "Senior Engineer",
+      "Project Lead",
+      "Engineering Manager"
+    ],
+    "relatedCourseSlugs": [
+      "btech-electrical",
+      "diploma-electrical"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "jee-advanced",
+      "gate",
+      "polytechnic-cet"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "bolt",
+    "description": "Electrical Engineers design and maintain the systems that generate, transmit and use electrical power — from home wiring and industrial motors to power grids, automation and renewable energy systems."
+  },
+  {
+    "slug": "electronics-engineer",
+    "title": "Electronics Engineer",
+    "categorySlug": "engineering-technology",
+    "tagline": "Circuits · Embedded Systems · Communication",
+    "demand": "High Demand",
+    "education": "B.Tech / B.E in Electronics & Communication Engineering (ECE)",
+    "skills": [
+      "Embedded Systems",
+      "PCB Design",
+      "Signal Processing",
+      "VLSI"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "jee-advanced"
+    ],
+    "typicalWork": "Designing chips, circuits, communication systems and embedded devices",
+    "salaryRange": "₹4.5L – ₹22L / year",
+    "growthPath": [
+      "Graduate Engineer Trainee",
+      "Design Engineer",
+      "Senior Engineer",
+      "Technical Lead",
+      "Engineering Manager"
+    ],
+    "relatedCourseSlugs": [
+      "btech-ece",
+      "diploma-ece"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "jee-advanced",
+      "gate",
+      "polytechnic-cet"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "chip",
+    "description": "Electronics Engineers design the circuits, chips and communication systems inside phones, computers, vehicles and industrial equipment — from embedded firmware to semiconductor design."
+  },
+  {
+    "slug": "doctor-mbbs",
+    "title": "Doctor (MBBS)",
+    "categorySlug": "medical-healthcare",
+    "tagline": "Clinical Medicine · Patient Care",
+    "demand": "High Demand",
+    "education": "MBBS, followed by MD/MS specialization",
+    "skills": [
+      "Clinical Diagnosis",
+      "Patient Communication",
+      "Emergency Care",
+      "Medical Ethics"
+    ],
+    "entranceExams": [
+      "neet-ug"
+    ],
+    "typicalWork": "Diagnosing and treating patients, clinical practice, surgery or specialization",
+    "salaryRange": "₹6L – ₹30L+ / year",
+    "growthPath": [
+      "Intern",
+      "Resident Doctor",
+      "Specialist",
+      "Consultant",
+      "Senior Consultant"
+    ],
+    "relatedCourseSlugs": [
+      "mbbs"
+    ],
+    "relatedExamSlugs": [
+      "neet-ug",
+      "neet-pg"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "steth",
+    "description": "Doctors diagnose and treat illness and injury, working in hospitals, clinics or specialized practice after MBBS and further specialization through NEET-PG."
+  },
+  {
+    "slug": "nurse",
+    "title": "Nurse",
+    "categorySlug": "medical-healthcare",
+    "tagline": "Patient Care · Clinical Support",
+    "demand": "Evergreen",
+    "education": "B.Sc Nursing / GNM Diploma",
+    "skills": [
+      "Patient Care",
+      "Clinical Procedures",
+      "Medication Management",
+      "Communication"
+    ],
+    "entranceExams": [
+      "neet-ug"
+    ],
+    "typicalWork": "Providing direct patient care in hospitals, clinics and community health settings",
+    "salaryRange": "₹2.5L – ₹9L / year",
+    "growthPath": [
+      "Staff Nurse",
+      "Senior Nurse",
+      "Nursing Supervisor",
+      "Nursing Superintendent"
+    ],
+    "relatedCourseSlugs": [
+      "bsc-nursing",
+      "gnm-diploma"
+    ],
+    "relatedExamSlugs": [
+      "neet-ug"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "heart",
+    "description": "Nurses are the backbone of patient care — administering treatment, monitoring recovery and supporting patients and doctors across every healthcare setting."
+  },
+  {
+    "slug": "dentist",
+    "title": "Dentist",
+    "categorySlug": "medical-healthcare",
+    "tagline": "Oral Health · Clinical Practice",
+    "demand": "Stable",
+    "education": "BDS, optionally MDS specialization",
+    "skills": [
+      "Clinical Dentistry",
+      "Patient Care",
+      "Precision & Dexterity"
+    ],
+    "entranceExams": [
+      "neet-ug"
+    ],
+    "typicalWork": "Diagnosing and treating dental and oral health conditions",
+    "salaryRange": "₹4L – ₹18L / year",
+    "growthPath": [
+      "Intern",
+      "Dental Surgeon",
+      "Specialist",
+      "Private Practice Owner"
+    ],
+    "relatedCourseSlugs": [
+      "bds"
+    ],
+    "relatedExamSlugs": [
+      "neet-ug"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "heart",
+    "description": "Dentists diagnose and treat conditions of the teeth, gums and mouth, working in clinics, hospitals or their own private practice."
+  },
+  {
+    "slug": "pharmacist",
+    "title": "Pharmacist",
+    "categorySlug": "medical-healthcare",
+    "tagline": "Pharmaceuticals · Patient Safety",
+    "demand": "Stable",
+    "education": "B.Pharm / D.Pharm",
+    "skills": [
+      "Pharmacology",
+      "Drug Safety",
+      "Patient Counselling",
+      "Regulatory Knowledge"
+    ],
+    "entranceExams": [
+      "neet-ug"
+    ],
+    "typicalWork": "Dispensing medication, advising patients, and working in pharma R&D or regulatory roles",
+    "salaryRange": "₹3L – ₹12L / year",
+    "growthPath": [
+      "Pharmacist",
+      "Senior Pharmacist",
+      "Pharmacy Manager",
+      "Regulatory Affairs Lead"
+    ],
+    "relatedCourseSlugs": [
+      "bpharm"
+    ],
+    "relatedExamSlugs": [
+      "neet-ug"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "flask",
+    "description": "Pharmacists ensure the safe and effective use of medication — dispensing prescriptions, advising patients, and working across retail, hospital and pharmaceutical R&D roles."
+  },
+  {
+    "slug": "research-scientist",
+    "title": "Research Scientist",
+    "categorySlug": "science-research",
+    "tagline": "R&D · Innovation · Publication",
+    "demand": "Competitive",
+    "education": "M.Sc / Ph.D in a core science discipline",
+    "skills": [
+      "Research Methodology",
+      "Data Analysis",
+      "Scientific Writing",
+      "Lab Techniques"
+    ],
+    "entranceExams": [
+      "csir-net",
+      "gate"
+    ],
+    "typicalWork": "Conducting original research, publishing papers, and driving innovation in academia or industry R&D",
+    "salaryRange": "₹5L – ₹20L / year",
+    "growthPath": [
+      "Research Associate",
+      "Scientist",
+      "Senior Scientist",
+      "Principal Investigator"
+    ],
+    "relatedCourseSlugs": [
+      "msc-science",
+      "phd-science"
+    ],
+    "relatedExamSlugs": [
+      "csir-net",
+      "gate"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "post-graduation"
+    ],
+    "icon": "flask",
+    "description": "Research Scientists push the boundaries of knowledge — designing experiments, analysing data and publishing findings across physics, chemistry, biology and applied sciences."
+  },
+  {
+    "slug": "data-analyst",
+    "title": "Data Analyst",
+    "categorySlug": "commerce-finance",
+    "tagline": "Business Intelligence · Reporting",
+    "demand": "High Demand",
+    "education": "B.Com / BBA / B.Tech with analytics skills",
+    "skills": [
+      "Excel",
+      "SQL",
+      "Data Visualization",
+      "Business Acumen"
+    ],
+    "entranceExams": [
+      "cuet"
+    ],
+    "typicalWork": "Analysing business data to support decisions, dashboards and reporting",
+    "salaryRange": "₹4L – ₹15L / year",
+    "growthPath": [
+      "Junior Analyst",
+      "Data Analyst",
+      "Senior Analyst",
+      "Analytics Manager"
+    ],
+    "relatedCourseSlugs": [
+      "bba",
+      "data-science-cert"
+    ],
+    "relatedExamSlugs": [
+      "cuet"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "chart",
+    "description": "Data Analysts turn business data into clear insights and dashboards that guide decision-making across marketing, operations and finance teams."
+  },
+  {
+    "slug": "chartered-accountant",
+    "title": "Chartered Accountant",
+    "categorySlug": "commerce-finance",
+    "tagline": "Audit · Taxation · Finance",
+    "demand": "Stable",
+    "education": "B.Com + CA (Foundation, Intermediate, Final via ICAI)",
+    "skills": [
+      "Accounting",
+      "Taxation",
+      "Auditing",
+      "Financial Reporting"
+    ],
+    "entranceExams": [
+      "ca-foundation"
+    ],
+    "typicalWork": "Auditing, tax planning, financial advisory and corporate finance",
+    "salaryRange": "₹7L – ₹25L / year",
+    "growthPath": [
+      "Article Trainee",
+      "Chartered Accountant",
+      "Senior CA",
+      "Finance Controller",
+      "CFO"
+    ],
+    "relatedCourseSlugs": [
+      "bcom",
+      "ca-course"
+    ],
+    "relatedExamSlugs": [
+      "ca-foundation"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "chart",
+    "description": "Chartered Accountants manage financial reporting, taxation, auditing and compliance for businesses of every size, and are among India's most respected finance professionals."
+  },
+  {
+    "slug": "company-secretary",
+    "title": "Company Secretary",
+    "categorySlug": "commerce-finance",
+    "tagline": "Corporate Governance · Compliance",
+    "demand": "Stable",
+    "education": "12th pass + CS Executive & Professional Programme (ICSI)",
+    "skills": [
+      "Corporate Law",
+      "Compliance",
+      "Governance",
+      "Secretarial Practice"
+    ],
+    "entranceExams": [
+      "cs-foundation"
+    ],
+    "typicalWork": "Ensuring statutory compliance, governance and board-level legal advisory for companies",
+    "salaryRange": "₹5L – ₹20L / year",
+    "growthPath": [
+      "Associate CS",
+      "Company Secretary",
+      "Senior CS",
+      "Head of Compliance",
+      "General Counsel"
+    ],
+    "relatedCourseSlugs": [
+      "cs-course"
+    ],
+    "relatedExamSlugs": [
+      "cs-foundation"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "scale",
+    "description": "Company Secretaries ensure corporate governance and statutory compliance — a respected, stable profession bridging law, finance and business administration."
+  },
+  {
+    "slug": "investment-banker",
+    "title": "Investment Banker",
+    "categorySlug": "commerce-finance",
+    "tagline": "M&A · Capital Markets",
+    "demand": "Competitive",
+    "education": "B.Com/BBA + MBA (Finance) or CFA",
+    "skills": [
+      "Financial Modelling",
+      "Valuation",
+      "Deal Structuring",
+      "Excel/PowerPoint"
+    ],
+    "entranceExams": [
+      "cat"
+    ],
+    "typicalWork": "Advising companies on mergers, acquisitions, fundraising and capital markets",
+    "salaryRange": "₹10L – ₹50L+ / year",
+    "growthPath": [
+      "Analyst",
+      "Associate",
+      "Vice President",
+      "Director",
+      "Managing Director"
+    ],
+    "relatedCourseSlugs": [
+      "mba-finance"
+    ],
+    "relatedExamSlugs": [
+      "cat"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "chart",
+    "description": "Investment Bankers help companies raise capital and execute mergers and acquisitions, working at the fast-paced, high-stakes intersection of finance and strategy."
+  },
+  {
+    "slug": "product-manager",
+    "title": "Product Manager",
+    "categorySlug": "management-business",
+    "tagline": "Strategy · Execution · User Focus",
+    "demand": "High Demand",
+    "education": "Any degree + MBA or strong product experience",
+    "skills": [
+      "Product Strategy",
+      "User Research",
+      "Roadmapping",
+      "Cross-team Leadership"
+    ],
+    "entranceExams": [
+      "cat"
+    ],
+    "typicalWork": "Defining product vision, prioritizing features and leading cross-functional teams",
+    "salaryRange": "₹10L – ₹45L / year",
+    "growthPath": [
+      "APM",
+      "Product Manager",
+      "Senior PM",
+      "Group PM",
+      "VP Product"
+    ],
+    "relatedCourseSlugs": [
+      "mba-general",
+      "product-management-cert"
+    ],
+    "relatedExamSlugs": [
+      "cat",
+      "pmp"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional",
+      "career-switch"
+    ],
+    "icon": "compass",
+    "description": "Product Managers sit at the intersection of business, design and engineering — deciding what gets built and why, and guiding it from idea to launch."
+  },
+  {
+    "slug": "business-analyst",
+    "title": "Business Analyst",
+    "categorySlug": "management-business",
+    "tagline": "Process · Requirements · Strategy",
+    "demand": "Stable",
+    "education": "Any degree, often with an MBA or analytics certification",
+    "skills": [
+      "Requirements Gathering",
+      "Process Mapping",
+      "Stakeholder Management",
+      "SQL"
+    ],
+    "entranceExams": [
+      "cat",
+      "cuet"
+    ],
+    "typicalWork": "Bridging business needs and technical solutions across projects",
+    "salaryRange": "₹5L – ₹18L / year",
+    "growthPath": [
+      "Junior BA",
+      "Business Analyst",
+      "Senior BA",
+      "Lead Consultant"
+    ],
+    "relatedCourseSlugs": [
+      "bba",
+      "mba-general"
+    ],
+    "relatedExamSlugs": [
+      "cat",
+      "cuet"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "brief",
+    "description": "Business Analysts translate business problems into clear requirements and solutions, working closely with stakeholders, product and engineering teams."
+  },
+  {
+    "slug": "hr-manager",
+    "title": "HR Manager",
+    "categorySlug": "management-business",
+    "tagline": "Talent · Culture · People Operations",
+    "demand": "Stable",
+    "education": "Any degree + MBA (HR) or PG Diploma in HR",
+    "skills": [
+      "Talent Acquisition",
+      "Employee Relations",
+      "Compensation & Benefits",
+      "Organizational Development"
+    ],
+    "entranceExams": [
+      "cat"
+    ],
+    "typicalWork": "Leading recruitment, employee engagement and people policy for an organization",
+    "salaryRange": "₹6L – ₹28L / year",
+    "growthPath": [
+      "HR Executive",
+      "HR Manager",
+      "Senior HR Manager",
+      "HR Business Partner",
+      "CHRO"
+    ],
+    "relatedCourseSlugs": [
+      "mba-general",
+      "hr-management-cert"
+    ],
+    "relatedExamSlugs": [
+      "cat"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional",
+      "career-switch"
+    ],
+    "icon": "users",
+    "description": "HR Managers build and lead the people function of an organization — hiring, developing and retaining talent, and shaping culture and workplace policy."
+  },
+  {
+    "slug": "digital-marketing-manager",
+    "title": "Digital Marketing Manager",
+    "categorySlug": "management-business",
+    "tagline": "Growth · Brand · Campaigns",
+    "demand": "High Demand",
+    "education": "Any degree + digital marketing certification or MBA",
+    "skills": [
+      "SEO/SEM",
+      "Social Media Strategy",
+      "Analytics",
+      "Campaign Management"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Planning and running digital campaigns across search, social and content to drive growth",
+    "salaryRange": "₹5L – ₹24L / year",
+    "growthPath": [
+      "Marketing Executive",
+      "Digital Marketing Manager",
+      "Senior Manager",
+      "Head of Marketing",
+      "CMO"
+    ],
+    "relatedCourseSlugs": [
+      "digital-marketing-cert",
+      "mba-general"
+    ],
+    "relatedExamSlugs": [],
+    "stageSlugs": [
+      "graduation",
+      "working-professional",
+      "career-switch"
+    ],
+    "icon": "mega",
+    "description": "Digital Marketing Managers plan and execute campaigns across search, social and content channels to grow brands and drive customer acquisition online."
+  },
+  {
+    "slug": "historian",
+    "title": "Historian",
+    "categorySlug": "arts-humanities",
+    "tagline": "Research · Archives · Academia",
+    "demand": "Competitive",
+    "education": "B.A. / M.A. in History",
+    "skills": [
+      "Archival Research",
+      "Critical Analysis",
+      "Academic Writing"
+    ],
+    "entranceExams": [
+      "cuet",
+      "ugc-net"
+    ],
+    "typicalWork": "Researching and interpreting historical records, teaching or working with museums and archives",
+    "salaryRange": "₹3L – ₹10L / year",
+    "growthPath": [
+      "Research Assistant",
+      "Assistant Professor",
+      "Associate Professor",
+      "Professor"
+    ],
+    "relatedCourseSlugs": [
+      "ba-humanities",
+      "ma-history"
+    ],
+    "relatedExamSlugs": [
+      "cuet",
+      "ugc-net"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "post-graduation"
+    ],
+    "icon": "book",
+    "description": "Historians research, interpret and preserve the past — working in academia, museums, archives and public policy to make history accessible and understood."
+  },
+  {
+    "slug": "psychologist",
+    "title": "Psychologist",
+    "categorySlug": "arts-humanities",
+    "tagline": "Mental Health · Counselling · Research",
+    "demand": "Emerging",
+    "education": "B.A./B.Sc Psychology + M.A./M.Sc (Clinical) Psychology",
+    "skills": [
+      "Counselling",
+      "Assessment",
+      "Empathy",
+      "Research Methods"
+    ],
+    "entranceExams": [
+      "cuet"
+    ],
+    "typicalWork": "Assessing and supporting mental health through therapy, counselling or research",
+    "salaryRange": "₹3L – ₹15L / year",
+    "growthPath": [
+      "Trainee Counsellor",
+      "Psychologist",
+      "Senior Psychologist",
+      "Clinical Director"
+    ],
+    "relatedCourseSlugs": [
+      "ba-humanities",
+      "msc-psychology"
+    ],
+    "relatedExamSlugs": [
+      "cuet"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "post-graduation"
+    ],
+    "icon": "heart",
+    "description": "Psychologists study the mind and behaviour, supporting mental health through therapy and counselling, or advancing the field through research."
+  },
+  {
+    "slug": "lawyer",
+    "title": "Lawyer",
+    "categorySlug": "law",
+    "tagline": "Litigation · Corporate Practice",
+    "demand": "Stable",
+    "education": "LLB or 5-year BA LLB",
+    "skills": [
+      "Legal Research",
+      "Drafting",
+      "Advocacy",
+      "Negotiation"
+    ],
+    "entranceExams": [
+      "clat"
+    ],
+    "typicalWork": "Representing clients, drafting contracts and providing legal counsel",
+    "salaryRange": "₹4L – ₹25L / year",
+    "growthPath": [
+      "Associate",
+      "Senior Associate",
+      "Partner",
+      "Senior Partner"
+    ],
+    "relatedCourseSlugs": [
+      "ballb",
+      "llb"
+    ],
+    "relatedExamSlugs": [
+      "clat"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "scale",
+    "description": "Lawyers advise clients, represent them in court and draft the agreements that structure business and personal life, across litigation and corporate practice."
+  },
+  {
+    "slug": "judge",
+    "title": "Judge (Judicial Services)",
+    "categorySlug": "law",
+    "tagline": "Judiciary · Public Service",
+    "demand": "Competitive",
+    "education": "LLB + State Judicial Services Examination",
+    "skills": [
+      "Legal Knowledge",
+      "Impartial Judgment",
+      "Case Management"
+    ],
+    "entranceExams": [
+      "judicial-services-exam"
+    ],
+    "typicalWork": "Presiding over court proceedings and delivering judgments",
+    "salaryRange": "₹8L – ₹24L / year",
+    "growthPath": [
+      "Civil Judge",
+      "Senior Civil Judge",
+      "District Judge",
+      "High Court Judge"
+    ],
+    "relatedCourseSlugs": [
+      "llb",
+      "ballb"
+    ],
+    "relatedExamSlugs": [
+      "judicial-services-exam"
+    ],
+    "stageSlugs": [
+      "post-graduation",
+      "working-professional"
+    ],
+    "icon": "scale",
+    "description": "Judges preside over legal proceedings and deliver judgments, entering the judiciary through competitive state judicial service examinations after an LLB."
+  },
+  {
+    "slug": "ux-designer",
+    "title": "UX Designer",
+    "categorySlug": "design-creative",
+    "tagline": "Product Design · Research · Prototyping",
+    "demand": "High Demand",
+    "education": "B.Des / any degree + UX portfolio",
+    "skills": [
+      "User Research",
+      "Wireframing",
+      "Prototyping",
+      "Visual Design"
+    ],
+    "entranceExams": [
+      "uceed",
+      "nid-dat"
+    ],
+    "typicalWork": "Designing intuitive digital products through research, prototyping and testing",
+    "salaryRange": "₹5L – ₹28L / year",
+    "growthPath": [
+      "Junior Designer",
+      "UX Designer",
+      "Senior Designer",
+      "Design Lead",
+      "Head of Design"
+    ],
+    "relatedCourseSlugs": [
+      "bdes",
+      "ux-design-cert"
+    ],
+    "relatedExamSlugs": [
+      "uceed",
+      "nid-dat"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "career-switch",
+      "working-professional"
+    ],
+    "icon": "palette",
+    "description": "UX Designers shape how digital products look, feel and work — researching user needs and crafting intuitive, delightful interfaces from wireframe to pixel-perfect UI."
+  },
+  {
+    "slug": "graphic-designer",
+    "title": "Graphic Designer",
+    "categorySlug": "design-creative",
+    "tagline": "Visual Communication · Branding",
+    "demand": "Stable",
+    "education": "B.Des / Diploma in Graphic Design + portfolio",
+    "skills": [
+      "Typography",
+      "Adobe Creative Suite",
+      "Branding",
+      "Layout Design"
+    ],
+    "entranceExams": [
+      "nid-dat"
+    ],
+    "typicalWork": "Creating visual content for branding, marketing and digital media",
+    "salaryRange": "₹2.5L – ₹10L / year",
+    "growthPath": [
+      "Junior Designer",
+      "Graphic Designer",
+      "Senior Designer",
+      "Creative Director"
+    ],
+    "relatedCourseSlugs": [
+      "bdes",
+      "graphic-design-diploma"
+    ],
+    "relatedExamSlugs": [
+      "nid-dat"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "palette",
+    "description": "Graphic Designers communicate ideas visually — crafting logos, layouts, and marketing creative that shape how brands are seen and understood."
+  },
+  {
+    "slug": "cybersecurity-analyst",
+    "title": "Cybersecurity Analyst",
+    "categorySlug": "it-software",
+    "tagline": "Security · Risk · Infrastructure",
+    "demand": "High Demand",
+    "education": "B.Tech/BCA + security certifications (CEH, CompTIA Security+)",
+    "skills": [
+      "Network Security",
+      "Threat Analysis",
+      "Penetration Testing",
+      "Incident Response"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "cuet"
+    ],
+    "typicalWork": "Protecting systems and data from cyber threats and breaches",
+    "salaryRange": "₹5L – ₹25L / year",
+    "growthPath": [
+      "SOC Analyst",
+      "Security Engineer",
+      "Senior Analyst",
+      "Security Architect",
+      "CISO"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "cybersecurity-cert"
+    ],
+    "relatedExamSlugs": [
+      "jee-main"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional",
+      "career-switch"
+    ],
+    "icon": "shield",
+    "description": "Cybersecurity Analysts defend systems, networks and data against attacks — monitoring threats, responding to incidents and hardening infrastructure."
+  },
+  {
+    "slug": "cloud-architect",
+    "title": "Cloud Architect",
+    "categorySlug": "it-software",
+    "tagline": "Infrastructure · Scalability",
+    "demand": "High Demand",
+    "education": "B.Tech/BCA + cloud certifications (AWS, Azure, GCP)",
+    "skills": [
+      "Cloud Platforms",
+      "System Design",
+      "DevOps",
+      "Security"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Designing and managing scalable cloud infrastructure for organizations",
+    "salaryRange": "₹12L – ₹45L / year",
+    "growthPath": [
+      "Cloud Engineer",
+      "Senior Engineer",
+      "Cloud Architect",
+      "Principal Architect"
+    ],
+    "relatedCourseSlugs": [
+      "cloud-computing-cert"
+    ],
+    "relatedExamSlugs": [
+      "pmp"
+    ],
+    "stageSlugs": [
+      "working-professional"
+    ],
+    "icon": "layers",
+    "description": "Cloud Architects design the infrastructure that modern applications run on — balancing scalability, cost, and security across AWS, Azure and GCP."
+  },
+  {
+    "slug": "ias-officer",
+    "title": "IAS Officer",
+    "categorySlug": "government-civil-services",
+    "tagline": "Administration · Public Policy",
+    "demand": "Competitive",
+    "education": "Any bachelor's degree + UPSC Civil Services Examination",
+    "skills": [
+      "Public Administration",
+      "Policy Analysis",
+      "Leadership",
+      "Decision Making"
+    ],
+    "entranceExams": [
+      "upsc-cse"
+    ],
+    "typicalWork": "Administering government policy and public services at district, state or national level",
+    "salaryRange": "₹8L – ₹22L / year",
+    "growthPath": [
+      "Sub-Divisional Magistrate",
+      "District Collector",
+      "Secretary",
+      "Cabinet Secretary"
+    ],
+    "relatedCourseSlugs": [
+      "any-graduate-degree"
+    ],
+    "relatedExamSlugs": [
+      "upsc-cse"
+    ],
+    "stageSlugs": [
+      "graduation"
+    ],
+    "icon": "bank",
+    "description": "IAS Officers administer public policy and government services — among the most prestigious and responsible careers in India, entered through the UPSC Civil Services Examination."
+  },
+  {
+    "slug": "ips-officer",
+    "title": "IPS Officer",
+    "categorySlug": "government-civil-services",
+    "tagline": "Law Enforcement · Public Safety",
+    "demand": "Competitive",
+    "education": "Any bachelor's degree + UPSC Civil Services Examination",
+    "skills": [
+      "Leadership",
+      "Crisis Management",
+      "Law & Order",
+      "Investigation"
+    ],
+    "entranceExams": [
+      "upsc-cse"
+    ],
+    "typicalWork": "Leading police forces and maintaining law and order at district and state level",
+    "salaryRange": "₹8L – ₹22L / year",
+    "growthPath": [
+      "ASP",
+      "SP",
+      "DIG",
+      "IG",
+      "DGP"
+    ],
+    "relatedCourseSlugs": [
+      "any-graduate-degree"
+    ],
+    "relatedExamSlugs": [
+      "upsc-cse"
+    ],
+    "stageSlugs": [
+      "graduation"
+    ],
+    "icon": "shield",
+    "description": "IPS Officers lead police administration and law enforcement, maintaining public order and safety across districts, states and national agencies."
+  },
+  {
+    "slug": "isro-scientist-engineer",
+    "title": "ISRO Scientist/Engineer",
+    "categorySlug": "government-civil-services",
+    "tagline": "Space Research · Aerospace Engineering",
+    "demand": "Competitive",
+    "education": "B.Tech/B.E in CS, Electronics, Mechanical or Electrical Engineering + ISRO ICRB exam or GATE",
+    "skills": [
+      "Systems Engineering",
+      "Aerospace & Electronics Fundamentals",
+      "Research & Development",
+      "Problem Solving"
+    ],
+    "entranceExams": [
+      "isro-icrb",
+      "gate"
+    ],
+    "typicalWork": "Designing, building and testing satellites, launch vehicles and space systems at ISRO centres",
+    "salaryRange": "₹8L – ₹18L / year",
+    "growthPath": [
+      "Scientist/Engineer-SC",
+      "Scientist/Engineer-SD",
+      "Scientist/Engineer-SE",
+      "Group Head",
+      "Project Director"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "btech-electrical",
+      "btech-ece",
+      "btech-mech"
+    ],
+    "relatedExamSlugs": [
+      "isro-icrb",
+      "gate"
+    ],
+    "stageSlugs": [
+      "graduation"
+    ],
+    "icon": "rocket",
+    "description": "ISRO Scientists and Engineers design, build and test India's satellites, launch vehicles and space missions — recruited through ISRO's own Centralised Recruitment Board exam (ICRB) or a GATE score, across streams like Computer Science, Electronics, Mechanical and Electrical Engineering."
+  },
+  {
+    "slug": "rrb-junior-engineer",
+    "title": "RRB Junior Engineer",
+    "categorySlug": "government-civil-services",
+    "tagline": "Indian Railways · Engineering Operations",
+    "demand": "Stable",
+    "education": "Diploma or B.Tech in Civil, Mechanical, Electrical or Electronics Engineering + RRB JE exam",
+    "skills": [
+      "Technical Drawing",
+      "Maintenance & Operations",
+      "Project Execution",
+      "Safety Standards"
+    ],
+    "entranceExams": [
+      "rrb-je"
+    ],
+    "typicalWork": "Maintaining and executing engineering works across Indian Railways' civil, mechanical, electrical and signal departments",
+    "salaryRange": "₹3.5L – ₹9L / year",
+    "growthPath": [
+      "Junior Engineer",
+      "Senior Section Engineer",
+      "Assistant Divisional Engineer",
+      "Divisional Engineer"
+    ],
+    "relatedCourseSlugs": [
+      "diploma-mech",
+      "diploma-civil",
+      "diploma-electrical",
+      "btech-electrical"
+    ],
+    "relatedExamSlugs": [
+      "rrb-je"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "train",
+    "description": "RRB Junior Engineers maintain and execute engineering works across Indian Railways' civil, mechanical, electrical and signalling departments — one of India's most sought-after stable government engineering roles, open to diploma and degree holders alike."
+  },
+  {
+    "slug": "sebi-grade-a-officer-it",
+    "title": "SEBI Grade A Officer (IT)",
+    "categorySlug": "government-civil-services",
+    "tagline": "Financial Markets · Technology Regulation",
+    "demand": "Competitive",
+    "education": "B.Tech/B.E or MCA in IT/CS + SEBI Grade A exam",
+    "skills": [
+      "Information Systems",
+      "Cybersecurity Awareness",
+      "Regulatory Technology",
+      "Data Analysis"
+    ],
+    "entranceExams": [
+      "sebi-grade-a"
+    ],
+    "typicalWork": "Overseeing the technology systems, cybersecurity and data infrastructure that regulate India's securities markets",
+    "salaryRange": "₹12L – ₹20L / year",
+    "growthPath": [
+      "Assistant Manager (Grade A)",
+      "Manager (Grade B)",
+      "Deputy General Manager",
+      "General Manager",
+      "Executive Director"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "mca"
+    ],
+    "relatedExamSlugs": [
+      "sebi-grade-a"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "monitor",
+    "description": "SEBI Grade A Officers in the IT stream manage the technology systems, cybersecurity and data infrastructure behind India's securities market regulator — a prestigious, well-paid government-sector career for IT and computer science graduates."
+  },
+  {
+    "slug": "army-officer",
+    "title": "Army Officer",
+    "categorySlug": "defence",
+    "tagline": "National Security · Leadership",
+    "demand": "Stable",
+    "education": "Any degree + NDA/CDS + officer training",
+    "skills": [
+      "Leadership",
+      "Physical Fitness",
+      "Strategic Thinking",
+      "Discipline"
+    ],
+    "entranceExams": [
+      "nda-exam",
+      "cds-exam"
+    ],
+    "typicalWork": "Leading troops and operations in the Indian Army",
+    "salaryRange": "₹6L – ₹20L / year",
+    "growthPath": [
+      "Lieutenant",
+      "Captain",
+      "Major",
+      "Colonel",
+      "General"
+    ],
+    "relatedCourseSlugs": [
+      "any-graduate-degree"
+    ],
+    "relatedExamSlugs": [
+      "nda-exam",
+      "cds-exam"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "shield",
+    "description": "Army Officers lead soldiers and operations in defence of the nation, entering through the NDA (after 12th) or CDS (after graduation) followed by officer training."
+  },
+  {
+    "slug": "bank-po",
+    "title": "Bank Probationary Officer",
+    "categorySlug": "banking-insurance",
+    "tagline": "Banking · Financial Services",
+    "demand": "Stable",
+    "education": "Any bachelor's degree + Bank PO exams (IBPS/SBI)",
+    "skills": [
+      "Financial Literacy",
+      "Customer Service",
+      "Reasoning & Aptitude",
+      "Regulatory Knowledge"
+    ],
+    "entranceExams": [
+      "ibps-po"
+    ],
+    "typicalWork": "Managing banking operations, loans and customer relationships as a future branch manager",
+    "salaryRange": "₹4L – ₹12L / year",
+    "growthPath": [
+      "Probationary Officer",
+      "Assistant Manager",
+      "Branch Manager",
+      "Regional Manager"
+    ],
+    "relatedCourseSlugs": [
+      "bcom",
+      "bba"
+    ],
+    "relatedExamSlugs": [
+      "ibps-po"
+    ],
+    "stageSlugs": [
+      "graduation"
+    ],
+    "icon": "bank",
+    "description": "Bank Probationary Officers begin a path toward branch and regional leadership in public and private banks, entering through competitive exams like IBPS PO and SBI PO."
+  },
+  {
+    "slug": "ibps-it-officer",
+    "title": "Bank IT Officer",
+    "categorySlug": "banking-insurance",
+    "tagline": "Banking Technology · Systems",
+    "demand": "Stable",
+    "education": "B.Tech/B.E or MCA in IT/CS + IBPS SO (IT) exam",
+    "skills": [
+      "Core Banking Systems",
+      "Information Security",
+      "Database Management",
+      "IT Infrastructure"
+    ],
+    "entranceExams": [
+      "ibps-so-it"
+    ],
+    "typicalWork": "Managing core banking technology, systems security and IT infrastructure for public sector banks",
+    "salaryRange": "₹6L – ₹14L / year",
+    "growthPath": [
+      "IT Officer (Scale I)",
+      "Manager (Scale II)",
+      "Senior Manager (Scale III)",
+      "Chief Manager",
+      "AGM (IT)"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "mca"
+    ],
+    "relatedExamSlugs": [
+      "ibps-so-it"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "monitor",
+    "description": "Bank IT Officers manage the technology backbone of India's public sector banks — core banking systems, network security and digital infrastructure — recruited through the IBPS Specialist Officer (IT) exam."
+  },
+  {
+    "slug": "school-teacher",
+    "title": "School Teacher",
+    "categorySlug": "education-teaching",
+    "tagline": "K-12 Education",
+    "demand": "Evergreen",
+    "education": "B.Ed after a bachelor's degree + TET",
+    "skills": [
+      "Subject Expertise",
+      "Classroom Management",
+      "Communication",
+      "Patience"
+    ],
+    "entranceExams": [
+      "ctet"
+    ],
+    "typicalWork": "Teaching and mentoring students in schools",
+    "salaryRange": "₹3L – ₹9L / year",
+    "growthPath": [
+      "Teacher",
+      "Senior Teacher",
+      "Head of Department",
+      "Vice Principal",
+      "Principal"
+    ],
+    "relatedCourseSlugs": [
+      "bed"
+    ],
+    "relatedExamSlugs": [
+      "ctet"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "post-graduation"
+    ],
+    "icon": "teach",
+    "description": "School Teachers shape the next generation — delivering curriculum, mentoring students and building the foundational skills children carry for life."
+  },
+  {
+    "slug": "school-principal",
+    "title": "School Principal",
+    "categorySlug": "education-teaching",
+    "tagline": "Academic Leadership · School Administration",
+    "demand": "Stable",
+    "education": "B.Ed + several years of teaching experience (M.Ed preferred)",
+    "skills": [
+      "Academic Leadership",
+      "Staff Management",
+      "Curriculum Planning",
+      "Parent & Community Relations"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Leading a school's academic direction, staff and day-to-day administration",
+    "salaryRange": "₹6L – ₹18L / year",
+    "growthPath": [
+      "Teacher",
+      "Head of Department",
+      "Vice Principal",
+      "Principal",
+      "Education Director"
+    ],
+    "relatedCourseSlugs": [
+      "bed"
+    ],
+    "relatedExamSlugs": [],
+    "stageSlugs": [
+      "working-professional"
+    ],
+    "icon": "teach",
+    "description": "School Principals lead a school's academic vision, staff and administration — typically a senior-career step after years of classroom teaching experience."
+  },
+  {
+    "slug": "professor",
+    "title": "Professor",
+    "categorySlug": "education-teaching",
+    "tagline": "Higher Education · Research",
+    "demand": "Competitive",
+    "education": "Ph.D. + UGC-NET/SET qualification",
+    "skills": [
+      "Subject Mastery",
+      "Research",
+      "Curriculum Design",
+      "Mentorship"
+    ],
+    "entranceExams": [
+      "ugc-net"
+    ],
+    "typicalWork": "Teaching undergraduate and postgraduate students and conducting academic research",
+    "salaryRange": "₹6L – ₹20L / year",
+    "growthPath": [
+      "Assistant Professor",
+      "Associate Professor",
+      "Professor",
+      "Dean"
+    ],
+    "relatedCourseSlugs": [
+      "phd-science",
+      "ma-history"
+    ],
+    "relatedExamSlugs": [
+      "ugc-net"
+    ],
+    "stageSlugs": [
+      "post-graduation"
+    ],
+    "icon": "cap",
+    "description": "Professors teach and mentor at the university level while advancing their field through original research and academic publication."
+  },
+  {
+    "slug": "agricultural-scientist",
+    "title": "Agricultural Scientist",
+    "categorySlug": "agriculture",
+    "tagline": "Crop Science · Sustainability",
+    "demand": "Emerging",
+    "education": "B.Sc Agriculture + M.Sc/Ph.D specialization",
+    "skills": [
+      "Crop Science",
+      "Soil Analysis",
+      "Research Methods",
+      "Sustainability"
+    ],
+    "entranceExams": [
+      "icar-aieea"
+    ],
+    "typicalWork": "Researching crop yields, soil health and sustainable farming practices",
+    "salaryRange": "₹4L – ₹15L / year",
+    "growthPath": [
+      "Field Officer",
+      "Agricultural Scientist",
+      "Senior Scientist",
+      "Research Director"
+    ],
+    "relatedCourseSlugs": [
+      "bsc-agriculture"
+    ],
+    "relatedExamSlugs": [
+      "icar-aieea"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "post-graduation"
+    ],
+    "icon": "leaf",
+    "description": "Agricultural Scientists research crop science, soil health and sustainable farming methods that improve yields and food security."
+  },
+  {
+    "slug": "hotel-manager",
+    "title": "Hotel Manager",
+    "categorySlug": "hospitality-tourism",
+    "tagline": "Hospitality · Guest Experience",
+    "demand": "Stable",
+    "education": "BHM (Bachelor of Hotel Management)",
+    "skills": [
+      "Guest Relations",
+      "Operations Management",
+      "Team Leadership",
+      "Budgeting"
+    ],
+    "entranceExams": [
+      "nchmct-jee"
+    ],
+    "typicalWork": "Managing hotel operations, staff and guest experience",
+    "salaryRange": "₹3.5L – ₹15L / year",
+    "growthPath": [
+      "Management Trainee",
+      "Assistant Manager",
+      "Hotel Manager",
+      "General Manager"
+    ],
+    "relatedCourseSlugs": [
+      "bhm"
+    ],
+    "relatedExamSlugs": [
+      "nchmct-jee"
+    ],
+    "stageSlugs": [
+      "after-12th",
+      "graduation"
+    ],
+    "icon": "building",
+    "description": "Hotel Managers run every aspect of hospitality operations — from guest experience to staffing and budgets — across hotels and resorts."
+  },
+  {
+    "slug": "journalist",
+    "title": "Journalist",
+    "categorySlug": "media-communication",
+    "tagline": "News · Storytelling · Media",
+    "demand": "Stable",
+    "education": "B.A./B.J.M.C. in Journalism & Mass Communication",
+    "skills": [
+      "Writing",
+      "Research",
+      "Interviewing",
+      "Media Ethics"
+    ],
+    "entranceExams": [
+      "cuet"
+    ],
+    "typicalWork": "Reporting, researching and producing news and feature content",
+    "salaryRange": "₹3L – ₹14L / year",
+    "growthPath": [
+      "Trainee Reporter",
+      "Correspondent",
+      "Senior Editor",
+      "Editor-in-Chief"
+    ],
+    "relatedCourseSlugs": [
+      "bjmc"
+    ],
+    "relatedExamSlugs": [
+      "cuet"
+    ],
+    "stageSlugs": [
+      "graduation"
+    ],
+    "icon": "mega",
+    "description": "Journalists research, verify and tell the stories that inform the public — across print, broadcast and digital media."
+  },
+  {
+    "slug": "electrician",
+    "title": "Electrician",
+    "categorySlug": "skilled-trades",
+    "tagline": "Skilled Trade · Hands-on Work",
+    "demand": "Stable",
+    "education": "ITI Diploma in Electrical Trade",
+    "skills": [
+      "Wiring",
+      "Circuit Repair",
+      "Safety Standards",
+      "Troubleshooting"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Installing and repairing electrical systems in homes, offices and industry",
+    "salaryRange": "₹2L – ₹7L / year",
+    "growthPath": [
+      "Apprentice",
+      "Electrician",
+      "Senior Electrician",
+      "Contractor / Business Owner"
+    ],
+    "relatedCourseSlugs": [
+      "iti-electrician"
+    ],
+    "relatedExamSlugs": [],
+    "stageSlugs": [
+      "after-10th"
+    ],
+    "icon": "wrench",
+    "description": "Electricians install, maintain and repair electrical systems — a hands-on, always-in-demand skilled trade entered through an ITI diploma."
+  },
+  {
+    "slug": "plumber",
+    "title": "Plumber",
+    "categorySlug": "skilled-trades",
+    "tagline": "Skilled Trade · Hands-on Work",
+    "demand": "Stable",
+    "education": "ITI Diploma in Plumbing",
+    "skills": [
+      "Pipefitting",
+      "Blueprint Reading",
+      "Problem Solving",
+      "Safety Standards"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Installing and repairing water, gas and drainage systems",
+    "salaryRange": "₹2L – ₹6.5L / year",
+    "growthPath": [
+      "Apprentice",
+      "Plumber",
+      "Senior Plumber",
+      "Contractor / Business Owner"
+    ],
+    "relatedCourseSlugs": [
+      "iti-plumber"
+    ],
+    "relatedExamSlugs": [],
+    "stageSlugs": [
+      "after-10th"
+    ],
+    "icon": "wrench",
+    "description": "Plumbers install and maintain the water, gas and drainage systems every building depends on — a stable, hands-on trade entered through an ITI diploma."
+  },
+  {
+    "slug": "fitness-trainer",
+    "title": "Fitness Trainer",
+    "categorySlug": "sports-fitness",
+    "tagline": "Health · Coaching · Wellness",
+    "demand": "Emerging",
+    "education": "Certification in Fitness/Sports Science (any stream)",
+    "skills": [
+      "Exercise Science",
+      "Nutrition Basics",
+      "Motivation & Coaching",
+      "Client Programming"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Designing training programs and coaching clients toward fitness goals",
+    "salaryRange": "₹2L – ₹10L / year",
+    "growthPath": [
+      "Trainee",
+      "Fitness Trainer",
+      "Senior Trainer",
+      "Gym/Studio Owner"
+    ],
+    "relatedCourseSlugs": [
+      "fitness-cert"
+    ],
+    "relatedExamSlugs": [],
+    "stageSlugs": [
+      "after-12th",
+      "career-switch"
+    ],
+    "icon": "trophy",
+    "description": "Fitness Trainers design workout and nutrition programs and coach clients toward health and performance goals, in gyms, studios or independently."
+  },
+  {
+    "slug": "entrepreneur",
+    "title": "Entrepreneur",
+    "categorySlug": "entrepreneurship",
+    "tagline": "Startups · Innovation · Ownership",
+    "demand": "High Demand",
+    "education": "Any background — the venture is the credential",
+    "skills": [
+      "Problem Solving",
+      "Resilience",
+      "Sales",
+      "Financial Planning"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Building and running your own venture, from idea to scale",
+    "salaryRange": "Variable — equity & revenue-based",
+    "growthPath": [
+      "Idea & Validation",
+      "Founder",
+      "Scaling Startup",
+      "Established Business",
+      "Serial Entrepreneur"
+    ],
+    "relatedCourseSlugs": [
+      "entrepreneurship-cert",
+      "mba-general"
+    ],
+    "relatedExamSlugs": [],
+    "stageSlugs": [
+      "graduation",
+      "working-professional",
+      "career-switch"
+    ],
+    "icon": "rocket",
+    "description": "Entrepreneurs identify problems worth solving and build ventures around them — taking on risk and ownership in exchange for the chance to build something new."
+  },
+  {
+    "slug": "ai-ml-engineer",
+    "title": "AI/ML Engineer",
+    "categorySlug": "emerging-careers",
+    "tagline": "Artificial Intelligence · Deep Learning",
+    "demand": "High Demand",
+    "education": "B.Tech/M.Tech in CS/AI or strong self-taught portfolio",
+    "skills": [
+      "Python",
+      "Deep Learning",
+      "MLOps",
+      "Mathematics"
+    ],
+    "entranceExams": [
+      "jee-main",
+      "gate"
+    ],
+    "typicalWork": "Building and deploying machine learning and AI systems at scale",
+    "salaryRange": "₹8L – ₹45L / year",
+    "growthPath": [
+      "ML Engineer",
+      "Senior ML Engineer",
+      "AI Lead",
+      "Head of AI"
+    ],
+    "relatedCourseSlugs": [
+      "btech-cse",
+      "ai-ml-cert"
+    ],
+    "relatedExamSlugs": [
+      "jee-main",
+      "gate"
+    ],
+    "stageSlugs": [
+      "graduation",
+      "working-professional"
+    ],
+    "icon": "bulb",
+    "description": "AI/ML Engineers build the machine learning systems behind modern products — from recommendation engines to generative AI, one of the fastest-growing fields today."
+  },
+  {
+    "slug": "sustainability-consultant",
+    "title": "Sustainability Consultant",
+    "categorySlug": "emerging-careers",
+    "tagline": "ESG · Climate · Strategy",
+    "demand": "Emerging",
+    "education": "Any degree + sustainability/ESG certification",
+    "skills": [
+      "ESG Frameworks",
+      "Data Analysis",
+      "Policy Knowledge",
+      "Stakeholder Communication"
+    ],
+    "entranceExams": [],
+    "typicalWork": "Advising organizations on environmental, social and governance strategy",
+    "salaryRange": "₹6L – ₹22L / year",
+    "growthPath": [
+      "Analyst",
+      "Consultant",
+      "Senior Consultant",
+      "Practice Lead"
+    ],
+    "relatedCourseSlugs": [
+      "sustainability-cert"
+    ],
+    "relatedExamSlugs": [],
+    "stageSlugs": [
+      "working-professional",
+      "career-switch"
+    ],
+    "icon": "leaf",
+    "description": "Sustainability Consultants help organizations reduce environmental impact and meet ESG goals — a fast-growing field as climate strategy becomes core business."
+  }
+]

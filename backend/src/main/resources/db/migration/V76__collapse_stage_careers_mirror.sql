@@ -1,0 +1,28 @@
+-- Drops stage_careers, collapsing the Career<->Stage relationship onto the
+-- single table career_stages. Stage.relatedCareers becomes the inverse side
+-- (mappedBy = "stages") in the same change.
+--
+-- Why this pair, and why now: it was the only mirrored pair with a genuine
+-- one-way write path. The Career admin form writes career_stages
+-- (CareerService.applyRequest -> setStages), but NOTHING could ever write
+-- stage_careers -- Stage is a read-only entity (no setters, absent from the
+-- admin's RESOURCE_CONFIGS, StageService exposes only findAll/findBySlug).
+-- Meanwhile /stage/[slug] renders stage.relatedCareerSlugs, i.e. it read the
+-- table with no writer. Net effect: assigning stages to a career in the
+-- admin could never appear on the stage page, and no amount of care on the
+-- write path would have fixed it.
+--
+-- Both tables are currently empty -- V49 TRUNCATEd them during the career
+-- taxonomy rebuild and V50's replacement taxonomy never re-seeded the
+-- relation (the old seed-json data uses the pre-V49 slugs, which share zero
+-- overlap with the current 42 careers, so it cannot simply be restored).
+-- That emptiness is exactly why this is the right pair to collapse first:
+-- zero rows to migrate, zero ordering to preserve, zero risk.
+--
+-- Note on sequencing: the general rule is to stop using a table in one
+-- release and drop it in a later one, so there is a verified state to fall
+-- back to. This is a deliberate exception -- the table holds 0 rows and has
+-- no writer, so "rolling back" is recreating an empty table, which is this
+-- file's CREATE statement in reverse. The two-step dance buys nothing here.
+
+DROP TABLE stage_careers;

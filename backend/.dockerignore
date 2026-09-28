@@ -1,0 +1,7 @@
+target/
+seed-json/
+*.log
+.idea/
+.vscode/
+*.iml
+.DS_Store

@@ -1,0 +1,741 @@
+[
+  {
+    "slug": "btech-cse",
+    "name": "B.Tech Computer Science & Engineering",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "A core engineering degree covering programming, systems, algorithms and software development.",
+    "eligibility": "12th with PCM + JEE Main/Advanced or state CET",
+    "careerSlugs": [
+      "software-engineer",
+      "data-scientist",
+      "cybersecurity-analyst",
+      "ai-ml-engineer"
+    ],
+    "examSlugs": [
+      "jee-main",
+      "jee-advanced",
+      "bitsat"
+    ],
+    "icon": "code"
+  },
+  {
+    "slug": "diploma-cs",
+    "name": "Diploma in Computer Science",
+    "level": "Diploma",
+    "duration": "3 years",
+    "description": "A polytechnic diploma covering programming fundamentals and computer systems, entered after 10th.",
+    "eligibility": "Passed 10th standard",
+    "careerSlugs": [
+      "software-engineer"
+    ],
+    "examSlugs": [
+      "polytechnic-cet"
+    ],
+    "icon": "code"
+  },
+  {
+    "slug": "mca",
+    "name": "Master of Computer Applications",
+    "level": "Postgraduate",
+    "duration": "2 years",
+    "description": "A postgraduate degree deepening software development and systems expertise for graduates.",
+    "eligibility": "Bachelor's degree with Mathematics",
+    "careerSlugs": [
+      "data-scientist",
+      "software-engineer"
+    ],
+    "examSlugs": [
+      "cuet"
+    ],
+    "icon": "code"
+  },
+  {
+    "slug": "data-science-cert",
+    "name": "Data Science Certification",
+    "level": "Certification",
+    "duration": "6-12 months",
+    "description": "An applied certification in Python, statistics and machine learning for working professionals.",
+    "eligibility": "Any graduate, some programming familiarity helpful",
+    "careerSlugs": [
+      "data-scientist",
+      "data-analyst"
+    ],
+    "examSlugs": [],
+    "icon": "chart"
+  },
+  {
+    "slug": "web-dev-bootcamp",
+    "name": "Full-Stack Web Development Bootcamp",
+    "level": "Short-term",
+    "duration": "3-6 months",
+    "description": "An intensive, project-based bootcamp covering front-end and back-end web development.",
+    "eligibility": "Open to all; basic computer literacy",
+    "careerSlugs": [
+      "software-engineer"
+    ],
+    "examSlugs": [],
+    "icon": "code"
+  },
+  {
+    "slug": "cybersecurity-cert",
+    "name": "Cybersecurity Certification (CEH/Security+)",
+    "level": "Certification",
+    "duration": "3-6 months",
+    "description": "Industry certification covering ethical hacking, network defence and incident response.",
+    "eligibility": "Basic networking/IT knowledge",
+    "careerSlugs": [
+      "cybersecurity-analyst"
+    ],
+    "examSlugs": [],
+    "icon": "shield"
+  },
+  {
+    "slug": "cloud-computing-cert",
+    "name": "Cloud Computing Certification (AWS/Azure/GCP)",
+    "level": "Certification",
+    "duration": "3-6 months",
+    "description": "Vendor certification validating cloud architecture, deployment and management skills.",
+    "eligibility": "IT background recommended",
+    "careerSlugs": [
+      "cloud-architect"
+    ],
+    "examSlugs": [],
+    "icon": "layers"
+  },
+  {
+    "slug": "ai-ml-cert",
+    "name": "AI & Machine Learning Certification",
+    "level": "Certification",
+    "duration": "6-9 months",
+    "description": "A focused program in deep learning, MLOps and applied AI system design.",
+    "eligibility": "Programming background recommended",
+    "careerSlugs": [
+      "ai-ml-engineer"
+    ],
+    "examSlugs": [],
+    "icon": "bulb"
+  },
+  {
+    "slug": "btech-mech",
+    "name": "B.Tech Mechanical Engineering",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "Covers design, thermodynamics, manufacturing and mechanical systems.",
+    "eligibility": "12th with PCM + JEE Main/Advanced",
+    "careerSlugs": [
+      "mechanical-engineer"
+    ],
+    "examSlugs": [
+      "jee-main",
+      "jee-advanced"
+    ],
+    "icon": "gear"
+  },
+  {
+    "slug": "diploma-mech",
+    "name": "Diploma in Mechanical Engineering",
+    "level": "Diploma",
+    "duration": "3 years",
+    "description": "A polytechnic diploma in mechanical systems and manufacturing, entered after 10th.",
+    "eligibility": "Passed 10th standard",
+    "careerSlugs": [
+      "mechanical-engineer"
+    ],
+    "examSlugs": [
+      "polytechnic-cet"
+    ],
+    "icon": "gear"
+  },
+  {
+    "slug": "btech-civil",
+    "name": "B.Tech Civil Engineering",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "Covers structural design, construction management and infrastructure planning.",
+    "eligibility": "12th with PCM + JEE Main/Advanced",
+    "careerSlugs": [
+      "civil-engineer"
+    ],
+    "examSlugs": [
+      "jee-main"
+    ],
+    "icon": "building"
+  },
+  {
+    "slug": "diploma-civil",
+    "name": "Diploma in Civil Engineering",
+    "level": "Diploma",
+    "duration": "3 years",
+    "description": "A polytechnic diploma in construction and structural fundamentals, entered after 10th.",
+    "eligibility": "Passed 10th standard",
+    "careerSlugs": [
+      "civil-engineer"
+    ],
+    "examSlugs": [
+      "polytechnic-cet"
+    ],
+    "icon": "building"
+  },
+  {
+    "slug": "btech-electrical",
+    "name": "B.Tech Electrical Engineering",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "Covers power systems, circuit design, control systems and electrical machines.",
+    "eligibility": "12th with PCM + JEE Main/Advanced",
+    "careerSlugs": [
+      "electrical-engineer"
+    ],
+    "examSlugs": [
+      "jee-main",
+      "jee-advanced"
+    ],
+    "icon": "bolt"
+  },
+  {
+    "slug": "diploma-electrical",
+    "name": "Diploma in Electrical Engineering",
+    "level": "Diploma",
+    "duration": "3 years",
+    "description": "A polytechnic diploma in electrical systems and machines, entered after 10th.",
+    "eligibility": "Passed 10th standard",
+    "careerSlugs": [
+      "electrical-engineer"
+    ],
+    "examSlugs": [
+      "polytechnic-cet"
+    ],
+    "icon": "bolt"
+  },
+  {
+    "slug": "btech-ece",
+    "name": "B.Tech Electronics & Communication Engineering",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "Covers circuit design, embedded systems, signal processing and communication networks.",
+    "eligibility": "12th with PCM + JEE Main/Advanced",
+    "careerSlugs": [
+      "electronics-engineer"
+    ],
+    "examSlugs": [
+      "jee-main",
+      "jee-advanced"
+    ],
+    "icon": "chip"
+  },
+  {
+    "slug": "diploma-ece",
+    "name": "Diploma in Electronics Engineering",
+    "level": "Diploma",
+    "duration": "3 years",
+    "description": "A polytechnic diploma in electronics and communication fundamentals, entered after 10th.",
+    "eligibility": "Passed 10th standard",
+    "careerSlugs": [
+      "electronics-engineer"
+    ],
+    "examSlugs": [
+      "polytechnic-cet"
+    ],
+    "icon": "chip"
+  },
+  {
+    "slug": "mbbs",
+    "name": "MBBS",
+    "level": "Undergraduate",
+    "duration": "5.5 years (incl. internship)",
+    "description": "The foundational medical degree required to practise as a doctor in India.",
+    "eligibility": "12th with PCB + NEET-UG",
+    "careerSlugs": [
+      "doctor-mbbs"
+    ],
+    "examSlugs": [
+      "neet-ug"
+    ],
+    "icon": "steth"
+  },
+  {
+    "slug": "bds",
+    "name": "BDS (Dental Surgery)",
+    "level": "Undergraduate",
+    "duration": "5 years (incl. internship)",
+    "description": "The foundational degree required to practise dentistry.",
+    "eligibility": "12th with PCB + NEET-UG",
+    "careerSlugs": [
+      "dentist"
+    ],
+    "examSlugs": [
+      "neet-ug"
+    ],
+    "icon": "heart"
+  },
+  {
+    "slug": "bsc-nursing",
+    "name": "B.Sc Nursing",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "A professional nursing degree covering clinical care and patient management.",
+    "eligibility": "12th with PCB",
+    "careerSlugs": [
+      "nurse"
+    ],
+    "examSlugs": [
+      "neet-ug"
+    ],
+    "icon": "heart"
+  },
+  {
+    "slug": "gnm-diploma",
+    "name": "GNM (General Nursing & Midwifery) Diploma",
+    "level": "Diploma",
+    "duration": "3.5 years",
+    "description": "A diploma pathway into nursing practice, an alternative to the B.Sc route.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "nurse"
+    ],
+    "examSlugs": [],
+    "icon": "heart"
+  },
+  {
+    "slug": "bpharm",
+    "name": "B.Pharm",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "A pharmacy degree covering pharmacology, drug safety and dispensing.",
+    "eligibility": "12th with PCB/PCM",
+    "careerSlugs": [
+      "pharmacist"
+    ],
+    "examSlugs": [
+      "neet-ug"
+    ],
+    "icon": "flask"
+  },
+  {
+    "slug": "msc-science",
+    "name": "M.Sc (Physics/Chemistry/Biology)",
+    "level": "Postgraduate",
+    "duration": "2 years",
+    "description": "Advanced study in a core science discipline, building toward research or teaching.",
+    "eligibility": "Relevant B.Sc degree",
+    "careerSlugs": [
+      "research-scientist"
+    ],
+    "examSlugs": [
+      "cuet"
+    ],
+    "icon": "flask"
+  },
+  {
+    "slug": "phd-science",
+    "name": "Ph.D in Sciences",
+    "level": "Postgraduate",
+    "duration": "3-5 years",
+    "description": "Original doctoral research culminating in a published thesis.",
+    "eligibility": "Relevant Master's degree + entrance/NET",
+    "careerSlugs": [
+      "research-scientist",
+      "professor"
+    ],
+    "examSlugs": [
+      "csir-net"
+    ],
+    "icon": "flask"
+  },
+  {
+    "slug": "bba",
+    "name": "BBA",
+    "level": "Undergraduate",
+    "duration": "3 years",
+    "description": "An undergraduate business degree covering management fundamentals.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "business-analyst",
+      "data-analyst",
+      "bank-po"
+    ],
+    "examSlugs": [
+      "cuet"
+    ],
+    "icon": "brief"
+  },
+  {
+    "slug": "bcom",
+    "name": "B.Com",
+    "level": "Undergraduate",
+    "duration": "3 years",
+    "description": "A commerce degree covering accounting, finance and business law.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "chartered-accountant",
+      "bank-po"
+    ],
+    "examSlugs": [
+      "cuet"
+    ],
+    "icon": "chart"
+  },
+  {
+    "slug": "ca-course",
+    "name": "Chartered Accountancy (CA)",
+    "level": "Certification",
+    "duration": "4-5 years",
+    "description": "The ICAI professional qualification in accounting, audit and taxation.",
+    "eligibility": "12th pass, via CA Foundation",
+    "careerSlugs": [
+      "chartered-accountant"
+    ],
+    "examSlugs": [
+      "ca-foundation"
+    ],
+    "icon": "chart"
+  },
+  {
+    "slug": "cs-course",
+    "name": "Company Secretary (CS) Course",
+    "level": "Certification",
+    "duration": "3 years",
+    "description": "The ICSI professional qualification in corporate law, governance and compliance.",
+    "eligibility": "12th pass, via CS Foundation",
+    "careerSlugs": [
+      "company-secretary"
+    ],
+    "examSlugs": [
+      "cs-foundation"
+    ],
+    "icon": "scale"
+  },
+  {
+    "slug": "mba-finance",
+    "name": "MBA (Finance)",
+    "level": "Postgraduate",
+    "duration": "2 years",
+    "description": "A specialized MBA in financial management, valuation and capital markets.",
+    "eligibility": "Bachelor's degree + CAT/entrance",
+    "careerSlugs": [
+      "investment-banker"
+    ],
+    "examSlugs": [
+      "cat"
+    ],
+    "icon": "chart"
+  },
+  {
+    "slug": "mba-general",
+    "name": "MBA (General Management)",
+    "level": "Postgraduate",
+    "duration": "2 years",
+    "description": "A broad management degree covering strategy, operations, marketing and leadership.",
+    "eligibility": "Bachelor's degree + CAT/entrance",
+    "careerSlugs": [
+      "product-manager",
+      "business-analyst",
+      "entrepreneur"
+    ],
+    "examSlugs": [
+      "cat"
+    ],
+    "icon": "brief"
+  },
+  {
+    "slug": "product-management-cert",
+    "name": "Product Management Certification",
+    "level": "Certification",
+    "duration": "3-6 months",
+    "description": "An applied program in product strategy, roadmapping and user research.",
+    "eligibility": "Any graduate",
+    "careerSlugs": [
+      "product-manager"
+    ],
+    "examSlugs": [],
+    "icon": "compass"
+  },
+  {
+    "slug": "digital-marketing-cert",
+    "name": "Digital Marketing Certification",
+    "level": "Certification",
+    "duration": "3-6 months",
+    "description": "Covers SEO, SEM, social media and analytics for performance marketing.",
+    "eligibility": "Any graduate",
+    "careerSlugs": [
+      "digital-marketing-manager"
+    ],
+    "examSlugs": [],
+    "icon": "mega"
+  },
+  {
+    "slug": "hr-management-cert",
+    "name": "HR Management Certification (PG Diploma)",
+    "level": "Certification",
+    "duration": "6-12 months",
+    "description": "Covers talent acquisition, compensation design and employee relations.",
+    "eligibility": "Any graduate",
+    "careerSlugs": [
+      "hr-manager"
+    ],
+    "examSlugs": [],
+    "icon": "users"
+  },
+  {
+    "slug": "entrepreneurship-cert",
+    "name": "Entrepreneurship & Startup Certification",
+    "level": "Certification",
+    "duration": "3-6 months",
+    "description": "Covers venture building, fundraising and go-to-market strategy.",
+    "eligibility": "Open to all",
+    "careerSlugs": [
+      "entrepreneur"
+    ],
+    "examSlugs": [],
+    "icon": "rocket"
+  },
+  {
+    "slug": "ba-humanities",
+    "name": "B.A. (Humanities)",
+    "level": "Undergraduate",
+    "duration": "3 years",
+    "description": "An undergraduate degree across history, literature, psychology or political science.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "historian",
+      "psychologist"
+    ],
+    "examSlugs": [
+      "cuet"
+    ],
+    "icon": "book"
+  },
+  {
+    "slug": "ma-history",
+    "name": "M.A. History",
+    "level": "Postgraduate",
+    "duration": "2 years",
+    "description": "Advanced historical research and analysis, a step toward academia or archival work.",
+    "eligibility": "Relevant Bachelor's degree",
+    "careerSlugs": [
+      "historian",
+      "professor"
+    ],
+    "examSlugs": [
+      "ugc-net"
+    ],
+    "icon": "book"
+  },
+  {
+    "slug": "msc-psychology",
+    "name": "M.Sc/M.A. Psychology (Clinical)",
+    "level": "Postgraduate",
+    "duration": "2 years",
+    "description": "Advanced clinical training toward counselling and therapy practice.",
+    "eligibility": "Relevant Bachelor's degree",
+    "careerSlugs": [
+      "psychologist"
+    ],
+    "examSlugs": [],
+    "icon": "heart"
+  },
+  {
+    "slug": "ballb",
+    "name": "BA LLB (5-Year Integrated)",
+    "level": "Undergraduate",
+    "duration": "5 years",
+    "description": "An integrated law degree combining arts and legal education, entered after 12th.",
+    "eligibility": "12th pass + CLAT",
+    "careerSlugs": [
+      "lawyer"
+    ],
+    "examSlugs": [
+      "clat"
+    ],
+    "icon": "scale"
+  },
+  {
+    "slug": "llb",
+    "name": "LLB (3-Year)",
+    "level": "Undergraduate",
+    "duration": "3 years",
+    "description": "A law degree for graduates of any discipline entering the legal profession.",
+    "eligibility": "Any Bachelor's degree",
+    "careerSlugs": [
+      "lawyer",
+      "judge"
+    ],
+    "examSlugs": [],
+    "icon": "scale"
+  },
+  {
+    "slug": "bdes",
+    "name": "B.Des (Bachelor of Design)",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "A design degree spanning UX, product, communication or fashion design.",
+    "eligibility": "12th pass + UCEED/NID entrance",
+    "careerSlugs": [
+      "ux-designer",
+      "graphic-designer"
+    ],
+    "examSlugs": [
+      "uceed",
+      "nid-dat"
+    ],
+    "icon": "palette"
+  },
+  {
+    "slug": "ux-design-cert",
+    "name": "UX Design Certification",
+    "level": "Certification",
+    "duration": "4-6 months",
+    "description": "An applied program in user research, wireframing and prototyping.",
+    "eligibility": "Any background, portfolio-driven",
+    "careerSlugs": [
+      "ux-designer"
+    ],
+    "examSlugs": [],
+    "icon": "palette"
+  },
+  {
+    "slug": "graphic-design-diploma",
+    "name": "Diploma in Graphic Design",
+    "level": "Diploma",
+    "duration": "1-2 years",
+    "description": "Covers typography, branding and visual communication tools.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "graphic-designer"
+    ],
+    "examSlugs": [],
+    "icon": "palette"
+  },
+  {
+    "slug": "any-graduate-degree",
+    "name": "Any Bachelor's Degree",
+    "level": "Undergraduate",
+    "duration": "3-4 years",
+    "description": "Civil services and defence exams accept graduates from any stream — the degree subject is your choice.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "ias-officer",
+      "ips-officer",
+      "army-officer"
+    ],
+    "examSlugs": [
+      "upsc-cse",
+      "nda-exam",
+      "cds-exam"
+    ],
+    "icon": "cap"
+  },
+  {
+    "slug": "bed",
+    "name": "B.Ed",
+    "level": "Postgraduate",
+    "duration": "2 years",
+    "description": "A professional teaching qualification required for school teaching roles.",
+    "eligibility": "Bachelor's degree + entrance",
+    "careerSlugs": [
+      "school-teacher"
+    ],
+    "examSlugs": [
+      "ctet"
+    ],
+    "icon": "teach"
+  },
+  {
+    "slug": "bsc-agriculture",
+    "name": "B.Sc Agriculture",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "Covers crop science, soil health and agricultural technology.",
+    "eligibility": "12th with PCB/PCM + ICAR AIEEA",
+    "careerSlugs": [
+      "agricultural-scientist"
+    ],
+    "examSlugs": [
+      "icar-aieea"
+    ],
+    "icon": "leaf"
+  },
+  {
+    "slug": "bhm",
+    "name": "BHM (Bachelor of Hotel Management)",
+    "level": "Undergraduate",
+    "duration": "4 years",
+    "description": "Covers hospitality operations, guest services and hotel administration.",
+    "eligibility": "12th pass + NCHMCT JEE",
+    "careerSlugs": [
+      "hotel-manager"
+    ],
+    "examSlugs": [
+      "nchmct-jee"
+    ],
+    "icon": "building"
+  },
+  {
+    "slug": "bjmc",
+    "name": "BJMC (Journalism & Mass Communication)",
+    "level": "Undergraduate",
+    "duration": "3 years",
+    "description": "Covers reporting, media production and communication theory.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "journalist"
+    ],
+    "examSlugs": [
+      "cuet"
+    ],
+    "icon": "mega"
+  },
+  {
+    "slug": "iti-electrician",
+    "name": "ITI Electrician Trade",
+    "level": "ITI",
+    "duration": "1-2 years",
+    "description": "Hands-on vocational training in electrical wiring, repair and safety.",
+    "eligibility": "Passed 10th standard",
+    "careerSlugs": [
+      "electrician"
+    ],
+    "examSlugs": [],
+    "icon": "wrench"
+  },
+  {
+    "slug": "iti-plumber",
+    "name": "ITI Plumber Trade",
+    "level": "ITI",
+    "duration": "1-2 years",
+    "description": "Hands-on vocational training in pipefitting and plumbing systems.",
+    "eligibility": "Passed 10th standard",
+    "careerSlugs": [
+      "plumber"
+    ],
+    "examSlugs": [],
+    "icon": "wrench"
+  },
+  {
+    "slug": "fitness-cert",
+    "name": "Fitness & Sports Science Certification",
+    "level": "Certification",
+    "duration": "3-6 months",
+    "description": "Covers exercise science, programming and client coaching.",
+    "eligibility": "12th pass (any stream)",
+    "careerSlugs": [
+      "fitness-trainer"
+    ],
+    "examSlugs": [],
+    "icon": "trophy"
+  },
+  {
+    "slug": "sustainability-cert",
+    "name": "Sustainability & ESG Certification",
+    "level": "Certification",
+    "duration": "3-6 months",
+    "description": "Covers ESG frameworks, climate policy and corporate sustainability strategy.",
+    "eligibility": "Any graduate",
+    "careerSlugs": [
+      "sustainability-consultant"
+    ],
+    "examSlugs": [],
+    "icon": "leaf"
+  }
+]

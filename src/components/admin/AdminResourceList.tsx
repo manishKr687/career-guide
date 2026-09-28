@@ -16,6 +16,16 @@ import {
 import AdminEntityForm, { type FieldValue } from "@/components/admin/AdminEntityForm";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Modal from "@/components/ui/Modal";
+import {
+  BTN_PRIMARY,
+  BTN_SECONDARY,
+  EmptyState,
+  IconButton,
+  PageHeader,
+  SURFACE,
+  Toast,
+  type ToastTone,
+} from "@/components/admin/AdminKit";
 
 /**
  * Renders updated_at, or an em dash where there is none.
@@ -55,7 +65,7 @@ export default function AdminResourceList({
   const config = RESOURCE_CONFIGS[resource];
 
   const [items, setItems] = useState<FormValues[]>(initialItems);
-  const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ tone: ToastTone; message: string } | null>(null);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
   const [confirmSlug, setConfirmSlug] = useState<string | null>(null);
 
@@ -80,7 +90,7 @@ export default function AdminResourceList({
         if (!cancelled) setReferenceOptions(opts);
       })
       .catch(() => {
-        if (!cancelled) setError("Could not load the dropdown options for this form.");
+        if (!cancelled) setToast({ tone: "error", message: "Could not load the dropdown options for this form." });
       });
     return () => {
       cancelled = true;
@@ -138,28 +148,33 @@ export default function AdminResourceList({
   }, [items, query, filter, filterField, config]);
 
   async function refresh() {
-    setError(null);
     try {
       setItems(await config.loadAll());
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "Could not reach the API. Is the backend running?");
+      setToast({
+        tone: "error",
+        message: err instanceof ApiError ? err.message : "Could not reach the API. Is the backend running?",
+      });
     }
   }
 
   async function handleDelete(slug: string) {
     setConfirmSlug(null);
     setPendingDelete(slug);
-    setError(null);
     try {
       await adminDelete(resource, slug);
       if (draft && draft.slug === slug) setDraft(null);
       await refresh();
+      setToast({ tone: "success", message: `Deleted "${slug}".` });
     } catch (err) {
       if (err instanceof AdminUnauthorizedError) {
         router.push("/admin/login");
         return;
       }
-      setError(err instanceof ApiError ? err.message : "Delete failed. Is the backend running?");
+      setToast({
+        tone: "error",
+        message: err instanceof ApiError ? err.message : "Delete failed. Is the backend running?",
+      });
     } finally {
       setPendingDelete(null);
     }
@@ -168,17 +183,21 @@ export default function AdminResourceList({
   async function handleSave() {
     if (!draft) return;
     setSaving(true);
-    setError(null);
+    const savedSlug = String(draft.slug);
     try {
-      await adminUpdate(resource, String(draft.slug), toPayload(config, draft));
+      await adminUpdate(resource, savedSlug, toPayload(config, draft));
       setDraft(null);
       await refresh();
+      setToast({ tone: "success", message: `Saved changes to "${savedSlug}".` });
     } catch (err) {
       if (err instanceof AdminUnauthorizedError) {
         router.push("/admin/login");
         return;
       }
-      setError(err instanceof ApiError ? err.message : "Save failed. Is the backend running?");
+      setToast({
+        tone: "error",
+        message: err instanceof ApiError ? err.message : "Save failed. Is the backend running?",
+      });
     } finally {
       setSaving(false);
     }
@@ -189,28 +208,13 @@ export default function AdminResourceList({
   // and an always-empty column would be noise on those three pages.
   const hasUpdatedAt = useMemo(() => items.some((item) => "updatedAt" in item), [items]);
 
-  const iconButton =
-    "w-8 h-8 rounded-lg border border-line flex items-center justify-center transition-colors disabled:opacity-40";
-
   return (
     <div>
-      <div className="flex flex-wrap items-start justify-between gap-4 mb-5">
-        <div>
-          <h2 className="font-display font-extrabold text-navy text-[22px]">{config.pluralLabel}</h2>
-          <p className="text-[13px] text-muted mt-1">
-            Manage {config.pluralLabel.toLowerCase()} and their details.
-          </p>
-        </div>
-        <Link
-          href={`/admin/${resource}/new`}
-          className="flex items-center gap-2 text-[13px] font-bold text-white bg-blue px-4 py-2.5 rounded-xl hover:opacity-90 transition-opacity shrink-0"
-        >
-          {/* A literal plus rather than an icon: the set has no plus glyph, and
-              inventing one for a single button is not worth a new path. */}
-          <span className="text-[15px] leading-none -mt-px">+</span>
-          Add {config.label}
-        </Link>
-      </div>
+      <PageHeader
+        title={config.pluralLabel}
+        subtitle={`Manage all ${config.pluralLabel.toLowerCase()}, add new ones or edit existing ones.`}
+        action={{ href: `/admin/${resource}/new`, label: `Add ${config.label}` }}
+      />
 
       <div className="flex flex-wrap items-center justify-end gap-3 mb-4">
         {filterField && filterOptions.length > 1 && (
@@ -242,12 +246,12 @@ export default function AdminResourceList({
         </div>
       </div>
 
-      {error && <p className="text-[13px] text-red mb-4">{error}</p>}
-
-      <div className="bg-white rounded-2xl border border-line overflow-hidden">
-        <div className="overflow-x-auto">
+      <div className={`${SURFACE} overflow-hidden`}>
+        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-19rem)]">
           <table className="w-full text-left text-[13px]">
-            <thead className="bg-bg-soft">
+            {/* Sticky because Skills runs to 413 rows, and a header that scrolls
+                away turns the remaining columns into guesswork. */}
+            <thead className="bg-bg-soft sticky top-0 z-10">
               <tr>
                 <th className="px-4 py-3 font-bold text-ink w-12">#</th>
                 {config.columns.map((col) => (
@@ -285,31 +289,24 @@ export default function AdminResourceList({
                     )}
                     <td className="px-4 py-3">
                       <div className="flex items-center justify-end gap-2">
-                        <button
+                        <IconButton
+                          icon="pencil"
+                          label={`Quick edit ${slug}`}
+                          tone="primary"
                           onClick={() => setDraft(toFormValues(config, item))}
-                          title="Quick edit"
-                          aria-label={`Quick edit ${slug}`}
-                          className={`${iconButton} text-blue hover:border-blue/40`}
-                        >
-                          <Icon name="pencil" className="w-4 h-4" />
-                        </button>
-                        <Link
+                        />
+                        <IconButton
+                          icon="eye"
+                          label={`Open the full form for ${slug}`}
                           href={`/admin/${resource}/${encodeURIComponent(slug)}/edit`}
-                          title="Open the full form"
-                          aria-label={`Edit ${slug}`}
-                          className={`${iconButton} text-muted hover:border-navy/30 hover:text-navy`}
-                        >
-                          <Icon name="eye" className="w-4 h-4" />
-                        </Link>
-                        <button
-                          onClick={() => setConfirmSlug(slug)}
+                        />
+                        <IconButton
+                          icon="trash"
+                          label={`Delete ${slug}`}
+                          tone="danger"
                           disabled={pendingDelete === slug}
-                          title="Delete"
-                          aria-label={`Delete ${slug}`}
-                          className={`${iconButton} text-red hover:border-red/40`}
-                        >
-                          <Icon name="trash" className="w-4 h-4" />
-                        </button>
+                          onClick={() => setConfirmSlug(slug)}
+                        />
                       </div>
                     </td>
                   </tr>
@@ -319,13 +316,27 @@ export default function AdminResourceList({
           </table>
         </div>
 
-        {visible.length === 0 && (
-          <p className="px-4 py-10 text-[13px] text-muted text-center">
-            {items.length === 0
-              ? `No ${config.pluralLabel.toLowerCase()} yet.`
-              : `No ${config.pluralLabel.toLowerCase()} match that search.`}
-          </p>
-        )}
+        {visible.length === 0 &&
+          (items.length === 0 ? (
+            <EmptyState
+              icon="layers"
+              title={`No ${config.pluralLabel.toLowerCase()} yet`}
+              message={`Nothing has been added here. Create the first ${config.label.toLowerCase()} to get started.`}
+              action={{ href: `/admin/${resource}/new`, label: `Add ${config.label}` }}
+            />
+          ) : (
+            <EmptyState
+              title="Nothing matches"
+              message={`No ${config.pluralLabel.toLowerCase()} match the current search or filter.`}
+              action={{
+                label: "Clear search and filters",
+                onClick: () => {
+                  setQuery("");
+                  setFilter("");
+                },
+              }}
+            />
+          ))}
       </div>
 
       <Modal
@@ -372,29 +383,19 @@ export default function AdminResourceList({
               . Saving here keeps them untouched.
             </p>
 
-            {error && <p className="text-[12.5px] text-red mt-4">{error}</p>}
-
             <div className="flex justify-end gap-3 mt-6">
-              <button
-                type="button"
-                onClick={() => setDraft(null)}
-                disabled={saving}
-                className="text-[13px] font-bold text-navy bg-white px-4 py-2.5 rounded-xl border border-line hover:border-navy/30 transition-colors disabled:opacity-50"
-              >
+              <button type="button" onClick={() => setDraft(null)} disabled={saving} className={BTN_SECONDARY}>
                 Cancel
               </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="text-[13px] font-bold text-white bg-blue px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
+              <button type="button" onClick={handleSave} disabled={saving} className={BTN_PRIMARY}>
                 {saving ? "Saving..." : "Update"}
               </button>
             </div>
           </>
         )}
       </Modal>
+
+      {toast && <Toast tone={toast.tone} message={toast.message} onClose={() => setToast(null)} />}
 
       <ConfirmDialog
         open={confirmSlug !== null}

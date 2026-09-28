@@ -83,3 +83,45 @@ body {
   background: var(--color-purple-soft);
   color: var(--color-navy);
 }
+
+/* Admin motion. Two short, purposeful transitions rather than a library:
+   a dialog that appears instantly reads as a jump, and a toast that appears
+   instantly is easy to miss. Both respect prefers-reduced-motion below. */
+@keyframes admin-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes admin-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-rise {
+  animation: admin-rise 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-in {
+  animation: admin-slide-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Motion is decoration here -- every one of these views is fully usable
+   without it, so it is dropped entirely rather than shortened. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-slide-in {
+    animation: none;
+  }
+}

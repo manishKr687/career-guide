@@ -7,6 +7,7 @@ import { ApiError } from "@/lib/api";
 import { FieldOption, FieldType, FormValues, RESOURCE_CONFIGS, toFormValues, toPayload } from "@/lib/admin/resourceConfig";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
+import { BTN_PRIMARY, BTN_SECONDARY, SURFACE, Toast } from "@/components/admin/AdminKit";
 import AdminEntityForm, { FieldValue } from "@/components/admin/AdminEntityForm";
 
 /**
@@ -193,7 +194,7 @@ export default function AdminResourceForm({
 
       <div className="flex flex-col gap-5">
         {sections.map((section) => (
-          <section key={section.title} className="bg-white rounded-2xl border border-line">
+          <section key={section.title} className={SURFACE}>
             <div className="px-5 py-4 border-b border-line">
               <h3 className="font-display font-extrabold text-navy text-[14.5px]">{section.title}</h3>
               <p className="text-[12px] text-muted mt-0.5">{section.blurb}</p>
@@ -216,23 +217,18 @@ export default function AdminResourceForm({
           a Save button people forget to press. */}
       <div className="fixed bottom-0 left-0 right-0 lg:left-60 bg-white/95 backdrop-blur border-t border-line z-20">
         <div className="max-w-3xl px-4 sm:px-6 py-3.5 flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={submitting}
-            className="text-[13px] font-bold text-white bg-blue px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
+          <button type="submit" disabled={submitting} className={BTN_PRIMARY}>
             {submitting ? "Saving..." : mode === "create" ? `Create ${config.label}` : "Save changes"}
           </button>
-          <button
-            type="button"
-            onClick={() => router.push(listHref)}
-            className="text-[13px] font-bold text-navy bg-white px-5 py-2.5 rounded-xl border border-line hover:border-navy/30 transition-colors"
-          >
+          <button type="button" onClick={() => router.push(listHref)} className={BTN_SECONDARY}>
             Cancel
           </button>
-          {submitError && <p className="text-[12.5px] text-red leading-snug">{submitError}</p>}
         </div>
       </div>
+
+      {/* A save failure at the bottom of a long form is easy to scroll past, and
+          the reader's attention is on the action bar, not the page. */}
+      {submitError && <Toast tone="error" message={submitError} onClose={() => setSubmitError(null)} />}
     </form>
   );
 }

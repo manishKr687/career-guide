@@ -56,7 +56,7 @@ export default function Modal({
         aria-modal="true"
         aria-labelledby="modal-title"
         tabIndex={-1}
-        className={`relative bg-white rounded-2xl shadow-card w-full p-6 outline-none max-h-[90vh] overflow-y-auto ${
+        className={`relative bg-white rounded-2xl shadow-card w-full p-6 outline-none max-h-[90vh] overflow-y-auto animate-rise ${
           size === "lg" ? "max-w-2xl" : "max-w-md"
         }`}
       >

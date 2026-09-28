@@ -4,8 +4,37 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdminResource, adminCreate, adminUpdate, AdminUnauthorizedError } from "@/lib/adminApi";
 import { ApiError } from "@/lib/api";
-import { FieldOption, FormValues, RESOURCE_CONFIGS, toFormValues, toPayload } from "@/lib/admin/resourceConfig";
+import { FieldOption, FieldType, FormValues, RESOURCE_CONFIGS, toFormValues, toPayload } from "@/lib/admin/resourceConfig";
+import Link from "next/link";
+import Icon from "@/components/ui/Icon";
 import AdminEntityForm, { FieldValue } from "@/components/admin/AdminEntityForm";
+
+/**
+ * Sections, derived from field type rather than hand-annotated.
+ *
+ * Careers carry 27 fields and Colleges 20. As one flat column that is a long
+ * scroll with no landmarks, and the Save button sits at the bottom of it. Adding
+ * a `group` to every field across thirteen configs would be ~150 edits to
+ * express something the types already imply, so the split is computed: what the
+ * entity IS, what it LINKS TO, and the structured tables that need room.
+ */
+const SECTIONS: Array<{ title: string; blurb: string; types: FieldType[] }> = [
+  {
+    title: "Details",
+    blurb: "The entity's own fields.",
+    types: ["text", "textarea", "number", "select", "boolean", "date", "tags"],
+  },
+  {
+    title: "Relationships",
+    blurb: "Links to other entities. These drive what appears on the public pages.",
+    types: ["multiselect"],
+  },
+  {
+    title: "Structured data",
+    blurb: "Ordered tables -- each row is a record in its own right.",
+    types: ["pairs", "rows"],
+  },
+];
 
 function isFilled(value: FieldValue): boolean {
   if (value === undefined) return false;
@@ -98,44 +127,112 @@ export default function AdminResourceForm({
     }
   }
 
+  const listHref = `/admin/${resource}`;
+
   if (loadError) {
-    return <p className="text-[13.5px] text-red">{loadError}</p>;
-  }
-  if (!values) {
-    return <p className="text-[13.5px] text-subtle">Loading...</p>;
+    return (
+      <div>
+        <Link href={listHref} className="inline-flex items-center gap-1.5 text-[13px] font-bold text-muted hover:text-navy mb-5">
+          <Icon name="arrowRight" className="w-4 h-4 rotate-180" />
+          Back to {config.pluralLabel}
+        </Link>
+        <div className="bg-white rounded-2xl border border-line p-6 max-w-lg">
+          <h2 className="flex items-center gap-2 font-display font-extrabold text-navy text-[15px]">
+            <Icon name="shield" className="w-[18px] h-[18px] text-red shrink-0" />
+            Could not open this form
+          </h2>
+          <p className="text-[13px] text-muted leading-relaxed mt-2">{loadError}</p>
+        </div>
+      </div>
+    );
   }
 
+  if (!values) {
+    // A skeleton rather than the word "Loading...", so the page does not jump
+    // from one line of text to a full form.
+    return (
+      <div>
+        <div className="h-5 w-40 rounded bg-line animate-pulse mb-6" />
+        <div className="bg-white rounded-2xl border border-line p-6 space-y-5 max-w-3xl">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i}>
+              <div className="h-3 w-28 rounded bg-line animate-pulse mb-2" />
+              <div className="h-10 rounded-xl bg-line/60 animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const sections = SECTIONS.map((section) => ({
+    ...section,
+    fields: config.fields.filter((f) => section.types.includes(f.type)),
+  })).filter((section) => section.fields.length > 0);
+
   return (
-    <div>
-      <h1 className="font-display font-extrabold text-navy text-xl mb-6">
-        {mode === "create" ? `New ${config.label}` : `Edit ${config.label}`}
-      </h1>
-      <form onSubmit={handleSubmit} className="max-w-2xl space-y-5">
-        <AdminEntityForm
-          fields={config.fields}
-          values={values}
-          onChange={handleChange}
-          referenceOptions={referenceOptions}
-          disabledFields={mode === "edit" ? ["slug"] : []}
-        />
-        {submitError && <p className="text-[13.5px] text-red">{submitError}</p>}
-        <div className="flex gap-3 pt-2">
+    <form onSubmit={handleSubmit} className="max-w-3xl pb-28">
+      <Link
+        href={listHref}
+        className="inline-flex items-center gap-1.5 text-[13px] font-bold text-muted hover:text-navy mb-4"
+      >
+        <Icon name="arrowRight" className="w-4 h-4 rotate-180" />
+        Back to {config.pluralLabel}
+      </Link>
+
+      <div className="flex flex-wrap items-baseline gap-3 mb-6">
+        <h2 className="font-display font-extrabold text-navy text-[22px]">
+          {mode === "create" ? `New ${config.label}` : `Edit ${config.label}`}
+        </h2>
+        {mode === "edit" && (
+          <span className="font-mono text-[12px] text-subtle bg-bg-soft border border-line rounded-lg px-2 py-1">
+            {slug}
+          </span>
+        )}
+      </div>
+
+      <div className="flex flex-col gap-5">
+        {sections.map((section) => (
+          <section key={section.title} className="bg-white rounded-2xl border border-line">
+            <div className="px-5 py-4 border-b border-line">
+              <h3 className="font-display font-extrabold text-navy text-[14.5px]">{section.title}</h3>
+              <p className="text-[12px] text-muted mt-0.5">{section.blurb}</p>
+            </div>
+            <div className="px-5 py-5">
+              <AdminEntityForm
+                fields={section.fields}
+                values={values}
+                onChange={handleChange}
+                referenceOptions={referenceOptions}
+                disabledFields={mode === "edit" ? ["slug"] : []}
+              />
+            </div>
+          </section>
+        ))}
+      </div>
+
+      {/* Fixed rather than at the end of the form. On Careers the last field is
+          about two screens down, and a Save button you have to scroll to find is
+          a Save button people forget to press. */}
+      <div className="fixed bottom-0 left-0 right-0 lg:left-60 bg-white/95 backdrop-blur border-t border-line z-20">
+        <div className="max-w-3xl px-4 sm:px-6 py-3.5 flex items-center gap-3">
           <button
             type="submit"
             disabled={submitting}
-            className="text-[13.5px] font-bold text-white bg-navy px-5 py-3 rounded-xl hover:bg-navy-2 transition-colors disabled:opacity-50"
+            className="text-[13px] font-bold text-white bg-blue px-5 py-2.5 rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50"
           >
-            {submitting ? "Saving..." : "Save"}
+            {submitting ? "Saving..." : mode === "create" ? `Create ${config.label}` : "Save changes"}
           </button>
           <button
             type="button"
-            onClick={() => router.push(`/admin/${resource}`)}
-            className="text-[13.5px] font-bold text-navy bg-white px-5 py-3 rounded-xl border border-line hover:border-navy/30 transition-colors"
+            onClick={() => router.push(listHref)}
+            className="text-[13px] font-bold text-navy bg-white px-5 py-2.5 rounded-xl border border-line hover:border-navy/30 transition-colors"
           >
             Cancel
           </button>
+          {submitError && <p className="text-[12.5px] text-red leading-snug">{submitError}</p>}
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   );
 }

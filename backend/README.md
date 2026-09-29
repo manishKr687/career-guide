@@ -61,6 +61,53 @@ If you'd rather run Postgres yourself and the API via your IDE/Maven:
    environment variables — see `application.yml`).
 2. `mvn spring-boot:run` — Flyway applies all migrations on startup.
 
+## What owns the content
+
+Two things can write the catalog -- Flyway migrations and the admin UI -- and
+until this was written down, nothing said which wins. That ambiguity has already
+cost data twice: a migration (V80) asserted on rows that only existed because
+someone had created them through the admin, and three exams added through the
+admin were lost when a database volume was dropped, because they existed in no
+migration.
+
+The rule, from go-live onward:
+
+| | Source of truth | Changed by |
+|---|---|---|
+| **Schema** | Flyway migrations | A new `V___` migration, as always |
+| **Catalog content** | The database | The admin UI |
+| **User data** | Production only | Real visitors |
+
+Migrations V1-V132 seeded the catalog and remain the record of how it got here,
+including why particular things were left empty. They are history, not the live
+truth. **Do not add content migrations after go-live** -- edit the content in the
+admin instead, or the two sources diverge again.
+
+A consequence worth stating plainly: CI's replay-from-empty proves the schema and
+the original seed are coherent. It does not produce a copy of production. A new
+environment is *run the migrations, then import the content*, not *run the
+migrations and you are done*.
+
+### Moving content between environments
+
+```bash
+./scripts/export-content.sh              # from your local database
+./scripts/import-content.sh backups/content-YYYYMMDD-HHMM.sql
+```
+
+The export takes every table except `users`, the eleven `user_*` tables,
+`counselling_requests` and `flyway_schema_history`. The table list is derived
+rather than hard-coded, so a table added later is picked up automatically.
+
+**The import refuses to run against a database that has users or counselling
+requests, and that refusal is the point.** Replacing the catalog means truncating
+it, and `user_saved_careers`, `user_saved_colleges`, `user_saved_exams` and
+`user_roadmaps` all cascade from the content they reference -- so on a live
+database this would delete people's saved items and roadmaps without reporting
+it. The script is for the first load into a new environment. Updating the catalog
+on a site that already has users needs an upsert-based sync, which is a different
+tool and does not exist yet.
+
 ## Backups
 
 The `postgres` service already uses a named Docker volume

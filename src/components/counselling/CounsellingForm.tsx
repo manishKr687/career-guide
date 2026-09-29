@@ -13,10 +13,22 @@ const INPUT_CLASS =
 const INPUT_ICON_CLASS = `${INPUT_CLASS} pl-10`;
 
 const NEXT_STEPS = [
-  { n: 1, label: "We reach out within 24 hours, by call or WhatsApp", color: "bg-blue" },
-  { n: 2, label: "A free, no-pressure 15–20 minute conversation", color: "bg-teal" },
-  { n: 3, label: "You leave with a clear, personalized next step", color: "bg-green" },
+  { icon: "mail", label: "We reach out within 24 hours, by call or WhatsApp", color: "bg-blue" },
+  { icon: "phone", label: "A free, no-pressure 15–20 minute conversation", color: "bg-teal" },
+  { icon: "check", label: "You leave with a clear, personalized next step", color: "bg-green" },
 ];
+
+function StepBadge({ n, active }: { n: number; active?: boolean }) {
+  return (
+    <span
+      className={`w-[22px] h-[22px] shrink-0 rounded-full flex items-center justify-center font-display font-extrabold text-[11px] ${
+        active ? "bg-navy text-white" : "bg-line text-muted"
+      }`}
+    >
+      {n}
+    </span>
+  );
+}
 
 function FieldIcon({ name }: { name: string }) {
   return (
@@ -118,8 +130,8 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
           )}
 
           <div className="space-y-4">
-            <h2 className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wide text-subtle">
-              <Icon name="user" className="w-3.5 h-3.5" />
+            <h2 className="flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-wide text-subtle">
+              <StepBadge n={1} active />
               Your details
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -171,8 +183,8 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
           <div className="h-px bg-line" />
 
           <div className="space-y-4">
-            <h2 className="flex items-center gap-2 text-[12px] font-bold uppercase tracking-wide text-subtle">
-              <Icon name="cal" className="w-3.5 h-3.5" />
+            <h2 className="flex items-center gap-2.5 text-[12px] font-bold uppercase tracking-wide text-subtle">
+              <StepBadge n={2} />
               When &amp; what
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -250,18 +262,36 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
         <div className="lg:col-span-2 bg-bg-soft p-6 sm:p-9 lg:border-l border-line space-y-6">
           <div>
             <h3 className="font-display font-extrabold text-navy text-[15px] mb-4">What happens next</h3>
-            <ol className="space-y-3.5">
+            <ol className="relative space-y-4">
+              <span className="absolute left-4 top-8 bottom-8 w-px bg-line" aria-hidden="true" />
               {NEXT_STEPS.map((step) => (
-                <li key={step.n} className="flex items-start gap-3">
+                <li key={step.label} className="relative flex items-start gap-3.5">
                   <span
-                    className={`w-6 h-6 shrink-0 rounded-full flex items-center justify-center text-white font-display font-extrabold text-[11px] ${step.color}`}
+                    className={`w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-white ${step.color}`}
                   >
-                    {step.n}
+                    <Icon name={step.icon} className="w-3.5 h-3.5" strokeWidth={2.2} />
                   </span>
-                  <span className="text-[13px] text-ink/75 leading-snug pt-0.5">{step.label}</span>
+                  <span className="text-[13px] text-ink/75 leading-snug pt-1.5">{step.label}</span>
                 </li>
               ))}
             </ol>
+          </div>
+
+          {/* Placeholder testimonial -- swap for a real one (or remove this
+              card) before shipping; this quote is not from an actual student. */}
+          <div className="rounded-2xl bg-white border border-line p-5">
+            <p className="text-[13px] italic text-ink leading-relaxed">
+              &ldquo;I had no idea how to choose between commerce and science. The call gave me an actual plan instead of more confusion.&rdquo;
+            </p>
+            <div className="flex items-center gap-2.5 mt-3.5">
+              <div className="w-8 h-8 rounded-full bg-purple-soft text-purple text-[11px] font-bold flex items-center justify-center">
+                AP
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[12.5px] font-bold text-navy">Ananya P.</span>
+                <span className="text-[11px] text-subtle">Class 12, Delhi</span>
+              </div>
+            </div>
           </div>
 
           <div className="rounded-2xl bg-gradient-to-br from-green-soft to-white border border-green/15 p-5">

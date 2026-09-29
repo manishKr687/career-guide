@@ -580,7 +580,10 @@ export interface Specialization {
 
   // "What you will learn". Distinct from `description` (one line, for cards
   // and search) and `responsibilities` (what the job involves day to day).
-  // Null where nobody has written one -- 262 of 263 at time of writing.
+  //
+  // Written for all 263 specializations by V134-V146, and V146 asserts on every
+  // boot that none is missing one. Still typed nullable because the column is,
+  // and because the admin form can clear it.
   overview: string | null;
   // Short claims about the field. Empty where unwritten.
   highlights: string[];

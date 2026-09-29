@@ -45,3 +45,10 @@ next-env.d.ts
 
 # One-off source transfer archives, not part of the build
 /_sync_incoming
+
+# SonarQube scanner working directory. Analyser bundles and task metadata,
+# regenerated on every scan. sonar-project.properties IS tracked, since it
+# configures the scan -- but never put sonar.token or sonar.login in it: this
+# repository is public. Pass the token as -Dsonar.token= or via SONAR_TOKEN.
+/.scannerwork
+/backend/target/sonar

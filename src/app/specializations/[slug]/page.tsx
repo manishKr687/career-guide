@@ -80,6 +80,37 @@ const RESOURCE_ICONS: Record<string, string> = {
 // No generateStaticParams: the catalog lives in Postgres and can change at any
 // time, so specialization pages render dynamically per request.
 
+/**
+ * Whether `description` is the generated placeholder rather than written prose.
+ *
+ * 262 of 263 specializations carry a description of the exact form "<name> is a
+ * specialization within <career>." It says nothing the <h1> and the category
+ * chip beside it do not already say, and it was filling the two places on this
+ * page a reader and a crawler look first: the paragraph under the title, and the
+ * meta description Google prints as the search snippet.
+ *
+ * V134-V146 wrote a real `overview` for every specialization, so there is now
+ * something better to show in both places. This detects the stub instead of
+ * ignoring `description` altogether, because a description someone has actually
+ * written is worth showing and the admin form can set one.
+ *
+ * Matched by prefix rather than by regex: names contain characters that would
+ * need escaping (UI/UX Design, Petroleum & Petrochemicals, CAD/CAM).
+ */
+function isGeneratedStub({ name, description }: { name: string; description: string }): boolean {
+  const d = description.trim();
+  return d.length === 0 || d.startsWith(`${name} is a specialization within `);
+}
+
+/** Trim to a whole word for use as a meta description. */
+function toSnippet(text: string, max = 155): string {
+  const t = text.trim().replace(/\s+/g, " ");
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max);
+  const lastSpace = cut.lastIndexOf(" ");
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:.]+$/, "")}…`;
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -88,9 +119,18 @@ export async function generateMetadata({
   const { slug } = await params;
   const specialization = await getSpecialization(slug);
   if (!specialization) return {};
+  // Prefer the overview for the snippet, since the description is a placeholder
+  // on all but one specialization. Omitted entirely rather than set to the stub
+  // if there is no overview: no meta description lets the search engine pick a
+  // passage from the page, which beats a sentence that restates the title.
+  const snippet = isGeneratedStub(specialization)
+    ? specialization.overview
+      ? toSnippet(specialization.overview)
+      : undefined
+    : specialization.description;
   return {
     title: `${specialization.name} — CareerGuide`,
-    description: specialization.description,
+    ...(snippet ? { description: snippet } : {}),
   };
 }
 
@@ -319,9 +359,14 @@ export default async function SpecializationDetailPage({
               ))}
             </div>
 
-            <p className="text-ink/70 text-[14.5px] leading-relaxed mt-5 max-w-2xl">
-              {specialization.description}
-            </p>
+            {/* Hidden when the description is the generated stub: the full
+                overview appears in "What You Will Learn" below, so the hero
+                loses a tautology rather than any information. */}
+            {!isGeneratedStub(specialization) && (
+              <p className="text-ink/70 text-[14.5px] leading-relaxed mt-5 max-w-2xl">
+                {specialization.description}
+              </p>
+            )}
 
             {metrics.length > 0 && (
               <div className="mt-7">
@@ -340,7 +385,9 @@ export default async function SpecializationDetailPage({
       <Container className="mt-12 pb-24">
         <div className="flex flex-col gap-6">
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            {(specialization.overview || specialization.description) && (
+            {/* The stub is not worth a card headed "What You Will Learn", which
+                is what `overview || description` used to produce on 262 pages. */}
+            {(specialization.overview || !isGeneratedStub(specialization)) && (
               <Card className="md:col-span-3">
                 <CardTitle icon="book">What You Will Learn</CardTitle>
                 <div className="bg-bg-soft rounded-2xl p-5">

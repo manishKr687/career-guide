@@ -9,6 +9,8 @@ export interface CounsellingRequestInput {
   stageSlug?: string;
   careerSlug?: string;
   message?: string;
+  /** Affirmative consent to being contacted. The API rejects anything but true. */
+  consent: boolean;
 }
 
 /** Submits the public "Book a counselling call" form. Throws ApiError on validation failure or if the API is unreachable. */

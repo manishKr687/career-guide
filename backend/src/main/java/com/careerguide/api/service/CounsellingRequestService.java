@@ -40,6 +40,9 @@ public class CounsellingRequestService {
         request.setStageSlug(blankToNull(submission.stageSlug()));
         request.setCareerSlug(blankToNull(submission.careerSlug()));
         request.setMessage(blankToNull(submission.message()));
+        // From the server clock, not the client's. A consent time the browser
+        // could choose is not evidence of anything.
+        request.setConsentedAt(java.time.Instant.now());
         // status defaults to PENDING (set at field declaration in the entity)
         repository.save(request);
         return DtoMapper.toDto(request);

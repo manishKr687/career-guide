@@ -47,6 +47,7 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
   const [stageSlug, setStageSlug] = useState("");
   const [message, setMessage] = useState(career ? `I'd like to talk about the ${career.title} career path.` : "");
 
+  const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
@@ -70,6 +71,7 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
         stageSlug: stageSlug || undefined,
         careerSlug: career?.slug,
         message: message || undefined,
+        consent,
       });
       setSubmitted(true);
     } catch (err) {
@@ -254,7 +256,24 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
             {submitting ? "Sending..." : "Request a call"}
             {!submitting && <Icon name="arrowRight" className="w-4 h-4" />}
           </button>
-          <p className="text-[12px] text-subtle -mt-4">
+          <label className="flex items-start gap-3 -mt-4 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consent}
+              onChange={(e) => setConsent(e.target.checked)}
+              required
+              className="mt-0.5 w-4 h-4 shrink-0 accent-navy"
+            />
+            <span className="text-[12.5px] text-ink/75 leading-snug">
+              I agree to CareerGuide contacting me about this enquiry, and to my details being
+              stored for that purpose. If you are under 18, please ask a parent or guardian before
+              submitting.{" "}
+              <Link href="/privacy" className="font-bold text-navy hover:underline">
+                Privacy policy
+              </Link>
+            </span>
+          </label>
+          <p className="text-[12px] text-subtle -mt-2">
             We&apos;ll only use these details to get in touch about your counselling request.
           </p>
         </form>

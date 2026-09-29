@@ -55,6 +55,12 @@ public class CounsellingRequest {
     @Column(nullable = false, length = 16)
     private String status = STATUS_PENDING;
 
+    // V133. Stamped server-side when the submission carries consent; see
+    // CounsellingRequestService.submit. Null only for rows created before the
+    // form asked.
+    @Column(name = "consented_at")
+    private Instant consentedAt;
+
     @Column(name = "created_at", nullable = false)
     private Instant createdAt = Instant.now();
 
@@ -144,5 +150,13 @@ public class CounsellingRequest {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public Instant getConsentedAt() {
+        return consentedAt;
+    }
+
+    public void setConsentedAt(Instant consentedAt) {
+        this.consentedAt = consentedAt;
     }
 }

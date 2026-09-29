@@ -24,14 +24,6 @@ const TRUST_STYLES: Record<string, string> = {
   teal: "bg-teal-soft text-teal",
 };
 
-// Placeholder social proof -- swap the count and avatars for real numbers
-// (or remove this row) before this goes live. Nothing here is measured yet.
-const SOCIAL_PROOF_AVATARS = [
-  { initials: "RS", color: "bg-blue" },
-  { initials: "AK", color: "bg-teal" },
-  { initials: "PN", color: "bg-amber" },
-];
-
 export default async function CounsellingPage({
   searchParams,
 }: {
@@ -63,34 +55,6 @@ export default async function CounsellingPage({
               message us directly on WhatsApp right now.
             </p>
 
-            {/* Placeholder social proof row -- see SOCIAL_PROOF_AVATARS above */}
-            <div className="flex items-center gap-4 mt-6">
-              <div className="flex">
-                {SOCIAL_PROOF_AVATARS.map((a, i) => (
-                  <div
-                    key={a.initials}
-                    className={`w-9 h-9 rounded-full border-2 border-navy flex items-center justify-center text-white text-[11px] font-bold ${a.color}`}
-                    style={{ marginLeft: i === 0 ? 0 : -10 }}
-                  >
-                    {a.initials}
-                  </div>
-                ))}
-                <div
-                  className="w-9 h-9 rounded-full border-2 border-navy flex items-center justify-center text-white text-[11px] font-bold bg-purple"
-                  style={{ marginLeft: -10 }}
-                >
-                  +
-                </div>
-              </div>
-              <div className="flex flex-col gap-0.5">
-                <div className="flex gap-0.5 text-amber">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <Icon key={i} name="star" className="w-3 h-3" strokeWidth={1.6} />
-                  ))}
-                </div>
-                <span className="text-[12px] font-semibold text-white/60">Trusted by students across India</span>
-              </div>
-            </div>
           </div>
         </Container>
       </div>

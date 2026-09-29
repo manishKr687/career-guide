@@ -78,10 +78,33 @@ The rule, from go-live onward:
 | **Catalog content** | The database | The admin UI |
 | **User data** | Production only | Real visitors |
 
-Migrations V1-V132 seeded the catalog and remain the record of how it got here,
+Migrations V1-V146 seeded the catalog and remain the record of how it got here,
 including why particular things were left empty. They are history, not the live
-truth. **Do not add content migrations after go-live** -- edit the content in the
-admin instead, or the two sources diverge again.
+truth. **Do not add content migrations** -- edit the content in the admin
+instead, or the two sources diverge again.
+
+Nothing was removed from V1-V146 to make this true, and nothing should be.
+Applied migrations are checksummed; editing one makes Flyway refuse to start
+against every database that already ran it. The rule governs what gets written
+from here on.
+
+### Where the line falls
+
+Taxonomy counts as schema, not content: `categories`, `stages`, `streams` and
+their join tables. Around 165 rows that foreign keys across the whole database
+depend on, that change roughly never, and that have no admin screens. A new
+migration may add or change those. Everything else -- careers, colleges, exams,
+degrees, specializations, skills, job roles, certifications, resources,
+industries -- is content, lives in the database, and is edited in the admin.
+
+Content with no admin screen, which this rule leaves editable only by SQL:
+
+| | Rows |
+|---|---|
+| `assessment_questions` + `assessment_options` + `assessment_option_weights` | 155 |
+| `subjects` (an admin API exists, no UI) + `degree_subjects` | 100 |
+
+Those are the screens to build before anyone needs to change the assessment.
 
 A consequence worth stating plainly: CI's replay-from-empty proves the schema and
 the original seed are coherent. It does not produce a copy of production. A new
@@ -152,11 +175,64 @@ contain real data and can grow over time; copy files out of there if you
 want them somewhere more durable than your laptop (a cloud drive, an
 external disk, etc.) — these scripts don't do that part for you.
 
-For scheduled/automatic backups, the scripts above are the building block:
-on Windows, point Task Scheduler at `backup-db.ps1` (e.g. "daily at 2am");
-on macOS/Linux, a cron entry calling `backup-db.sh` does the same. Neither
-is set up here since it wasn't asked for, but nothing extra needs to be
-built — the scripts already work fine outside an interactive session.
+### Backups are the only way back
+
+This matters more than it used to. Since the catalog's source of truth is the
+database rather than the migrations, anything added or edited through the admin
+exists in exactly one place. Replaying migrations rebuilds the catalog as it
+stood at V146 and nothing after it. A backup is the only route back from a lost
+volume, a bad restore, or a mistaken bulk delete — and this project has already
+lost three admin-created exams and a user account to exactly that, because they
+existed in no migration.
+
+### Scheduling
+
+```powershell
+.\scripts\schedule-backup.ps1                     # daily 02:00, keep 30 days
+.\scripts\schedule-backup.ps1 -Status             # registered? last result?
+.\scripts\schedule-backup.ps1 -Remove
+```
+
+Registers a Windows Scheduled Task running as the current user, so it needs no
+elevation and no stored password. `-Status` reports the last exit code: 0 is
+success, and anything else is a backup that failed silently. On macOS/Linux a
+cron entry calling `backup-db.sh` does the same job; set `KEEP_DAYS=30` in the
+environment to enable the same pruning.
+
+Two limits worth stating: the task does not run while logged out or powered off,
+so on a real deployment the backup belongs on the server hosting Postgres; and
+it writes to the same disk as the database, which survives a mistake but not a
+dead disk. Copying dumps somewhere else is still a manual step.
+
+### Verification
+
+`backup-db` now checks its own output. `pg_dump`'s redirection happens inside
+the container, so a dump interrupted by a full disk or a stopped container
+leaves a truncated file that looks exactly like a good one until the day it is
+needed. The scripts grep for the `-- PostgreSQL database dump complete` marker
+that `pg_dump` writes last, and **delete the file and fail** if it is absent —
+no backup is better than one you would wrongly trust.
+
+Pruning (`-KeepDays` / `KEEP_DAYS`) only removes unlabelled automatic backups.
+A labelled one — `before-schema-change` — was taken deliberately at a moment
+someone thought mattered, and is never auto-deleted.
+
+To check a backup is restorable without touching the real database, restore it
+into a scratch one and compare:
+
+```bash
+docker compose exec -T postgres psql -U careerguide -d postgres \
+  -c "CREATE DATABASE restore_test OWNER careerguide;"
+docker compose exec -T postgres psql -U careerguide -d restore_test -f /backups/<file>.sql
+# compare row counts across every table, then:
+docker compose exec -T postgres psql -U careerguide -d postgres -c "DROP DATABASE restore_test;"
+```
+
+This was run against the current database on 2026-09-29: 76 tables, identical
+row counts in every one, `flyway_schema_history` restored with all 146
+migrations recorded. A `pg_dump` backup is a full disaster-recovery artifact —
+schema, data and migration history — not just a content copy, so the app boots
+straight against a restored database.
 
 ## API overview
 

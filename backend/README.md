@@ -106,6 +106,29 @@ Content with no admin screen, which this rule leaves editable only by SQL:
 
 Those are the screens to build before anyone needs to change the assessment.
 
+### The rule is enforced, not just written here
+
+`MigrationPolicyTest` fails the build if a migration after V146 writes to a
+content table. That matters because this exact rule was written down and then
+broken thirteen times — V134 to V146 are all content. Not through
+carelessness: a README paragraph is advice, and advice loses to whatever is
+convenient at the time.
+
+It runs in `mvn test`, so CI already catches it with no extra wiring. Taxonomy
+tables are allowed. V1-V146 are exempt as history.
+
+Genuine schema work sometimes needs DML — backfilling a column the same
+migration just added, re-densifying `sort_order` after a structural change. Such
+a migration passes if it carries a comment line containing
+`POLICY-EXCEPTION:` and a reason. The marker is deliberately a sentence someone
+has to write and a reviewer will see in the diff: "backfilling the column added
+above" is a fine reason, "adding three new colleges" is not.
+
+The guard was checked in both directions rather than just observed to pass:
+a migration inserting colleges and updating careers fails with both tables
+named; the same file passes once the exception is stated; and removing the
+stated reason makes it fail again.
+
 A consequence worth stating plainly: CI's replay-from-empty proves the schema and
 the original seed are coherent. It does not produce a copy of production. A new
 environment is *run the migrations, then import the content*, not *run the

@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { Category, Skill } from "@/lib/types";
 import { indexBySlug } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
+import { usePagedList } from "@/hooks/usePagedList";
 import {
   CheckRow,
   Chip,
@@ -109,11 +110,14 @@ export default function SkillsExplorer({
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   const categoriesBySlug = useMemo(() => indexBySlug(categories), [categories]);
-  const cats = splitParam(categoryParam);
-  const reaches = splitParam(reachParam);
-
-  const roles = (slug: string) => roleCounts[slug] ?? 0;
-  const careers = (slug: string) => careerCounts[slug] ?? 0;
+  // All four memoised so the filter, sort and top-skills memos below can name
+  // them as dependencies. Previously the parsed arrays were rebuilt each render
+  // and the two count lookups were plain closures over props, so none could be a
+  // dependency and all three memos carried exhaustive-deps suppressions instead.
+  const cats = useMemo(() => splitParam(categoryParam), [categoryParam]);
+  const reaches = useMemo(() => splitParam(reachParam), [reachParam]);
+  const roles = useCallback((slug: string) => roleCounts[slug] ?? 0, [roleCounts]);
+  const careers = useCallback((slug: string) => careerCounts[slug] ?? 0, [careerCounts]);
 
   function toggle(list: string[], value: string, set: (v: string) => void) {
     set(joinParam(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]));
@@ -148,7 +152,10 @@ export default function SkillsExplorer({
       if (q === "") return true;
       return s.name.toLowerCase().includes(q) || (s.description?.toLowerCase().includes(q) ?? false);
     });
-  }, [initialSkills, query, categoryParam, reachParam, field]); // eslint-disable-line react-hooks/exhaustive-deps
+    // `fieldsBySkill` was missing from this list entirely while the suppression
+    // was in place -- the memo read it but would not have recomputed if it
+    // changed.
+  }, [initialSkills, query, cats, reaches, field, roles, fieldsBySkill]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -160,17 +167,14 @@ export default function SkillsExplorer({
       default:
         return list.sort((a, b) => roles(b.slug) - roles(a.slug) || a.name.localeCompare(b.name));
     }
-  }, [filtered, sort]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filtered, sort, careers, roles]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-
-  const resultsTopRef = useRef<HTMLDivElement>(null);
-  function goToPage(next: number) {
-    setPage(next);
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const { paginated, safePage, totalPages, resultsTopRef, goToPage } = usePagedList(
+    sorted,
+    page,
+    setPage,
+    PAGE_SIZE
+  );
 
   // Counts from the UNFILTERED list.
   const categoryCounts = useMemo(() => {
@@ -199,7 +203,7 @@ export default function SkillsExplorer({
         .filter((s) => roles(s.slug) > 0)
         .sort((a, b) => roles(b.slug) - roles(a.slug) || a.name.localeCompare(b.name))
         .slice(0, 6),
-    [initialSkills] // eslint-disable-line react-hooks/exhaustive-deps
+    [initialSkills, roles]
   );
 
   return (

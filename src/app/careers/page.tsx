@@ -21,20 +21,6 @@ export const metadata: Metadata = {
     "Browse careers across every field, with specializations, education paths, skills, exams and salary ranges.",
 };
 
-// Hidden from this listing page only -- these 3 careers' data, detail pages
-// (/careers/<slug>) and every other reference to them (search, related-
-// careers lists, etc.) are untouched. They overlap with 3 of the 4 CSE
-// specializations added in V46 (Software Engineer / Cloud Architect / AI-ML
-// Engineer vs. the Software Developer / Cloud Engineer / ML-AI Engineer
-// specializations under Computer Science Engineer), so they're filtered out
-// of the main careers grid here to avoid showing near-duplicate entries
-// side by side, per direct request.
-const HIDDEN_FROM_LISTING_SLUGS = new Set([
-  "software-engineer",
-  "cloud-architect",
-  "ai-ml-engineer",
-]);
-
 // Colours for the hero signpost's arms, cycled by position.
 //
 // The arms themselves are DERIVED from the categories that actually hold
@@ -59,14 +45,13 @@ const SIGNPOST_COLOURS = [
 ];
 
 export default async function CareersPage() {
-  const [allCareers, categories, specializations, colleges, exams] = await Promise.all([
+  const [careers, categories, specializations, colleges, exams] = await Promise.all([
     getCareers(),
     getCategories(),
     getSpecializations(),
     getColleges(),
     getExams(),
   ]);
-  const careers = allCareers.filter((c) => !HIDDEN_FROM_LISTING_SLUGS.has(c.slug));
 
   // Counted, not written down. A hard-coded "120+" is a number that goes
   // wrong the first time someone adds a career, and this catalog has moved a

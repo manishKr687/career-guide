@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { Industry } from "@/lib/types";
 import { useUrlListState } from "@/hooks/useUrlListState";
+import { usePagedList } from "@/hooks/usePagedList";
 import {
   CheckRow,
   Chip,
@@ -70,11 +71,20 @@ export default function IndustriesExplorer({
 
   const [view, setView] = useState<ViewMode>("grid");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const reaches = splitParam(reachParam);
 
-  const careersOf = (slug: string) => careerCounts[slug] ?? 0;
-  const rolesOf = (slug: string) => roleCounts[slug] ?? 0;
-  const reachOf = (slug: string) => careersOf(slug) + rolesOf(slug);
+  // Memoised so they are stable dependencies for the filter and sort memos
+  // below. Previously these were plain closures over the two count props, which
+  // meant the memos could not name them as dependencies and each carried an
+  // exhaustive-deps suppression instead -- the memos then depended on
+  // `reachParam` rather than on the values they actually read, and would not
+  // have recomputed had the counts ever changed.
+  const reaches = useMemo(() => splitParam(reachParam), [reachParam]);
+  const careersOf = useCallback((slug: string) => careerCounts[slug] ?? 0, [careerCounts]);
+  const rolesOf = useCallback((slug: string) => roleCounts[slug] ?? 0, [roleCounts]);
+  const reachOf = useCallback(
+    (slug: string) => careersOf(slug) + rolesOf(slug),
+    [careersOf, rolesOf]
+  );
 
   function reset() {
     setKind("all");
@@ -99,23 +109,20 @@ export default function IndustriesExplorer({
       }
       return q === "" || i.name.toLowerCase().includes(q);
     });
-  }, [initialIndustries, query, kind, reachParam]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialIndustries, query, kind, reaches, reachOf]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
     if (sort === "az") return list.sort((a, b) => a.name.localeCompare(b.name));
     return list.sort((a, b) => reachOf(b.slug) - reachOf(a.slug) || a.name.localeCompare(b.name));
-  }, [filtered, sort]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [filtered, sort, reachOf]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-
-  const resultsTopRef = useRef<HTMLDivElement>(null);
-  function goToPage(next: number) {
-    setPage(next);
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const { paginated, safePage, totalPages, resultsTopRef, goToPage } = usePagedList(
+    sorted,
+    page,
+    setPage,
+    PAGE_SIZE
+  );
 
   const sectorCount = initialIndustries.filter((i) => i.isSector).length;
 

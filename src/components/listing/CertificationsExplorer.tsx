@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { Certification } from "@/lib/types";
 import { useUrlListState } from "@/hooks/useUrlListState";
+import { usePagedList } from "@/hooks/usePagedList";
 import {
   CheckRow,
   Chip,
@@ -58,7 +59,10 @@ export default function CertificationsExplorer({
 
   const [view, setView] = useState<ViewMode>("grid");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const levels = splitParam(levelParam);
+  // Memoised so the filter memo below can depend on the parsed array itself
+  // rather than on the raw param string, which is what forced an
+  // exhaustive-deps suppression here.
+  const levels = useMemo(() => splitParam(levelParam), [levelParam]);
 
   function reset() {
     setLevelParam(NONE);
@@ -80,7 +84,7 @@ export default function CertificationsExplorer({
         c.description.toLowerCase().includes(q)
       );
     });
-  }, [initialCertifications, query, levelParam, provider]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialCertifications, query, levels, provider]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -96,15 +100,12 @@ export default function CertificationsExplorer({
     }
   }, [filtered, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-
-  const resultsTopRef = useRef<HTMLDivElement>(null);
-  function goToPage(next: number) {
-    setPage(next);
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const { paginated, safePage, totalPages, resultsTopRef, goToPage } = usePagedList(
+    sorted,
+    page,
+    setPage,
+    PAGE_SIZE
+  );
 
   const levelCounts = useMemo(() => {
     const counts = new Map<string, number>();

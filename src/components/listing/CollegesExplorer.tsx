@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { City, College, State } from "@/lib/types";
 import { indexBySlug } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
+import { usePagedList } from "@/hooks/usePagedList";
 import {
   CheckRow,
   Chip,
@@ -102,7 +103,10 @@ export default function CollegesExplorer({
 
   const statesBySlug = useMemo(() => indexBySlug(states), [states]);
   const citiesBySlug = useMemo(() => indexBySlug(cities), [cities]);
-  const ownerships = splitParam(ownershipParam);
+  // Memoised so the filter memo below can depend on the parsed array rather
+  // than on the raw param string, which is what forced an exhaustive-deps
+  // suppression here.
+  const ownerships = useMemo(() => splitParam(ownershipParam), [ownershipParam]);
 
   const ranked = initialColleges.some((c) => c.nirfRank !== null);
 
@@ -172,7 +176,7 @@ export default function CollegesExplorer({
         c.description.toLowerCase().includes(q)
       );
     });
-  }, [initialColleges, query, type, ownershipParam, state, city, ranks]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialColleges, query, type, ownerships, state, city, ranks]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -198,15 +202,12 @@ export default function CollegesExplorer({
     }
   }, [filtered, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-
-  const resultsTopRef = useRef<HTMLDivElement>(null);
-  function goToPage(next: number) {
-    setPage(next);
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const { paginated, safePage, totalPages, resultsTopRef, goToPage } = usePagedList(
+    sorted,
+    page,
+    setPage,
+    PAGE_SIZE
+  );
 
   // Counts from the UNFILTERED list, so a facet says how many colleges it
   // holds rather than how many survive the current filter.

@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { Career, Category, JobRole } from "@/lib/types";
 import { indexBySlug } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
+import { usePagedList } from "@/hooks/usePagedList";
 import {
   CheckRow,
   Chip,
@@ -96,8 +97,11 @@ export default function JobRolesExplorer({
 
   const careersBySlug = useMemo(() => indexBySlug(careers), [careers]);
   const categoriesBySlug = useMemo(() => indexBySlug(categories), [categories]);
-  const levels = splitParam(levelParam);
-  const salaries = splitParam(salaryParam);
+  // Memoised so the filter memo below can depend on the parsed arrays rather
+  // than on the raw param strings, which is what forced an exhaustive-deps
+  // suppression here.
+  const levels = useMemo(() => splitParam(levelParam), [levelParam]);
+  const salaries = useMemo(() => splitParam(salaryParam), [salaryParam]);
 
   function reset() {
     setField("all");
@@ -130,7 +134,10 @@ export default function JobRolesExplorer({
       if (q === "") return true;
       return r.name.toLowerCase().includes(q) || r.description.toLowerCase().includes(q);
     });
-  }, [initialJobRoles, query, field, levelParam, salaryParam]); // eslint-disable-line react-hooks/exhaustive-deps
+    // `fieldsByRole` was missing from this list entirely while the suppression
+    // was in place -- the memo read it but would not have recomputed if it
+    // changed.
+  }, [initialJobRoles, query, field, levels, salaries, fieldsByRole]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -150,15 +157,12 @@ export default function JobRolesExplorer({
     }
   }, [filtered, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-
-  const resultsTopRef = useRef<HTMLDivElement>(null);
-  function goToPage(next: number) {
-    setPage(next);
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const { paginated, safePage, totalPages, resultsTopRef, goToPage } = usePagedList(
+    sorted,
+    page,
+    setPage,
+    PAGE_SIZE
+  );
 
   // Counts from the UNFILTERED list.
   const fieldCounts = useMemo(() => {

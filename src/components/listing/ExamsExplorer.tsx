@@ -1,13 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { Category, Exam } from "@/lib/types";
 import { indexBySlug } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
+import { usePagedList } from "@/hooks/usePagedList";
 import {
   CheckRow,
   Chip,
@@ -87,8 +88,11 @@ export default function ExamsExplorer({
   const [sort, setSort] = useState("popularity");
 
   const categoriesBySlug = useMemo(() => indexBySlug(categories), [categories]);
-  const levels = splitParam(levelParam);
-  const freqs = splitParam(freqParam);
+  // Memoised so the filter memo below can depend on the parsed arrays rather
+  // than on the raw param strings, which is what forced an exhaustive-deps
+  // suppression here.
+  const levels = useMemo(() => splitParam(levelParam), [levelParam]);
+  const freqs = useMemo(() => splitParam(freqParam), [freqParam]);
 
   function toggle(list: string[], value: string, set: (v: string) => void) {
     set(joinParam(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]));
@@ -133,7 +137,7 @@ export default function ExamsExplorer({
         e.conductedBy.toLowerCase().includes(q)
       );
     });
-  }, [initialExams, query, field, levelParam, freqParam, body]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [initialExams, query, field, levels, freqs, body]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -156,15 +160,12 @@ export default function ExamsExplorer({
     }
   }, [filtered, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
-  const safePage = Math.min(page, totalPages);
-  const paginated = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
-
-  const resultsTopRef = useRef<HTMLDivElement>(null);
-  function goToPage(next: number) {
-    setPage(next);
-    resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const { paginated, safePage, totalPages, resultsTopRef, goToPage } = usePagedList(
+    sorted,
+    page,
+    setPage,
+    PAGE_SIZE
+  );
 
   // Counts from the UNFILTERED list, so a facet always says how many exams it
   // holds rather than how many survive the current filter.

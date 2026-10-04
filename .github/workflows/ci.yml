@@ -114,6 +114,18 @@ jobs:
       - name: Smoke test
         run: npm run smoke -- --sample 25
 
+      # Guards the @OrderColumn relationship-sync hazard, which no unit test can
+      # reach: the failure happens inside Hibernate's positional UPDATE, and a
+      # mocked repository has no Hibernate. It edits a college through the admin
+      # API and restores it, which is safe here because this job builds the
+      # database from migrations and throws it away afterwards.
+      #
+      # It has been verified to fail, not just to pass: reintroducing the
+      # patch-in-place pattern this project was bitten by made it report HTTP 409
+      # primary key collisions on exactly the two operations that trigger the bug.
+      - name: Relationship sync check
+        run: npm run sync-check
+
       - name: Backend logs on failure
         if: failure()
         run: docker logs careerguide-api 2>&1 | tail -100

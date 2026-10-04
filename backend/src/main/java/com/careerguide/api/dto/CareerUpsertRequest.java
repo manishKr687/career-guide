@@ -25,7 +25,7 @@ import java.util.List;
  * every one of these since they were first added (V16/V24/V25/V26/V51).
  */
 public record CareerUpsertRequest(
-        @NotBlank @Size(max = 64) @Pattern(regexp = "^[a-z0-9]+(-[a-z0-9]+)*$", message = "must be lowercase letters, numbers and hyphens only") String slug,
+        @NotBlank @Size(max = 64) @Pattern(regexp = Slugs.PATTERN, message = Slugs.MESSAGE) String slug,
         @NotBlank @Size(max = 160) String title,
         @NotBlank String categorySlug,
         @NotBlank @Size(max = 255) String tagline,

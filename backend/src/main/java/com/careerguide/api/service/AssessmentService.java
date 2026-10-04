@@ -94,7 +94,13 @@ public class AssessmentService {
 
     private List<Category> getTopCategories(Map<String, Integer> scores, int count) {
         return scores.entrySet().stream()
-                .sorted((a, b) -> b.getValue() - a.getValue())
+                // Integer.compare rather than b - a: subtraction in a comparator
+                // overflows once the operands are far enough apart, and an
+                // overflowed difference flips sign, which makes the comparator
+                // inconsistent and can throw "Comparison method violates its
+                // general contract". Assessment scores are small enough that it
+                // could not happen here, but the correct form costs nothing.
+                .sorted((a, b) -> Integer.compare(b.getValue(), a.getValue()))
                 .limit(count)
                 .map(e -> categoryRepository.findById(e.getKey()).orElse(null))
                 .filter(java.util.Objects::nonNull)

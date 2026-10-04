@@ -54,6 +54,11 @@ public class AuthRateLimitInterceptor implements HandlerInterceptor {
         this.submissionMaxAttempts = submissionMaxAttempts;
     }
 
+    /**
+     * Always returns {@code true} and rejects by throwing -- see
+     * {@link AdminAuthInterceptor#preHandle} for why Sonar's java:S3516 on this
+     * method is wrong and returning {@code false} would be a regression.
+     */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // Same reasoning as AdminAuthInterceptor/UserAuthInterceptor: let CORS

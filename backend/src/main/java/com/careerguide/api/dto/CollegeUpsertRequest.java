@@ -25,7 +25,7 @@ import java.util.List;
  * see CollegeService.syncCareerOfferings.
  */
 public record CollegeUpsertRequest(
-        @NotBlank @Size(max = 64) @Pattern(regexp = "^[a-z0-9]+(-[a-z0-9]+)*$", message = "must be lowercase letters, numbers and hyphens only") String slug,
+        @NotBlank @Size(max = 64) @Pattern(regexp = Slugs.PATTERN, message = Slugs.MESSAGE) String slug,
         @NotBlank @Size(max = 200) String name,
         @NotBlank @Size(max = 200) String location,
         @NotBlank @Size(max = 32) String type,

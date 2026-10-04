@@ -9,7 +9,7 @@ import java.util.List;
 
 /** Request body for {@code POST/PUT /api/admin/exams}. */
 public record ExamUpsertRequest(
-        @NotBlank @Size(max = 64) @Pattern(regexp = "^[a-z0-9]+(-[a-z0-9]+)*$", message = "must be lowercase letters, numbers and hyphens only") String slug,
+        @NotBlank @Size(max = 64) @Pattern(regexp = Slugs.PATTERN, message = Slugs.MESSAGE) String slug,
         @NotBlank @Size(max = 160) String name,
         @NotBlank @Size(max = 255) String fullName,
         @NotBlank @Size(max = 64) String category,

@@ -14,7 +14,7 @@ import jakarta.validation.constraints.Size;
  * type may not (V71).
  */
 public record SubjectUpsertRequest(
-        @NotBlank @Size(max = 64) @Pattern(regexp = "^[a-z0-9]+(-[a-z0-9]+)*$", message = "must be lowercase letters, numbers and hyphens only") String slug,
+        @NotBlank @Size(max = 64) @Pattern(regexp = Slugs.PATTERN, message = Slugs.MESSAGE) String slug,
         @NotBlank @Size(max = 160) String title,
         @NotBlank String description,
         @NotBlank @Size(max = 32) String icon,

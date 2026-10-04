@@ -145,9 +145,16 @@ public class AdminDashboardService {
         StringBuilder sql = new StringBuilder();
         for (String[] e : ENTITIES) {
             if (sql.length() > 0) sql.append(" UNION ALL ");
-            // job_roles and the rest use `name`; careers/degrees use `title`.
+            // job_roles and the rest use `name`; careers, degrees and resources
+            // use `title`.
+            //
+            // The ternary that used to be here read
+            // `e[2].equals("resources") ? "title" : "title"` -- both branches
+            // the same, so it tested nothing and only looked as though resources
+            // were a special case. Sonar caught it as java:S3923. The output was
+            // always correct; the code lied about why.
             String titleCol = switch (e[2]) {
-                case "careers", "degrees", "resources" -> e[2].equals("resources") ? "title" : "title";
+                case "careers", "degrees", "resources" -> "title";
                 default -> "name";
             };
             sql.append(String.format(

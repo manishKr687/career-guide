@@ -117,7 +117,12 @@ export default function CertificationsExplorer({
   }, [initialCertifications]);
 
   const providers = useMemo(
-    () => [...new Set(initialCertifications.map((c) => c.provider).filter(Boolean))].sort(),
+    // localeCompare for the same reason as AdminResourceList's filter options: a
+    // bare sort() orders by UTF-16 code unit, so a lowercase provider name would
+    // sort after every capitalised one. Every provider is capitalised ASCII
+    // today, so this changes nothing visible and stops depending on that.
+    () => [...new Set(initialCertifications.map((c) => c.provider).filter(Boolean))]
+        .sort((a, b) => a.localeCompare(b)),
     [initialCertifications]
   );
 

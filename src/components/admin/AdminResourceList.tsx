@@ -94,7 +94,13 @@ export default function AdminResourceList({
       const v = item[filterField.key];
       if (typeof v === "string" && v !== "") seen.set(v, v);
     }
-    return [...seen.keys()].sort();
+    // localeCompare, not a bare sort(). Array.sort() with no comparator orders
+    // by UTF-16 code unit, which puts every capitalised value before every
+    // lowercase one and mis-orders anything outside ASCII. These values are
+    // whatever an admin typed into a filterable field, across all thirteen
+    // resource types, so the content decides whether that shows -- today every
+    // value happens to be consistently capitalised ASCII and the two agree.
+    return [...seen.keys()].sort((a, b) => a.localeCompare(b));
   }, [items, filterField]);
 
   const visible = useMemo(() => {

@@ -196,7 +196,21 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
         <div className="lg:hidden fixed inset-0 z-40 flex">
           {/* Closing on bubbled clicks rather than on a pathname effect: any
               link inside the drawer both navigates and dismisses it, and the
-              drawer never has to re-render the whole shell to do it. */}
+              drawer never has to re-render the whole shell to do it.
+
+              This div is a delegation target, not a control, which is why it
+              carries no keyboard handler and needs none. Sonar's S1082 flags it
+              as a non-interactive element with a click handler, but activating a
+              link or button by keyboard dispatches a click that bubbles here
+              exactly as a tap does -- so keyboard users already get the drawer
+              dismissed. Adding onKeyDown would be unreachable code that looks
+              like it matters. The real control is the button below, which has an
+              aria-label and is focusable.
+
+              No eslint-disable here on purpose: this project's ESLint config has
+              no jsx-a11y plugin, so the directive would be dead and eslint warns
+              about it. The finding is Sonar's, and this comment is the answer to
+              it. */}
           <div className="w-64 h-full shadow-xl" onClick={() => setNavOpen(false)}>
             {sidebar}
           </div>

@@ -138,10 +138,10 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[13px] font-bold text-ink mb-1.5">Name *</label>
+                <label htmlFor="cf-name" className="block text-[13px] font-bold text-ink mb-1.5">Name *</label>
                 <div className="relative">
                   <FieldIcon name="user" />
-                  <input
+                  <input id="cf-name"
                     required
                     type="text"
                     value={name}
@@ -152,10 +152,10 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
                 </div>
               </div>
               <div>
-                <label className="block text-[13px] font-bold text-ink mb-1.5">Phone *</label>
+                <label htmlFor="cf-phone" className="block text-[13px] font-bold text-ink mb-1.5">Phone *</label>
                 <div className="relative">
                   <FieldIcon name="phone" />
-                  <input
+                  <input id="cf-phone"
                     required
                     type="tel"
                     value={phone}
@@ -167,10 +167,10 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
               </div>
             </div>
             <div>
-              <label className="block text-[13px] font-bold text-ink mb-1.5">Email *</label>
+              <label htmlFor="cf-email" className="block text-[13px] font-bold text-ink mb-1.5">Email *</label>
               <div className="relative">
                 <FieldIcon name="mail" />
-                <input
+                <input id="cf-email"
                   required
                   type="email"
                   value={email}
@@ -191,10 +191,10 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[13px] font-bold text-ink mb-1.5">Preferred date</label>
+                <label htmlFor="cf-preferred-date" className="block text-[13px] font-bold text-ink mb-1.5">Preferred date</label>
                 <div className="relative">
                   <FieldIcon name="cal" />
-                  <input
+                  <input id="cf-preferred-date"
                     type="date"
                     value={preferredDate}
                     onChange={(e) => setPreferredDate(e.target.value)}
@@ -203,10 +203,10 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
                 </div>
               </div>
               <div>
-                <label className="block text-[13px] font-bold text-ink mb-1.5">Preferred time</label>
+                <label htmlFor="cf-preferred-time" className="block text-[13px] font-bold text-ink mb-1.5">Preferred time</label>
                 <div className="relative">
                   <FieldIcon name="clock" />
-                  <input
+                  <input id="cf-preferred-time"
                     type="text"
                     value={preferredTime}
                     onChange={(e) => setPreferredTime(e.target.value)}
@@ -217,8 +217,8 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
               </div>
             </div>
             <div>
-              <label className="block text-[13px] font-bold text-ink mb-1.5">Current stage</label>
-              <select value={stageSlug} onChange={(e) => setStageSlug(e.target.value)} className={INPUT_CLASS}>
+              <label htmlFor="cf-stage" className="block text-[13px] font-bold text-ink mb-1.5">Current stage</label>
+              <select id="cf-stage" value={stageSlug} onChange={(e) => setStageSlug(e.target.value)} className={INPUT_CLASS}>
                 <option value="">Prefer not to say</option>
                 {stages.map((s) => (
                   <option key={s.slug} value={s.slug}>
@@ -228,8 +228,8 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
               </select>
             </div>
             <div>
-              <label className="block text-[13px] font-bold text-ink mb-1.5">What would you like to discuss?</label>
-              <textarea
+              <label htmlFor="cf-message" className="block text-[13px] font-bold text-ink mb-1.5">What would you like to discuss?</label>
+              <textarea id="cf-message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 rows={3}

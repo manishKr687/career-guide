@@ -13,32 +13,44 @@ configuration is wrong.
 These are open defects, not preferences. Two are exploitable by anyone the day
 the site is reachable.
 
-### 0.1 Rate-limit the counselling endpoint
+### 0.1 Rate-limit the counselling endpoint — DONE
 
-`POST /api/counselling-requests` has no authentication, no rate limit, and no
-size cap on `message`. Measured, not assumed:
+`POST /api/counselling-requests` had no authentication, no rate limit and no
+size cap on `message`. It is the only unauthenticated endpoint that *persists*
+anything, and what it persists is name, email, phone and free text from students
+who are often minors — the table you are the DPDP data fiduciary for.
 
-- 30 rapid submissions → 30 × `201 Created`, 0 × `429`
-- a 2 MB `message` → `201 Created`, stored as 1953 kB
+Measured before: 30 rapid submissions → 30 × `201`, 0 × `429`; a 2 MB `message`
+→ `201 Created`, stored as 1953 kB.
 
-It is the only unauthenticated endpoint that *persists* anything, and what it
-persists is name, email, phone and free text from students who are often minors
-— the table you are the DPDP data fiduciary for. Anyone can fill it, and fill
-the disk.
+Three layers now, each covering what the others cannot:
 
-The fix is small because the machinery exists:
+| | |
+|---|---|
+| Rate limit | `/api/counselling-requests` registered in `AuthRateLimitWebConfig` with its own budget of 3 per 15 minutes, separate from the credential endpoints' 10 |
+| `@Size(max = 2000)` on `message` | Bounds what gets stored. Runs after Jackson parses, so it protects the column, not memory |
+| `RequestSizeLimitFilter` | Rejects a body over 64 KB with `413` before anything parses it. Bean Validation cannot do this, and Spring Boot has no property for it — `server.tomcat.max-http-form-post-size` covers form-encoded posts only |
 
-1. Add `/api/counselling-requests` to `AuthRateLimitWebConfig`'s path patterns.
-   `AuthRateLimiter` is already IP-keyed and configurable. Give it its own
-   budget — 10-per-15-minutes is tuned for credential guessing, not forms.
-2. Add `@Size(max = ...)` to `message` in `CounsellingRequestSubmission`. Every
-   other field on that record has one; this is the only gap, and its column is
-   `text`.
-3. Cap the request body at Tomcat, so an oversized payload is rejected before
-   being parsed into memory rather than after.
+Measured after:
 
-**Verify:** re-run both probes. The 30-request burst must start returning `429`,
-and the 2 MB payload must be rejected.
+```
+30 rapid submissions   ->  3 x 201, 27 x 429, Retry-After: 896
+2 MB body              ->  413 Payload Too Large
+message of 2001 chars  ->  400 Bad Request
+normal 1500-char message -> 201 Created
+/api/admin/login       ->  still 10 before 429, not 3
+```
+
+Covered by `AuthRateLimitInterceptorTest` and `RequestSizeLimitFilterTest`
+(13 tests), including that exhausting the form does not lock the same caller out
+of logging in, and that one abusive IP does not take the form offline for
+everyone.
+
+**One known gap, recorded rather than glossed:** the filter reads
+`Content-Length`, so a client using `Transfer-Encoding: chunked` sends no length
+and passes through, bounded only by `@Size` after parsing. Closing it means
+wrapping the input stream and counting bytes as they are read. Every ordinary
+HTTP client sends `Content-Length`.
 
 ### 0.2 Get SonarQube out of the production compose file
 

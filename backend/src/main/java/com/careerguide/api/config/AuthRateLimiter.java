@@ -41,9 +41,25 @@ public class AuthRateLimiter {
 
     /**
      * Records one attempt for {@code key} and reports whether it's still
-     * within the allowed budget for the current window.
+     * within the configured budget for the current window.
      */
     public boolean tryAcquire(String key) {
+        return tryAcquire(key, maxAttempts);
+    }
+
+    /**
+     * As {@link #tryAcquire(String)}, but against a caller-supplied budget.
+     *
+     * <p>Added so one limiter can serve groups of endpoints with different
+     * threat models. The configured default suits credential guessing, where
+     * ten tries per quarter hour is already generous. A public form wants a
+     * tighter number: nobody submits a counselling enquiry ten times, so the
+     * extra headroom buys a legitimate user nothing and an abuser something.
+     *
+     * <p>Additive on purpose -- the no-argument overload behaves exactly as
+     * before, so the login and registration paths are untouched.
+     */
+    public boolean tryAcquire(String key, int budget) {
         long now = System.currentTimeMillis();
         sweepIfNeeded(now);
         Bucket bucket = buckets.computeIfAbsent(key, ignored -> new Bucket(now));
@@ -53,7 +69,7 @@ public class AuthRateLimiter {
                 bucket.count = 0;
             }
             bucket.count++;
-            return bucket.count <= maxAttempts;
+            return bucket.count <= budget;
         }
     }
 

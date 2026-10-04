@@ -3,27 +3,55 @@ package com.careerguide.api.config;
 import com.careerguide.api.web.RateLimitExceededException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.util.Set;
+
 /**
- * Basic per-IP throttle on the handful of endpoints an attacker can hit
- * without ever holding a valid credential -- {@code POST /api/auth/login}
- * and {@code POST /api/auth/register} (brute-forcing a password / spamming
- * account creation) and {@code POST /api/admin/login} (brute-forcing the
- * single shared admin password). Registered only on those exact paths in
- * {@link AuthRateLimitWebConfig}; every other endpoint is either already
- * behind a bearer token (so hammering it isn't a credential-guessing
- * concern) or a public read with no attempt-limited resource behind it.
+ * Basic per-IP throttle on the endpoints an attacker can hit without ever
+ * holding a valid credential.
+ *
+ * <p>Two groups, with different budgets because they are different problems:
+ *
+ * <ul>
+ *   <li><b>Credential endpoints</b> -- {@code POST /api/auth/login},
+ *       {@code /api/auth/register} and {@code /api/admin/login}. Brute-forcing
+ *       a password or spamming account creation. Budget:
+ *       {@code careerguide.rate-limit.auth.max-attempts}, default 10.</li>
+ *   <li><b>Public submissions</b> -- {@code POST /api/counselling-requests}.
+ *       Not credential guessing: it is an unauthenticated endpoint that writes
+ *       a row of personal data, so the risk is unbounded table growth and an
+ *       unusable admin inbox. Budget:
+ *       {@code careerguide.rate-limit.submission.max-attempts}, default 3,
+ *       because nobody books a counselling call four times in a quarter of an
+ *       hour and anyone who does can wait.</li>
+ * </ul>
+ *
+ * Registered on exactly those paths in {@link AuthRateLimitWebConfig}. Every
+ * other endpoint is either behind a bearer token or a public read with no
+ * attempt-limited resource behind it.
  */
 @Component
 public class AuthRateLimitInterceptor implements HandlerInterceptor {
 
-    private final AuthRateLimiter rateLimiter;
+    /**
+     * Paths treated as public submissions rather than credential attempts.
+     * Matched exactly, not by prefix: a future {@code /api/counselling-requests/
+     * something} should not inherit this budget by accident.
+     */
+    private static final Set<String> SUBMISSION_PATHS = Set.of("/api/counselling-requests");
 
-    public AuthRateLimitInterceptor(AuthRateLimiter rateLimiter) {
+    private final AuthRateLimiter rateLimiter;
+    private final int submissionMaxAttempts;
+
+    public AuthRateLimitInterceptor(
+            AuthRateLimiter rateLimiter,
+            @Value("${careerguide.rate-limit.submission.max-attempts:3}") int submissionMaxAttempts) {
         this.rateLimiter = rateLimiter;
+        this.submissionMaxAttempts = submissionMaxAttempts;
     }
 
     @Override
@@ -33,8 +61,12 @@ public class AuthRateLimitInterceptor implements HandlerInterceptor {
         if (HttpMethod.OPTIONS.matches(request.getMethod())) {
             return true;
         }
-        String key = clientIp(request) + ":" + request.getRequestURI();
-        if (!rateLimiter.tryAcquire(key)) {
+        String path = request.getRequestURI();
+        String key = clientIp(request) + ":" + path;
+        boolean allowed = SUBMISSION_PATHS.contains(path)
+                ? rateLimiter.tryAcquire(key, submissionMaxAttempts)
+                : rateLimiter.tryAcquire(key);
+        if (!allowed) {
             long retryAfterSeconds = rateLimiter.retryAfterSeconds(key);
             response.setHeader("Retry-After", String.valueOf(retryAfterSeconds));
             throw new RateLimitExceededException("Too many attempts -- please wait before trying again");

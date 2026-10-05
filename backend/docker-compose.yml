@@ -56,7 +56,18 @@ services:
       CAREERGUIDE_ADMIN_TOKEN_SECRET: ${CAREERGUIDE_ADMIN_TOKEN_SECRET:-dev-only-change-this-admin-token-secret}
       CAREERGUIDE_USER_TOKEN_SECRET: ${CAREERGUIDE_USER_TOKEN_SECRET:-dev-only-change-this-user-token-secret}
     ports:
-      - "8081:8080"
+      # Loopback only, for the same reason as postgres above. In a deployment the
+      # only thing that should listen publicly is the reverse proxy terminating
+      # TLS; this published on 0.0.0.0, which meant the API was reachable from
+      # the internet over plain HTTP. Every admin password, user password and
+      # session token on this API travels in the request body or an Authorization
+      # header, so unencrypted public exposure is the whole threat model at once.
+      #
+      # 127.0.0.1 still works for everything that needs it: `next start` on the
+      # host, the smoke and sync-check scripts, and a reverse proxy on the same
+      # machine. A containerised frontend would reach it over the compose network
+      # by service name instead, which does not need a published port at all.
+      - "127.0.0.1:8081:8080"
 
 volumes:
   careerguide-postgres-data:

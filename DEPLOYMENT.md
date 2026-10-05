@@ -52,20 +52,48 @@ and passes through, bounded only by `@Size` after parsing. Closing it means
 wrapping the input stream and counting bytes as they are read. Every ordinary
 HTTP client sends `Content-Length`.
 
-### 0.2 Get SonarQube out of the production compose file
+### 0.2 Get SonarQube out of the production compose file — DONE
 
-`backend/docker-compose.yml` publishes SonarQube on `0.0.0.0:9000` with the
-default `admin/admin`. In the same file that would run in production.
+It was a service in `backend/docker-compose.yml` — the file a deployment runs —
+published on `0.0.0.0:9000` with SonarQube's default `admin/admin`. Anyone who
+found the port owned it, and the analysis history of the whole codebase with it.
 
-Either bind it to `127.0.0.1:9000:9000`, or move it to a separate
-`docker-compose.sonar.yml` you only run locally. The second is better — a code
-quality scanner has no business on a production host.
+Now `backend/docker-compose.sonar.yml`, run on its own and bound to loopback:
 
-### 0.3 Do not publish the API directly
+```bash
+docker compose -f docker-compose.sonar.yml up -d
+docker compose -f docker-compose.sonar.yml down
+```
 
-`careerguide-api` publishes `0.0.0.0:8081->8080` over plain HTTP. On a real host
-that exposes the API to the internet unencrypted. Bind it to `127.0.0.1:8081`
-and let the reverse proxy in Phase 2 be the only thing listening publicly.
+Docker names volumes after the project directory, so it reuses the existing
+`backend_sonarqube_*` volumes — the analysis history, quality profiles and admin
+password survived the move, verified by reading `careerguide-backend`'s measures
+back afterwards. `docker compose up` for the app no longer waits on a service
+that wants ~2 GB and a minute to become healthy.
+
+### 0.3 Do not publish the API directly — DONE
+
+`careerguide-api` published `0.0.0.0:8081->8080` over plain HTTP, so on a real
+host the API was reachable from the internet unencrypted — and every admin
+password, user password and session token on it travels in a request body or an
+Authorization header.
+
+Now `127.0.0.1:8081:8080`, matching postgres. Verified from both sides rather
+than assumed:
+
+```
+http://127.0.0.1:8081    -> answers
+http://<lan-address>:8081 -> REFUSED (not listening)
+http://<lan-address>:9000 -> REFUSED (not listening)
+```
+
+Loopback is still enough for everything that needs it: `next start` on the host,
+the smoke and sync-check scripts, and a reverse proxy on the same machine. A
+containerised frontend would reach the API over the compose network by service
+name, which needs no published port at all.
+
+**This does not give you HTTPS.** It removes the public plaintext port; Phase 2
+is still required before anything is reachable from the internet.
 
 ---
 

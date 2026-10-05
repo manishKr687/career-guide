@@ -393,7 +393,7 @@ export function FilterRail({
               <label htmlFor={`${anchorId}-q`} className="block text-[12.5px] font-bold text-navy mb-2.5">
                 Search
               </label>
-              <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 focus-within:border-blue/50 transition-colors">
+              <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1 focus-within:border-blue/50 transition-colors">
                 <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
                 <input
                   id={`${anchorId}-q`}
@@ -402,7 +402,7 @@ export function FilterRail({
                   onChange={(e) => onQueryChange?.(e.target.value)}
                   placeholder={searchPlaceholder}
                   aria-label={searchLabel}
-                  className="flex-1 min-w-0 bg-transparent text-[13px] text-ink placeholder:text-subtle outline-none"
+                  className="flex-1 min-w-0 bg-transparent py-1.5 text-[13px] text-ink placeholder:text-subtle outline-none"
                 />
               </div>
             </div>
@@ -535,22 +535,30 @@ export function StatsStrip({
 }: {
   stats: { icon: string; tint: string; value: string | number; label: string; sub: string }[];
 }) {
+  // Two columns on a phone leave each tile about 171px, and a w-12 icon plus
+  // px-5 took all but 63px of it -- so every label and sub-label here was
+  // clipped mid-word ("Sectors and employers" needed 115px, "To a career, exam
+  // or skill" 124px). The icon and padding shrink below sm, and the two text
+  // lines wrap instead of truncating: they are two or three words, so a second
+  // line costs nothing and a clipped one cost the whole meaning.
   return (
     <dl className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {stats.map((s) => (
         <div
           key={s.label}
-          className="flex items-center gap-3.5 rounded-2xl border border-line bg-white px-5 py-4"
+          className="flex items-center gap-3 sm:gap-3.5 rounded-2xl border border-line bg-white px-3.5 sm:px-5 py-4"
         >
-          <span className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${s.tint}`}>
-            <Icon name={s.icon} className="w-[21px] h-[21px]" />
+          <span
+            className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 ${s.tint}`}
+          >
+            <Icon name={s.icon} className="w-[19px] h-[19px] sm:w-[21px] sm:h-[21px]" />
           </span>
           <div className="min-w-0">
             <dd className="font-display font-extrabold text-navy text-[22px] leading-none">
               {s.value}
             </dd>
-            <dt className="text-[12.5px] font-semibold text-ink/75 mt-1 truncate">{s.label}</dt>
-            <div className="text-[11.5px] text-muted truncate">{s.sub}</div>
+            <dt className="text-[12.5px] font-semibold text-ink/75 mt-1 leading-snug">{s.label}</dt>
+            <div className="text-[11.5px] text-muted leading-snug">{s.sub}</div>
           </div>
         </div>
       ))}

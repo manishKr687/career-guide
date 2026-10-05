@@ -143,7 +143,9 @@ export default async function CareersPage() {
                       <dd className="font-display font-extrabold text-navy text-[20px] leading-none">
                         {s.value}
                       </dd>
-                      <dt className="text-[12px] font-semibold text-muted mt-1 truncate">
+                      {/* Wraps rather than truncates: two columns on a phone
+                          left this 54px, and "Specializations" needs 80. */}
+                      <dt className="text-[12px] font-semibold text-muted mt-1 leading-snug">
                         {s.label}
                       </dt>
                     </div>

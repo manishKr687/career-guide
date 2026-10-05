@@ -7,6 +7,7 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import JobRolesExplorer from "@/components/listing/JobRolesExplorer";
+import { StatsStrip } from "@/components/listing/ListingKit";
 import { getJobRoles } from "@/data/jobRoles";
 import { getCareers } from "@/data/careers";
 import { getCategories } from "@/data/categories";
@@ -186,27 +187,7 @@ export default async function JobRolesPage() {
       </Container>
 
       <Container className="mt-6">
-        <dl className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className="flex items-center gap-3.5 rounded-2xl border border-line bg-white px-5 py-4"
-            >
-              <span
-                className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${s.tint}`}
-              >
-                <Icon name={s.icon} className="w-[21px] h-[21px]" />
-              </span>
-              <div className="min-w-0">
-                <dd className="font-display font-extrabold text-navy text-[22px] leading-none">
-                  {s.value}
-                </dd>
-                <dt className="text-[12.5px] font-semibold text-ink/75 mt-1 truncate">{s.label}</dt>
-                <div className="text-[11.5px] text-muted truncate">{s.sub}</div>
-              </div>
-            </div>
-          ))}
-        </dl>
+        <StatsStrip stats={stats} />
       </Container>
 
       <Suspense fallback={null}>

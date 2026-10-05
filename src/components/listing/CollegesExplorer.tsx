@@ -415,7 +415,7 @@ export default function CollegesExplorer({
                   the page. On a phone the panel toggle is the only route to it,
                   which is why that button says "Filter & sort". */}
               <FilterGroup label="Search by name">
-                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 focus-within:border-blue/50 transition-colors">
+                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1 focus-within:border-blue/50 transition-colors">
                   <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
                   <input
                     type="search"
@@ -423,7 +423,7 @@ export default function CollegesExplorer({
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search colleges..."
                     aria-label="Search colleges by name"
-                    className="flex-1 min-w-0 bg-transparent text-[13px] text-ink placeholder:text-subtle outline-none"
+                    className="flex-1 min-w-0 bg-transparent py-1.5 text-[13px] text-ink placeholder:text-subtle outline-none"
                   />
                 </div>
               </FilterGroup>

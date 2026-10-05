@@ -386,7 +386,7 @@ export default function CareersExplorer({
                 <label htmlFor="careers-q" className="block text-[12.5px] font-bold text-navy mb-2.5">
                   Search
                 </label>
-                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 focus-within:border-blue/50 transition-colors">
+                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1 focus-within:border-blue/50 transition-colors">
                   <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
                   <input
                     id="careers-q"
@@ -395,7 +395,7 @@ export default function CareersExplorer({
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search careers..."
                     aria-label="Search careers"
-                    className="flex-1 min-w-0 bg-transparent text-[13px] text-ink placeholder:text-subtle outline-none"
+                    className="flex-1 min-w-0 bg-transparent py-1.5 text-[13px] text-ink placeholder:text-subtle outline-none"
                   />
                 </div>
               </div>

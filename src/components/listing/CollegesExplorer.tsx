@@ -13,6 +13,12 @@ import {
   CheckRow,
   Chip,
   FilterGroup,
+  FilterRail,
+  ListingLayout,
+  NoResults,
+  ResultsColumn,
+  ResultsHeader,
+  countLabel,
   FilterSelect,
   NONE,
   joinParam,
@@ -253,46 +259,58 @@ export default function CollegesExplorer({
     [initialColleges]
   );
 
+  // The rail's lower panels, below the filter card.
+  const extraPanels = (
+    <>
+        {topRanked.length > 0 && (
+          <div className="rounded-3xl border border-line bg-white p-5">
+            <h2 className="flex items-center gap-2 font-display font-extrabold text-navy text-[15px] mb-3">
+              <Icon name="trophy" className="w-4 h-4 text-blue" />
+              Top Ranked
+            </h2>
+            <ul className="flex flex-col">
+              {topRanked.map((c) => (
+                <li key={c.slug}>
+                  <Link
+                    href={`/colleges/${c.slug}`}
+                    className="group flex items-center gap-2.5 py-2.5 border-b border-line last:border-0 -mx-2 px-2 rounded-lg hover:bg-bg-soft transition-colors"
+                  >
+                    <span className="w-7 h-7 rounded-lg bg-amber-soft text-amber flex items-center justify-center shrink-0 text-[11px] font-bold">
+                      {c.nirfRank}
+                    </span>
+                    <span className="flex-1 min-w-0">
+                      <span className="block text-[13px] font-semibold text-ink/85 truncate">
+                        {c.name}
+                      </span>
+                      <span className="block text-[11px] text-muted truncate">
+                        {c.nirfLabel}
+                      </span>
+                    </span>
+                    <Icon
+                      name="chevRight"
+                      className="w-3.5 h-3.5 text-subtle shrink-0 group-hover:text-blue transition-colors"
+                    />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+    </>
+  );
+
   return (
     <Container className="py-8 pb-24">
-      <div className="flex flex-col lg:flex-row lg:items-start gap-8">
-        {/* ------------------------------------------------------------ Results */}
-        <div className="flex-1 min-w-0 order-2">
-          <div id="all-colleges" className="flex flex-wrap items-end justify-between gap-4 mb-6 scroll-mt-24">
-            <div>
-              <h2 className="flex items-center gap-2.5 font-display font-extrabold text-navy text-[22px]">
-                <Icon name="grid" className="w-[22px] h-[22px] text-blue shrink-0" />
-                All Colleges
-              </h2>
-              <p className="text-[13px] text-muted mt-1.5">
-                Explore colleges and find the one that matches your career goals.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-[13px] font-semibold text-subtle">
-                {sorted.length > PAGE_SIZE
-                  ? `Showing ${(safePage - 1) * PAGE_SIZE + 1}–${Math.min(safePage * PAGE_SIZE, sorted.length)} of ${sorted.length} colleges`
-                  : `${sorted.length} college${sorted.length === 1 ? "" : "s"}`}
-              </span>
-              <div className="flex items-center rounded-xl border border-line overflow-hidden">
-                {(["grid", "list"] as const).map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setView(v)}
-                    aria-pressed={view === v}
-                    aria-label={`${v} view`}
-                    className={`w-9 h-9 flex items-center justify-center transition-colors ${
-                      view === v ? "bg-blue text-white" : "bg-white text-subtle hover:text-navy"
-                    }`}
-                  >
-                    <Icon name={v} className="w-4 h-4" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+      <ListingLayout>
+        <ResultsColumn>
+          <ResultsHeader
+            anchorId="all-colleges"
+            title="All Colleges"
+            subtitle="Browse institutes by type, ownership and where they are."
+            countLabel={countLabel(sorted.length, safePage, PAGE_SIZE, "college")}
+            view={view}
+            onViewChange={setView}
+          />
 
           {activeCount > 0 && (
             <div ref={resultsTopRef} className="flex flex-wrap items-center gap-2 mb-5">
@@ -353,242 +371,121 @@ export default function CollegesExplorer({
               <Pagination page={safePage} totalPages={totalPages} onChange={goToPage} />
             </>
           ) : (
-            <div className="text-center py-20">
-              <p className="text-muted text-sm">No colleges match these filters.</p>
-              {activeCount > 0 && (
-                <button
-                  type="button"
-                  onClick={reset}
-                  className="mt-4 text-[13.5px] font-bold text-white bg-navy px-5 py-2.5 rounded-xl hover:bg-navy-2 transition-colors"
-                >
-                  Clear filters
-                </button>
-              )}
-            </div>
+            <NoResults noun="colleges" activeCount={activeCount} onReset={reset} />
           )}
-        </div>
+        </ResultsColumn>
 
-        {/* ------------------------------------------------------------ Sidebar */}
-        <aside className="w-full lg:w-[264px] lg:shrink-0 order-1 lg:sticky lg:top-24">
-          <button
-            type="button"
-            onClick={() => setFiltersOpen((v) => !v)}
-            aria-expanded={filtersOpen}
-            className="lg:hidden w-full flex items-center justify-between gap-2 rounded-2xl border border-line bg-white px-4 py-3 mb-3"
-          >
-            <span className="flex items-center gap-2 font-display font-extrabold text-navy text-[14px]">
-              <Icon name="filter" className="w-4 h-4 text-blue" />
-              {/* Named for what is inside it: on a phone this button is the
-                  only route to sort now that the panel owns it. */}
-              Search &amp; filter
-              {activeCount > 0 && (
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue text-white">
-                  {activeCount}
-                </span>
-              )}
-            </span>
-            <Icon
-              name="arrowDown"
-              className={`w-3.5 h-3.5 text-subtle transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+        <FilterRail
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Search colleges..."
+          searchLabel="Search colleges"
+          sort={sort}
+          onSortChange={setSort}
+          sorts={SORTS}
+          title="Filter Colleges"
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
+          activeCount={activeCount}
+          onReset={reset}
+          anchorId="all-colleges"
+          ctaLabel={`Show ${sorted.length} college${sorted.length === 1 ? "" : "s"}`}
+          extra={extraPanels}
+        >
+          {/* "Institute Type", not the mock's "College Type": that list
+              (Government / Deemed / Central) is an ownership axis, which
+              this app records separately and which gets its own facet
+              below. Collapsing the two would lose one of them. */}
+          <FilterGroup label="Institute Type">
+            <FilterSelect
+              id="all-colleges-type"
+              value={type}
+              onChange={setType}
+              allLabel="All institute types"
+              options={typeCounts.map(({ type: t, count }) => ({ value: t, label: t, count }))}
             />
-          </button>
+          </FilterGroup>
 
-          <div className={`${filtersOpen ? "flex" : "hidden"} lg:flex flex-col gap-5`}>
-            <div className="rounded-3xl border border-line bg-white p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="flex items-center gap-2 font-display font-extrabold text-navy text-[15px]">
-                  <Icon name="filter" className="w-4 h-4 text-blue" />
-                  Filter Colleges
-                </h2>
-                <button
-                  type="button"
-                  onClick={reset}
-                  disabled={activeCount === 0}
-                  className="text-[12.5px] font-semibold text-blue hover:underline disabled:text-subtle disabled:no-underline disabled:cursor-default"
+          <FilterGroup label="Ownership">
+            <div className="flex flex-col gap-2">
+              {ownershipCounts.map(({ ownership, count }) => (
+                <CheckRow
+                  key={ownership}
+                  checked={ownerships.includes(ownership)}
+                  onChange={() =>
+                    setOwnershipParam(
+                      joinParam(
+                        ownerships.includes(ownership)
+                          ? ownerships.filter((v) => v !== ownership)
+                          : [...ownerships, ownership]
+                      )
+                    )
+                  }
+                  count={count}
                 >
-                  Reset
-                </button>
-              </div>
-
-              {/* Sort lives in this panel, not in the results header, so one
-                  place changes what you see instead of two at opposite ends of
-                  the page. On a phone the panel toggle is the only route to it,
-                  which is why that button says "Filter & sort". */}
-              <FilterGroup label="Search by name">
-                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1 focus-within:border-blue/50 transition-colors">
-                  <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search colleges..."
-                    aria-label="Search colleges by name"
-                    className="flex-1 min-w-0 bg-transparent py-1.5 text-[13px] text-ink placeholder:text-subtle outline-none"
-                  />
-                </div>
-              </FilterGroup>
-
-              <div className="pb-4 mb-4 border-b border-line">
-                <label htmlFor="CollegesExplorer-sort" className="block text-[12.5px] font-bold text-navy mb-2.5">
-                  Sort by
-                </label>
-                <select
-                  id="CollegesExplorer-sort"
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
-                >
-                  {SORTS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* "Institute Type", not the mock's "College Type": that list
-                  (Government / Deemed / Central) is an ownership axis, which
-                  this app records separately and which gets its own facet
-                  below. Collapsing the two would lose one of them. */}
-              <FilterGroup label="Institute Type">
-                <FilterSelect
-                  id="all-colleges-type"
-                  value={type}
-                  onChange={setType}
-                  allLabel="All institute types"
-                  options={typeCounts.map(({ type: t, count }) => ({ value: t, label: t, count }))}
-                />
-              </FilterGroup>
-
-              <FilterGroup label="Ownership">
-                <div className="flex flex-col gap-2">
-                  {ownershipCounts.map(({ ownership, count }) => (
-                    <CheckRow
-                      key={ownership}
-                      checked={ownerships.includes(ownership)}
-                      onChange={() =>
-                        setOwnershipParam(
-                          joinParam(
-                            ownerships.includes(ownership)
-                              ? ownerships.filter((v) => v !== ownership)
-                              : [...ownerships, ownership]
-                          )
-                        )
-                      }
-                      count={count}
-                    >
-                      <span className="text-[12.5px] text-ink/80">{ownership}</span>
-                    </CheckRow>
-                  ))}
-                </div>
-              </FilterGroup>
-
-              <FilterGroup label="City / State">
-                <select
-                  value={state}
-                  onChange={(e) => handleStateChange(e.target.value)}
-                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy mb-2"
-                >
-                  <option value="all">All States</option>
-                  {statesWithColleges.map((s) => (
-                    <option key={s.slug} value={s.slug}>
-                      {s.name}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  disabled={availableCities.length === 0}
-                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy disabled:opacity-50"
-                >
-                  <option value="all">All Cities</option>
-                  {availableCities.map((c) => (
-                    <option key={c.slug} value={c.slug}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </FilterGroup>
-
-              {/* Only when something is actually ranked. V113 ships the NIRF
-                  columns empty on purpose -- rendering five buckets that all
-                  match nothing would be a dead control. */}
-              {ranked && (
-                <FilterGroup label="NIRF Ranking">
-                  <div className="flex flex-col gap-2">
-                    {RANK_BUCKETS.map((b) => (
-                      <CheckRow
-                        key={b.id}
-                        checked={ranks.includes(b.id)}
-                        onChange={() => toggle(ranks, b.id, setRanks)}
-                        count={
-                          initialColleges.filter(
-                            (c) =>
-                              c.nirfRank !== null &&
-                              c.nirfRank >= b.min &&
-                              c.nirfRank <= (b.max ?? Infinity)
-                          ).length
-                        }
-                      >
-                        <span className="text-[12.5px] text-ink/80">{b.label}</span>
-                      </CheckRow>
-                    ))}
-                  </div>
-                </FilterGroup>
-              )}
-
-              <button
-                type="button"
-                onClick={() => {
-                  setFiltersOpen(false);
-                  document
-                    .getElementById("all-colleges")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                className="w-full mt-5 text-[13.5px] font-bold text-white bg-blue py-3 rounded-xl hover:opacity-90 transition-opacity"
-              >
-                Show {sorted.length} college{sorted.length === 1 ? "" : "s"}
-              </button>
+                  <span className="text-[12.5px] text-ink/80">{ownership}</span>
+                </CheckRow>
+              ))}
             </div>
+          </FilterGroup>
 
-            {topRanked.length > 0 && (
-              <div className="rounded-3xl border border-line bg-white p-5">
-                <h2 className="flex items-center gap-2 font-display font-extrabold text-navy text-[15px] mb-3">
-                  <Icon name="trophy" className="w-4 h-4 text-blue" />
-                  Top Ranked
-                </h2>
-                <ul className="flex flex-col">
-                  {topRanked.map((c) => (
-                    <li key={c.slug}>
-                      <Link
-                        href={`/colleges/${c.slug}`}
-                        className="group flex items-center gap-2.5 py-2.5 border-b border-line last:border-0 -mx-2 px-2 rounded-lg hover:bg-bg-soft transition-colors"
-                      >
-                        <span className="w-7 h-7 rounded-lg bg-amber-soft text-amber flex items-center justify-center shrink-0 text-[11px] font-bold">
-                          {c.nirfRank}
-                        </span>
-                        <span className="flex-1 min-w-0">
-                          <span className="block text-[13px] font-semibold text-ink/85 truncate">
-                            {c.name}
-                          </span>
-                          <span className="block text-[11px] text-muted truncate">
-                            {c.nirfLabel}
-                          </span>
-                        </span>
-                        <Icon
-                          name="chevRight"
-                          className="w-3.5 h-3.5 text-subtle shrink-0 group-hover:text-blue transition-colors"
-                        />
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+          <FilterGroup label="City / State">
+            <select
+              value={state}
+              onChange={(e) => handleStateChange(e.target.value)}
+              className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy mb-2"
+            >
+              <option value="all">All States</option>
+              {statesWithColleges.map((s) => (
+                <option key={s.slug} value={s.slug}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+            <select
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              disabled={availableCities.length === 0}
+              className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy disabled:opacity-50"
+            >
+              <option value="all">All Cities</option>
+              {availableCities.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          </FilterGroup>
+
+          {/* Only when something is actually ranked. V113 ships the NIRF
+              columns empty on purpose -- rendering five buckets that all
+              match nothing would be a dead control. */}
+          {ranked && (
+            <FilterGroup label="NIRF Ranking">
+              <div className="flex flex-col gap-2">
+                {RANK_BUCKETS.map((b) => (
+                  <CheckRow
+                    key={b.id}
+                    checked={ranks.includes(b.id)}
+                    onChange={() => toggle(ranks, b.id, setRanks)}
+                    count={
+                      initialColleges.filter(
+                        (c) =>
+                          c.nirfRank !== null &&
+                          c.nirfRank >= b.min &&
+                          c.nirfRank <= (b.max ?? Infinity)
+                      ).length
+                    }
+                  >
+                    <span className="text-[12.5px] text-ink/80">{b.label}</span>
+                  </CheckRow>
+                ))}
               </div>
-            )}
-          </div>
-        </aside>
-      </div>
+            </FilterGroup>
+          )}
+
+        </FilterRail>
+      </ListingLayout>
     </Container>
   );
 }

@@ -13,8 +13,14 @@ import {
   CheckRow,
   Chip,
   FilterGroup,
+  FilterRail,
   FilterSelect,
+  ListingLayout,
   NONE,
+  NoResults,
+  ResultsColumn,
+  ResultsHeader,
+  countLabel,
   joinParam,
   splitParam,
 } from "@/components/listing/ListingKit";
@@ -198,51 +204,23 @@ export default function ExamsExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <div className="flex flex-col lg:flex-row lg:items-start gap-8">
-        {/* ------------------------------------------------------------ Results */}
-        <div className="flex-1 min-w-0 order-2">
-          <div id="all-exams" className="flex flex-wrap items-end justify-between gap-4 mb-6 scroll-mt-24">
-            <div>
-              <h2 className="flex items-center gap-2.5 font-display font-extrabold text-navy text-[22px]">
-                <Icon name="grid" className="w-[22px] h-[22px] text-blue shrink-0" />
-                All Exams
-              </h2>
-              <p className="text-[13px] text-muted mt-1.5">
-                Explore different exams and find the one that matches your career goals.
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="text-[13px] font-semibold text-subtle">
-                {sorted.length > PAGE_SIZE
-                  ? `Showing ${(safePage - 1) * PAGE_SIZE + 1}–${Math.min(safePage * PAGE_SIZE, sorted.length)} of ${sorted.length} exams`
-                  : `${sorted.length} exam${sorted.length === 1 ? "" : "s"}`}
-              </span>
-              <div className="flex items-center rounded-xl border border-line overflow-hidden">
-                {(["grid", "list"] as const).map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => setView(v)}
-                    aria-pressed={view === v}
-                    aria-label={`${v} view`}
-                    className={`w-9 h-9 flex items-center justify-center transition-colors ${
-                      view === v ? "bg-blue text-white" : "bg-white text-subtle hover:text-navy"
-                    }`}
-                  >
-                    <Icon name={v} className="w-4 h-4" />
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
+      <ListingLayout>
+        <ResultsColumn>
+          <ResultsHeader
+            anchorId="all-exams"
+            title="All Exams"
+            subtitle="Explore different exams and find the one that matches your career goals."
+            countLabel={countLabel(sorted.length, safePage, PAGE_SIZE, "exam")}
+            view={view}
+            onViewChange={setView}
+          />
 
           {activeCount > 0 && (
             <div ref={resultsTopRef} className="flex flex-wrap items-center gap-2 mb-5">
               {query.trim() && <Chip onRemove={() => setQuery("")}>{`"${query.trim()}"`}</Chip>}
               {field !== "all" && (
                 <Chip onRemove={() => setField("all")}>
-                  {field === "none" ? "All Fields" : (categoriesBySlug.get(field)?.name ?? field)}
+                  {field === "none" ? "No single field" : (categoriesBySlug.get(field)?.name ?? field)}
                 </Chip>
               )}
               {levels.map((l) => (
@@ -286,179 +264,85 @@ export default function ExamsExplorer({
               <Pagination page={safePage} totalPages={totalPages} onChange={goToPage} />
             </>
           ) : (
-            <div className="text-center py-20">
-              <p className="text-muted text-sm">No exams match these filters.</p>
-              {activeCount > 0 && (
-                <button
-                  type="button"
-                  onClick={reset}
-                  className="mt-4 text-[13.5px] font-bold text-white bg-navy px-5 py-2.5 rounded-xl hover:bg-navy-2 transition-colors"
-                >
-                  Clear filters
-                </button>
-              )}
-            </div>
+            <NoResults noun="exams" activeCount={activeCount} onReset={reset} />
           )}
-        </div>
+        </ResultsColumn>
 
-        {/* ------------------------------------------------------------ Sidebar */}
-        <aside className="w-full lg:w-[264px] lg:shrink-0 order-1 lg:sticky lg:top-24">
-          <button
-            type="button"
-            onClick={() => setFiltersOpen((v) => !v)}
-            aria-expanded={filtersOpen}
-            className="lg:hidden w-full flex items-center justify-between gap-2 rounded-2xl border border-line bg-white px-4 py-3 mb-3"
-          >
-            <span className="flex items-center gap-2 font-display font-extrabold text-navy text-[14px]">
-              <Icon name="filter" className="w-4 h-4 text-blue" />
-              {/* Named for what is inside it: on a phone this button is the
-                  only route to sort now that the panel owns it. */}
-              Search &amp; filter
-              {activeCount > 0 && (
-                <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue text-white">
-                  {activeCount}
-                </span>
-              )}
-            </span>
-            <Icon
-              name="arrowDown"
-              className={`w-3.5 h-3.5 text-subtle transition-transform ${filtersOpen ? "rotate-180" : ""}`}
+        <FilterRail
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Search exams..."
+          searchLabel="Search exams"
+          sort={sort}
+          onSortChange={setSort}
+          sorts={SORTS}
+          title="Filter Exams"
+          open={filtersOpen}
+          onOpenChange={setFiltersOpen}
+          activeCount={activeCount}
+          onReset={reset}
+          anchorId="all-exams"
+          ctaLabel={`Show ${sorted.length} exam${sorted.length === 1 ? "" : "s"}`}
+        >
+          {/* 13 categories, 12 of which hold two exams or fewer. As a
+              checkbox list that was most of the rail; the strip above the
+              results showed only the top 8, so the two copies disagreed
+              about which categories you could even reach.
+
+              The unfiled option is labelled for what it means here. In a
+              dropdown sitting under "All categories", the old "All Fields"
+              read as the cleared state rather than as its opposite. */}
+          <FilterGroup label="Category">
+            <FilterSelect
+              id="all-exams-field"
+              value={field}
+              onChange={setField}
+              allLabel="All categories"
+              options={[
+                ...fieldCounts.map(({ category: c, count }) => ({
+                  value: c!.slug,
+                  label: c!.name,
+                  count,
+                })),
+                ...(unfiled > 0
+                  ? [{ value: "none", label: "No single field", count: unfiled }]
+                  : []),
+              ]}
             />
-          </button>
+          </FilterGroup>
 
-          <div className={`${filtersOpen ? "flex" : "hidden"} lg:flex flex-col gap-5`}>
-            <div className="rounded-3xl border border-line bg-white p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="flex items-center gap-2 font-display font-extrabold text-navy text-[15px]">
-                  <Icon name="filter" className="w-4 h-4 text-blue" />
-                  Filter Exams
-                </h2>
-                <button
-                  type="button"
-                  onClick={reset}
-                  disabled={activeCount === 0}
-                  className="text-[12.5px] font-semibold text-blue hover:underline disabled:text-subtle disabled:no-underline disabled:cursor-default"
+          <FilterGroup label="Exam Level">
+            <div className="flex flex-col gap-2">
+              {levelCounts.map(({ level, count }) => (
+                <CheckRow
+                  key={level}
+                  checked={levels.includes(level)}
+                  onChange={() => toggle(levels, level, setLevelParam)}
+                  count={count}
                 >
-                  Reset
-                </button>
-              </div>
-
-              {/* Sort lives in this panel, not in the results header, so one
-                  place changes what you see instead of two at opposite ends of
-                  the page. On a phone the panel toggle is the only route to it,
-                  which is why that button says "Filter & sort". */}
-              {/* Search lives in this panel with sort and the filters, so one
-                  place changes what you see. It narrows as you type, unlike the
-                  hero form it replaced, which had to be submitted. */}
-              <div className="pb-4 mb-4 border-b border-line">
-                <label htmlFor="exams-q" className="block text-[12.5px] font-bold text-navy mb-2.5">
-                  Search
-                </label>
-                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1 focus-within:border-blue/50 transition-colors">
-                  <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
-                  <input
-                    id="exams-q"
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search exams..."
-                    aria-label="Search exams"
-                    className="flex-1 min-w-0 bg-transparent py-1.5 text-[13px] text-ink placeholder:text-subtle outline-none"
-                  />
-                </div>
-              </div>
-
-              <div className="pb-4 mb-4 border-b border-line">
-                <label htmlFor="ExamsExplorer-sort" className="block text-[12.5px] font-bold text-navy mb-2.5">
-                  Sort by
-                </label>
-                <select
-                  id="ExamsExplorer-sort"
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
-                >
-                  {SORTS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 13 categories, 12 of which hold two exams or fewer. As a
-                  checkbox list that was most of the rail; the strip above the
-                  results showed only the top 8, so the two copies disagreed
-                  about which categories you could even reach.
-
-                  The unfiled option is labelled for what it means here. In a
-                  dropdown sitting under "All categories", the old "All Fields"
-                  read as the cleared state rather than as its opposite. */}
-              <FilterGroup label="Category">
-                <FilterSelect
-                  id="all-exams-field"
-                  value={field}
-                  onChange={setField}
-                  allLabel="All categories"
-                  options={[
-                    ...fieldCounts.map(({ category: c, count }) => ({
-                      value: c!.slug,
-                      label: c!.name,
-                      count,
-                    })),
-                    ...(unfiled > 0
-                      ? [{ value: "none", label: "No single field", count: unfiled }]
-                      : []),
-                  ]}
-                />
-              </FilterGroup>
-
-              <FilterGroup label="Exam Level">
-                <div className="flex flex-col gap-2">
-                  {levelCounts.map(({ level, count }) => (
-                    <CheckRow
-                      key={level}
-                      checked={levels.includes(level)}
-                      onChange={() => toggle(levels, level, setLevelParam)}
-                      count={count}
-                    >
-                      <span className="text-[12.5px] text-ink/80">{level}</span>
-                    </CheckRow>
-                  ))}
-                </div>
-              </FilterGroup>
-
-              <FilterGroup label="Frequency">
-                <div className="flex flex-col gap-2">
-                  {freqCounts.map(({ frequency, count }) => (
-                    <CheckRow
-                      key={frequency}
-                      checked={freqs.includes(frequency)}
-                      onChange={() => toggle(freqs, frequency, setFreqParam)}
-                      count={count}
-                    >
-                      <span className="text-[12.5px] text-ink/80">{frequency}</span>
-                    </CheckRow>
-                  ))}
-                </div>
-              </FilterGroup>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setFiltersOpen(false);
-                  document
-                    .getElementById("all-exams")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                className="w-full mt-5 text-[13.5px] font-bold text-white bg-blue py-3 rounded-xl hover:opacity-90 transition-opacity"
-              >
-                Show {sorted.length} exam{sorted.length === 1 ? "" : "s"}
-              </button>
+                  <span className="text-[12.5px] text-ink/80">{level}</span>
+                </CheckRow>
+              ))}
             </div>
-          </div>
-        </aside>
-      </div>
+          </FilterGroup>
+
+          <FilterGroup label="Frequency">
+            <div className="flex flex-col gap-2">
+              {freqCounts.map(({ frequency, count }) => (
+                <CheckRow
+                  key={frequency}
+                  checked={freqs.includes(frequency)}
+                  onChange={() => toggle(freqs, frequency, setFreqParam)}
+                  count={count}
+                >
+                  <span className="text-[12.5px] text-ink/80">{frequency}</span>
+                </CheckRow>
+              ))}
+            </div>
+          </FilterGroup>
+
+        </FilterRail>
+      </ListingLayout>
     </Container>
   );
 }

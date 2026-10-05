@@ -10,6 +10,7 @@ import com.careerguide.api.repository.ResourceRepository;
 import com.careerguide.api.repository.SkillRepository;
 import com.careerguide.api.web.ConflictException;
 import com.careerguide.api.web.NotFoundException;
+import com.careerguide.api.web.SlugList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +43,16 @@ public class ResourceService {
 
     public List<ResourceDto> findAll() {
         return resourceRepository.findAllByOrderByPublishedAtDesc().stream().map(DtoMapper::toDto).toList();
+    }
+
+    /**
+     * The records for {slugs}, in one query instead of one request each.
+     * See {@link com.careerguide.api.web.SlugList} for why this exists.
+     */
+    public List<ResourceDto> findBySlugs(String slugs) {
+        return resourceRepository.findAllById(SlugList.parse(slugs)).stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     public ResourceDto findBySlug(String slug) {

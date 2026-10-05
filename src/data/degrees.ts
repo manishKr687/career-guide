@@ -1,5 +1,5 @@
 import { Career, Degree } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getDegrees(): Promise<Degree[]> {
   return apiGet<Degree[]>("/api/degrees");
@@ -11,7 +11,7 @@ export async function getDegree(slug: string): Promise<Degree | undefined> {
 }
 
 export async function getManyDegrees(slugs: string[]): Promise<Degree[]> {
-  return fetchManyBySlug(slugs, getDegree);
+  return fetchManyBySlugChunked(slugs, "/api/degrees");
 }
 
 /**

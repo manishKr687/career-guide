@@ -32,6 +32,7 @@ import com.careerguide.api.repository.StageRepository;
 import com.careerguide.api.repository.SubjectRepository;
 import com.careerguide.api.web.ConflictException;
 import com.careerguide.api.web.NotFoundException;
+import com.careerguide.api.web.SlugList;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -92,6 +93,19 @@ public class CareerService {
         String normalizedCategory = StringUtils.hasText(category) ? category : null;
         String normalizedQuery = StringUtils.hasText(q) ? q.trim() : null;
         return careerRepository.search(normalizedCategory, normalizedQuery, pageable).map(DtoMapper::toDto);
+    }
+
+    /**
+     * The records for `slugs`, in one query instead of one request each.
+     * See SlugList for why this exists.
+     *
+     * <p>Unpaged by design: the caller has named a bounded, explicit set, and
+     * SlugList.MAX is what bounds it.
+     */
+    public List<CareerDto> findBySlugs(String slugs) {
+        return careerRepository.findAllById(SlugList.parse(slugs)).stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     public CareerDto findBySlug(String slug) {

@@ -1,5 +1,5 @@
 import { Industry } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getIndustries(): Promise<Industry[]> {
   return apiGet<Industry[]>("/api/industries");
@@ -11,5 +11,5 @@ export async function getIndustry(slug: string): Promise<Industry | undefined> {
 }
 
 export async function getManyIndustries(slugs: string[]): Promise<Industry[]> {
-  return fetchManyBySlug(slugs, getIndustry);
+  return fetchManyBySlugChunked(slugs, "/api/industries");
 }

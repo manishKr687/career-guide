@@ -28,9 +28,26 @@ public class JobRoleController {
         this.jobRoleService = jobRoleService;
     }
 
+    /**
+     * The full list, optionally filtered by {@code career}, or just the records
+     * named by {@code ?slugs=a,b,c}.
+     *
+     * <p>The slugs form exists so a page resolving relations makes one request
+     * instead of one per slug -- see {@link com.careerguide.api.web.SlugList}.
+     *
+     * <p>{@code slugs} takes precedence over {@code career} and ignores it: the
+     * caller has named the exact records it wants, so narrowing them further
+     * would silently return fewer than asked for. Sending both is a caller
+     * mistake rather than a meaningful query, and answering the explicit part is
+     * the less surprising of the two readings.
+     */
     @GetMapping
-    public List<JobRoleDto> findAll(@RequestParam(required = false) String career) {
-        return jobRoleService.findAll(career);
+    public List<JobRoleDto> findAll(
+            @RequestParam(required = false) String career,
+            @RequestParam(required = false) String slugs) {
+        return slugs == null
+                ? jobRoleService.findAll(career)
+                : jobRoleService.findBySlugs(slugs);
     }
 
     @GetMapping("/{slug}")

@@ -6,6 +6,7 @@ import com.careerguide.api.entity.Skill;
 import com.careerguide.api.mapper.DtoMapper;
 import com.careerguide.api.repository.SkillRepository;
 import com.careerguide.api.web.ConflictException;
+import com.careerguide.api.web.SlugList;
 import com.careerguide.api.web.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,20 @@ public class SkillService {
 
     public List<SkillDto> findAll() {
         return skillRepository.findAllByOrderByNameAsc().stream().map(DtoMapper::toDto).toList();
+    }
+
+    /**
+     * The records for {@code slugs}, in one query instead of one request each.
+     * See {@link com.careerguide.api.web.SlugList} for why this exists.
+     *
+     * <p>Order is the repository's, not the caller's, and unknown slugs are
+     * simply absent -- the same contract the per-slug lookups had, where a 404
+     * was dropped. The client restores its own ordering.
+     */
+    public List<SkillDto> findBySlugs(String slugs) {
+        return skillRepository.findAllById(SlugList.parse(slugs)).stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     public SkillDto findBySlug(String slug) {

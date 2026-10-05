@@ -1,5 +1,5 @@
 import { Skill } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getSkills(): Promise<Skill[]> {
   return apiGet<Skill[]>("/api/skills");
@@ -11,5 +11,5 @@ export async function getSkill(slug: string): Promise<Skill | undefined> {
 }
 
 export async function getManySkills(slugs: string[]): Promise<Skill[]> {
-  return fetchManyBySlug(slugs, getSkill);
+  return fetchManyBySlugChunked(slugs, "/api/skills");
 }

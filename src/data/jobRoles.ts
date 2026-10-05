@@ -1,5 +1,5 @@
 import { JobRole } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getJobRoles(filters?: { career?: string }): Promise<JobRole[]> {
   return apiGet<JobRole[]>("/api/job-roles", { career: filters?.career });
@@ -11,7 +11,7 @@ export async function getJobRole(slug: string): Promise<JobRole | undefined> {
 }
 
 export async function getManyJobRoles(slugs: string[]): Promise<JobRole[]> {
-  return fetchManyBySlug(slugs, getJobRole);
+  return fetchManyBySlugChunked(slugs, "/api/job-roles");
 }
 
 // Unlike Skill/Industry, the backend already supports filtering job roles by

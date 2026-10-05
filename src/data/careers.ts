@@ -1,5 +1,5 @@
 import { Career } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getCareers(filters?: { category?: string; q?: string }): Promise<Career[]> {
   return apiGet<Career[]>("/api/careers", { category: filters?.category, q: filters?.q });
@@ -15,7 +15,7 @@ export async function getCareersByCategory(categorySlug: string): Promise<Career
 }
 
 export async function getManyCareers(slugs: string[]): Promise<Career[]> {
-  return fetchManyBySlug(slugs, getCareer);
+  return fetchManyBySlugChunked(slugs, "/api/careers");
 }
 
 // Skill -> careers is a reverse relation: careers store `relatedSkillSlugs`,

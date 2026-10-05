@@ -1,5 +1,5 @@
 import { Specialization } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getSpecializations(): Promise<Specialization[]> {
   return apiGet<Specialization[]>("/api/specializations");
@@ -11,5 +11,5 @@ export async function getSpecialization(slug: string): Promise<Specialization | 
 }
 
 export async function getManySpecializations(slugs: string[]): Promise<Specialization[]> {
-  return fetchManyBySlug(slugs, getSpecialization);
+  return fetchManyBySlugChunked(slugs, "/api/specializations");
 }

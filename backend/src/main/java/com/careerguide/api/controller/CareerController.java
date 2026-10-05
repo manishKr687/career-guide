@@ -37,6 +37,12 @@ public class CareerController {
     /**
      * @param category optional category slug filter (e.g. "engineering-technology")
      * @param q        optional free-text search across title/tagline/description
+     * @param slugs      optional comma-separated slugs. When given, returns exactly
+     *                   those records and ignores every filter and the paging
+     *                   parameters above: the caller has named the set it wants,
+     *                   so narrowing it further would silently return less than
+     *                   was asked for. Exists so a page resolving relations makes
+     *                   one request instead of one per slug -- see SlugList.
      * @param page     optional, 0-based -- omit together with {@code size} to get every
      *                 matching career in one response (the default, and today's only
      *                 behavior for existing callers). Providing either opts into real
@@ -50,9 +56,13 @@ public class CareerController {
     public ResponseEntity<List<CareerDto>> findAll(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String q,
+            @RequestParam(required = false) String slugs,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
+        if (slugs != null) {
+            return ResponseEntity.ok(careerService.findBySlugs(slugs));
+        }
         Pageable pageable = PaginationSupport.resolve(page, size);
         Page<CareerDto> result = careerService.findAll(category, q, pageable);
         return ResponseEntity.ok()

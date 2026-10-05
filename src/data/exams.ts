@@ -1,5 +1,5 @@
 import { Career, Exam } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 import { getManyCareers } from "@/data/careers";
 import { getManyDegrees } from "@/data/degrees";
 
@@ -13,7 +13,7 @@ export async function getExam(slug: string): Promise<Exam | undefined> {
 }
 
 export async function getManyExams(slugs: string[]): Promise<Exam[]> {
-  return fetchManyBySlug(slugs, getExam);
+  return fetchManyBySlugChunked(slugs, "/api/exams");
 }
 
 // Resolves an exam's careerDegreeOfferings (career+degree slug pairs, V66)

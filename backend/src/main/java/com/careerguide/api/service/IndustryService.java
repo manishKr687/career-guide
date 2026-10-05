@@ -7,6 +7,7 @@ import com.careerguide.api.mapper.DtoMapper;
 import com.careerguide.api.repository.IndustryRepository;
 import com.careerguide.api.web.ConflictException;
 import com.careerguide.api.web.NotFoundException;
+import com.careerguide.api.web.SlugList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,16 @@ public class IndustryService {
 
     public List<IndustryDto> findAll() {
         return industryRepository.findAllByOrderByNameAsc().stream().map(DtoMapper::toDto).toList();
+    }
+
+    /**
+     * The records for {slugs}, in one query instead of one request each.
+     * See {@link com.careerguide.api.web.SlugList} for why this exists.
+     */
+    public List<IndustryDto> findBySlugs(String slugs) {
+        return industryRepository.findAllById(SlugList.parse(slugs)).stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     public IndustryDto findBySlug(String slug) {

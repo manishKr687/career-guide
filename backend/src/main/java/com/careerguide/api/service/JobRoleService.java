@@ -11,6 +11,7 @@ import com.careerguide.api.repository.JobRoleRepository;
 import com.careerguide.api.repository.SkillRepository;
 import com.careerguide.api.web.ConflictException;
 import com.careerguide.api.web.NotFoundException;
+import com.careerguide.api.web.SlugList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +53,16 @@ public class JobRoleService {
                 ? jobRoleRepository.findAllByOrderByNameAsc()
                 : jobRoleRepository.findAllByCareers_SlugOrderByNameAsc(careerSlug);
         return jobRoles.stream().map(DtoMapper::toDto).toList();
+    }
+
+    /**
+     * The records for {slugs}, in one query instead of one request each.
+     * See {@link com.careerguide.api.web.SlugList} for why this exists.
+     */
+    public List<JobRoleDto> findBySlugs(String slugs) {
+        return jobRoleRepository.findAllById(SlugList.parse(slugs)).stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     public JobRoleDto findBySlug(String slug) {

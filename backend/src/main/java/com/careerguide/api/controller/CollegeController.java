@@ -31,6 +31,12 @@ public class CollegeController {
      *                   {@code GET /api/colleges?degree=btech&discipline=cse&state=delhi} example
      * @param discipline optional discipline (career) slug filter (V53)
      * @param state      optional state slug filter (V53)
+     * @param slugs      optional comma-separated slugs. When given, returns exactly
+     *                   those records and ignores every filter and the paging
+     *                   parameters above: the caller has named the set it wants,
+     *                   so narrowing it further would silently return less than
+     *                   was asked for. Exists so a page resolving relations makes
+     *                   one request instead of one per slug -- see SlugList.
      * @param page       optional, 0-based -- see CareerController.findAll for the
      *                   backward-compatible unpaged-by-default contract this follows.
      * @param size       optional page size (1-200, default 20 when {@code page} is given)
@@ -42,9 +48,13 @@ public class CollegeController {
             @RequestParam(required = false) String degree,
             @RequestParam(required = false) String discipline,
             @RequestParam(required = false) String state,
+            @RequestParam(required = false) String slugs,
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size
     ) {
+        if (slugs != null) {
+            return ResponseEntity.ok(collegeService.findBySlugs(slugs));
+        }
         Pageable pageable = PaginationSupport.resolve(page, size);
         Page<CollegeDto> result = collegeService.findAll(type, q, degree, discipline, state, pageable);
         return ResponseEntity.ok()

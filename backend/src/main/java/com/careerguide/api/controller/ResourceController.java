@@ -5,6 +5,7 @@ import com.careerguide.api.service.ResourceService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -19,9 +20,17 @@ public class ResourceController {
         this.resourceService = resourceService;
     }
 
+    /**
+     * The full list, or just the records named by {@code ?slugs=a,b,c}.
+     *
+     * <p>The slugs form exists so a page resolving relations makes one request
+     * instead of one per slug -- see {@link com.careerguide.api.web.SlugList}.
+     */
     @GetMapping
-    public List<ResourceDto> findAll() {
-        return resourceService.findAll();
+    public List<ResourceDto> findAll(@RequestParam(required = false) String slugs) {
+        return slugs == null
+                ? resourceService.findAll()
+                : resourceService.findBySlugs(slugs);
     }
 
     @GetMapping("/{slug}")

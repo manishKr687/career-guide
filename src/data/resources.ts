@@ -1,5 +1,5 @@
 import { Resource } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getResources(): Promise<Resource[]> {
   return apiGet<Resource[]>("/api/resources");
@@ -11,7 +11,7 @@ export async function getResource(slug: string): Promise<Resource | undefined> {
 }
 
 export async function getManyResources(slugs: string[]): Promise<Resource[]> {
-  return fetchManyBySlug(slugs, getResource);
+  return fetchManyBySlugChunked(slugs, "/api/resources");
 }
 
 // Same reverse-relation situation as getCertificationsByCareer: Resource

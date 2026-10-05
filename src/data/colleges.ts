@@ -1,5 +1,5 @@
 import { Career, College } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 import { getManyCareers } from "@/data/careers";
 import { getManyDegrees } from "@/data/degrees";
 
@@ -26,7 +26,7 @@ export async function getCollege(slug: string): Promise<College | undefined> {
 }
 
 export async function getManyColleges(slugs: string[]): Promise<College[]> {
-  return fetchManyBySlug(slugs, getCollege);
+  return fetchManyBySlugChunked(slugs, "/api/colleges");
 }
 
 // Resolves a college's careerOfferings (career+degree slug pairs, V55)

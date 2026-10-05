@@ -21,6 +21,7 @@ import com.careerguide.api.repository.SpecializationRepository;
 import com.careerguide.api.repository.SubjectRepository;
 import com.careerguide.api.web.ConflictException;
 import com.careerguide.api.web.NotFoundException;
+import com.careerguide.api.web.SlugList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,6 +72,16 @@ public class SpecializationService {
 
     public List<SpecializationDto> findAll() {
         return specializationRepository.findAllByOrderByNameAsc().stream().map(DtoMapper::toDto).toList();
+    }
+
+    /**
+     * The records for {slugs}, in one query instead of one request each.
+     * See {@link com.careerguide.api.web.SlugList} for why this exists.
+     */
+    public List<SpecializationDto> findBySlugs(String slugs) {
+        return specializationRepository.findAllById(SlugList.parse(slugs)).stream()
+                .map(DtoMapper::toDto)
+                .toList();
     }
 
     public SpecializationDto findBySlug(String slug) {

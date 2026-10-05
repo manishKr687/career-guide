@@ -1,5 +1,5 @@
 import { Certification } from "@/lib/types";
-import { apiGet, apiGetOptional, fetchManyBySlug } from "@/lib/api";
+import { apiGet, apiGetOptional, fetchManyBySlugChunked } from "@/lib/api";
 
 export async function getCertifications(): Promise<Certification[]> {
   return apiGet<Certification[]>("/api/certifications");
@@ -11,7 +11,7 @@ export async function getCertification(slug: string): Promise<Certification | un
 }
 
 export async function getManyCertifications(slugs: string[]): Promise<Certification[]> {
-  return fetchManyBySlug(slugs, getCertification);
+  return fetchManyBySlugChunked(slugs, "/api/certifications");
 }
 
 // Same reverse-relation situation as getCareersBySkill/getCareersByIndustry:

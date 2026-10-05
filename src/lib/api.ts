@@ -85,10 +85,50 @@ export async function apiPost<T>(path: string, body: unknown): Promise<T> {
  * dropping any slug that no longer resolves — same contract the old
  * getManyCareers/getManyCourses/getManyExams array helpers had.
  */
-export async function fetchManyBySlug<T>(
+export async function fetchManyBySlug<T extends { slug: string }>(
   slugs: string[],
-  fetchOne: (slug: string) => Promise<T | undefined>
+  listPath: string
 ): Promise<T[]> {
-  const results: (T | undefined)[] = await Promise.all(slugs.map((slug) => fetchOne(slug)));
-  return results.filter((item): item is T => item !== undefined);
+  const wanted = Array.from(new Set(slugs.filter((s) => s)));
+  if (wanted.length === 0) return [];
+
+  // One request for the whole set, via the `slugs` parameter the list endpoints
+  // accept. This used to issue one request per slug: rendering
+  // /careers/computer-science-and-engineering meant 159 HTTP requests and 159
+  // database queries -- 40 skills, 54 colleges, 24 job roles, 16
+  // specializations, 14 industries, 6 exams, 5 degrees. Parallel, so it hid
+  // completely behind a local API, and the page still rendered in 0.29s.
+  //
+  // The server returns them in its own order and omits anything that no longer
+  // resolves, so the caller's order is restored here -- the pages rely on it
+  // (a career's skills are shown in the order the admin arranged them).
+  const batch = await apiGet<T[]>(listPath, { slugs: wanted.join(",") });
+  const bySlug = new Map(batch.map((item) => [item.slug, item]));
+  return slugs.map((slug) => bySlug.get(slug)).filter((item): item is T => item !== undefined);
+}
+
+/**
+ * Chunks a slug list so no request exceeds the server's cap, then flattens the
+ * results back into one ordered list.
+ *
+ * Nothing in the catalogue needs this today -- the largest real fan-out is 54,
+ * against a limit of 200. It exists because the limit is enforced server-side
+ * with a 400, so without chunking a career that one day relates to more than 200
+ * of anything would start failing to render rather than merely being slow, and
+ * the cause would be hard to see from the page.
+ */
+const SLUGS_PER_REQUEST = 200;
+
+export async function fetchManyBySlugChunked<T extends { slug: string }>(
+  slugs: string[],
+  listPath: string
+): Promise<T[]> {
+  if (slugs.length <= SLUGS_PER_REQUEST) return fetchManyBySlug<T>(slugs, listPath);
+
+  const chunks: string[][] = [];
+  for (let i = 0; i < slugs.length; i += SLUGS_PER_REQUEST) {
+    chunks.push(slugs.slice(i, i + SLUGS_PER_REQUEST));
+  }
+  const results = await Promise.all(chunks.map((chunk) => fetchManyBySlug<T>(chunk, listPath)));
+  return results.flat();
 }

@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import CareersExplorer from "@/components/listing/CareersExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { getCareers } from "@/data/careers";
 import { getCategories } from "@/data/categories";
 import { getSpecializations } from "@/data/specializations";
@@ -111,13 +110,6 @@ export default async function CareersPage() {
                 Discover career options, explore specializations, understand required skills,
                 education paths and job opportunities, and find the right career for your interests.
               </p>
-
-              <ListingHeroSearch
-                basePath="/careers"
-                anchorId="all-careers"
-                label="Search careers"
-                placeholder="Search careers (e.g. Computer Science, Medicine, Law...)"
-              />
 
               {popular.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-4">

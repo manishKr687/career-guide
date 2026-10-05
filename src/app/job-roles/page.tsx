@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import JobRolesExplorer from "@/components/listing/JobRolesExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { getJobRoles } from "@/data/jobRoles";
 import { getCareers } from "@/data/careers";
 import { getCategories } from "@/data/categories";
@@ -111,13 +110,6 @@ export default async function JobRolesPage() {
                 A career is a field; a job role is the post you are actually hired into. Browse them
                 by field, compare what they pay, and see the skills each one asks for.
               </p>
-
-              <ListingHeroSearch
-                basePath="/job-roles"
-                anchorId="all-job-roles"
-                label="Search job roles"
-                placeholder="Search job roles (e.g. Software Engineer, Cardiologist...)"
-              />
 
               {popular.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-4">

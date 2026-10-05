@@ -285,6 +285,10 @@ export default function SpecializationsExplorer({
         </ResultsColumn>
 
         <FilterRail
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Search specializations..."
+          searchLabel="Search specializations"
           sort={sort}
           onSortChange={setSort}
           sorts={SORTS}

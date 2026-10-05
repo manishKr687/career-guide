@@ -276,6 +276,10 @@ export default function JobRolesExplorer({
         </ResultsColumn>
 
         <FilterRail
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Search job roles..."
+          searchLabel="Search job roles"
           sort={sort}
           onSortChange={setSort}
           sorts={SORTS}

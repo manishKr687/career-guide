@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import IndustriesExplorer from "@/components/listing/IndustriesExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { StatsStrip, ValuePoints, SignpostPanel } from "@/components/listing/ListingKit";
 import { getIndustries } from "@/data/industries";
 import { getCareers } from "@/data/careers";
@@ -66,12 +65,6 @@ export default async function IndustriesPage() {
                 Two different answers live here: the sectors a career is practised in, and the
                 employers known to hire for it. Both are filterable separately.
               </p>
-              <ListingHeroSearch
-                basePath="/industries"
-                anchorId="all-industries"
-                label="Search industries"
-                placeholder="Search industries and employers (e.g. Healthcare, TCS...)"
-              />
             </div>
             <div className="lg:col-span-3 relative min-h-[220px]">
               <SignpostPanel

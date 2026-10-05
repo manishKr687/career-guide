@@ -230,6 +230,10 @@ export default function CertificationsExplorer({
         </ResultsColumn>
 
         <FilterRail
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Search certifications..."
+          searchLabel="Search certifications"
           sort={sort}
           onSortChange={setSort}
           sorts={SORTS}

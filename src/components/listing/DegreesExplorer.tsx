@@ -338,7 +338,7 @@ export default function DegreesExplorer({
               <Icon name="filter" className="w-4 h-4 text-blue" />
               {/* Named for what is inside it: on a phone this button is the
                   only route to sort now that the panel owns it. */}
-              Filter &amp; sort
+              Search &amp; filter
               {activeCount > 0 && (
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue text-white">
                   {activeCount}
@@ -372,6 +372,27 @@ export default function DegreesExplorer({
                   place changes what you see instead of two at opposite ends of
                   the page. On a phone the panel toggle is the only route to it,
                   which is why that button says "Filter & sort". */}
+              {/* Search lives in this panel with sort and the filters, so one
+                  place changes what you see. It narrows as you type, unlike the
+                  hero form it replaced, which had to be submitted. */}
+              <div className="pb-4 mb-4 border-b border-line">
+                <label htmlFor="degrees-q" className="block text-[12.5px] font-bold text-navy mb-2.5">
+                  Search
+                </label>
+                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 focus-within:border-blue/50 transition-colors">
+                  <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
+                  <input
+                    id="degrees-q"
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder="Search degrees..."
+                    aria-label="Search degrees"
+                    className="flex-1 min-w-0 bg-transparent text-[13px] text-ink placeholder:text-subtle outline-none"
+                  />
+                </div>
+              </div>
+
               <div className="pb-4 mb-4 border-b border-line">
                 <label htmlFor="DegreesExplorer-sort" className="block text-[12.5px] font-bold text-navy mb-2.5">
                   Sort by

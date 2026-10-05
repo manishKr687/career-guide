@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import CollegesExplorer from "@/components/listing/CollegesExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { getColleges } from "@/data/colleges";
 import { getStates } from "@/data/states";
 import { getCities } from "@/data/cities";
@@ -94,13 +93,6 @@ export default async function CollegesPage() {
                 Discover colleges and institutes, explore the degrees they offer, check which exams
                 they admit through, and find the best fit for your career goals.
               </p>
-
-              <ListingHeroSearch
-                basePath="/colleges"
-                anchorId="all-colleges"
-                label="Search colleges"
-                placeholder="Search colleges (e.g. IIT Delhi, AIIMS, NIT Trichy...)"
-              />
 
               {popular.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-4">

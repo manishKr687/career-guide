@@ -298,6 +298,10 @@ export function FilterRail({
   sort,
   onSortChange,
   sorts,
+  query,
+  onQueryChange,
+  searchPlaceholder = "Search...",
+  searchLabel = "Search",
 }: {
   title: string;
   open: boolean;
@@ -318,8 +322,19 @@ export function FilterRail({
   sort?: string;
   onSortChange?: (v: string) => void;
   sorts?: { value: string; label: string }[];
+  /**
+   * Free-text search, in the panel rather than in the page hero. Bound to the
+   * live query the list filters on, so it narrows as you type -- unlike the
+   * hero box it replaces, which was a form you had to submit.
+   */
+  query?: string;
+  onQueryChange?: (v: string) => void;
+  searchPlaceholder?: string;
+  /** For the input's accessible name, e.g. "Search careers". */
+  searchLabel?: string;
 }) {
   const ownsSort = sort !== undefined && onSortChange !== undefined && sorts !== undefined;
+  const ownsSearch = query !== undefined && onQueryChange !== undefined;
   return (
     <aside className="w-full lg:w-[264px] lg:shrink-0 order-1 lg:sticky lg:top-24">
       <button
@@ -333,7 +348,7 @@ export function FilterRail({
           {/* Named for what is inside it. On a phone this button is the only way
               to reach sort now that the rail owns it, so calling it "Filters"
               would hide a control people use more often than any filter. */}
-          {ownsSort ? "Filter & sort" : "Filters"}
+          {ownsSearch || ownsSort ? "Search & filter" : "Filters"}
           {activeCount > 0 && (
             <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue text-white">
               {activeCount}
@@ -362,6 +377,26 @@ export function FilterRail({
               Reset
             </button>
           </div>
+
+          {ownsSearch && (
+            <div className="pb-4 mb-4 border-b border-line">
+              <label htmlFor={`${anchorId}-q`} className="block text-[12.5px] font-bold text-navy mb-2.5">
+                Search
+              </label>
+              <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-2 focus-within:border-blue/50 transition-colors">
+                <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
+                <input
+                  id={`${anchorId}-q`}
+                  type="search"
+                  value={query}
+                  onChange={(e) => onQueryChange?.(e.target.value)}
+                  placeholder={searchPlaceholder}
+                  aria-label={searchLabel}
+                  className="flex-1 min-w-0 bg-transparent text-[13px] text-ink placeholder:text-subtle outline-none"
+                />
+              </div>
+            </div>
+          )}
 
           {ownsSort && (
             <div className="pb-4 mb-4 border-b border-line">

@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import DegreesExplorer from "@/components/listing/DegreesExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { getDegrees, filterDegreesRelevantToCareer } from "@/data/degrees";
 import { getCareer, getCareers } from "@/data/careers";
 import { getCategories } from "@/data/categories";
@@ -129,13 +128,6 @@ export default async function DegreesPage({
                 Discover degree options, explore specializations, understand eligibility and career
                 opportunities, and find the right degree for your goals.
               </p>
-
-              <ListingHeroSearch
-                basePath="/degrees"
-                anchorId="all-degrees"
-                label="Search degrees"
-                placeholder="Search degrees (e.g. B.Tech, MBBS, B.Sc, BBA...)"
-              />
 
               {popular.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-4">

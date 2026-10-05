@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import CertificationsExplorer from "@/components/listing/CertificationsExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { StatsStrip, ValuePoints, SignpostPanel } from "@/components/listing/ListingKit";
 import { getCertifications } from "@/data/certifications";
 
@@ -49,12 +48,6 @@ export default async function CertificationsPage() {
                 Credentials that sit alongside a degree rather than replace it — what each covers,
                 who awards it, and which careers it strengthens.
               </p>
-              <ListingHeroSearch
-                basePath="/certifications"
-                anchorId="all-certifications"
-                label="Search certifications"
-                placeholder="Search certifications (e.g. AWS, PMP, Scrum...)"
-              />
             </div>
             <div className="lg:col-span-3 relative min-h-[220px]">
               <SignpostPanel

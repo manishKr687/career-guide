@@ -232,6 +232,10 @@ export default function ResourcesExplorer({ initialResources }: { initialResourc
         </ResultsColumn>
 
         <FilterRail
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Search resources..."
+          searchLabel="Search resources"
           sort={sort}
           onSortChange={setSort}
           sorts={SORTS}

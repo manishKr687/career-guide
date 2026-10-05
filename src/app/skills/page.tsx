@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import SkillsExplorer from "@/components/listing/SkillsExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { getSkills } from "@/data/skills";
 import { getCareers } from "@/data/careers";
 import { getJobRoles } from "@/data/jobRoles";
@@ -122,13 +121,6 @@ export default async function SkillsPage() {
                 Discover the skills behind every career, see which job roles ask for them, and find
                 the ones that open up the most options.
               </p>
-
-              <ListingHeroSearch
-                basePath="/skills"
-                anchorId="all-skills"
-                label="Search skills"
-                placeholder="Search skills (e.g. Python, Communication, Data Analysis...)"
-              />
 
               {popular.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-4">

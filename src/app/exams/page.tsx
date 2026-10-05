@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import ExamsExplorer from "@/components/listing/ExamsExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { getExams } from "@/data/exams";
 import { getCategories } from "@/data/categories";
 
@@ -97,13 +96,6 @@ export default async function ExamsPage() {
                 Discover entrance and competitive exams, understand eligibility and exam pattern,
                 and explore the career opportunities they can lead to.
               </p>
-
-              <ListingHeroSearch
-                basePath="/exams"
-                anchorId="all-exams"
-                label="Search exams"
-                placeholder="Search exams (e.g. JEE Main, NEET, GATE, UPSC...)"
-              />
 
               {popular.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-4">

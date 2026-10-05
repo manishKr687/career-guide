@@ -7,7 +7,6 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import SpecializationsExplorer from "@/components/listing/SpecializationsExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { getSpecializations } from "@/data/specializations";
 import { getCareers } from "@/data/careers";
 import { getCategories } from "@/data/categories";
@@ -115,13 +114,6 @@ export default async function SpecializationsPage() {
                 Science, say. Browse them by field, see the job roles each one leads to, and find
                 where to go deep.
               </p>
-
-              <ListingHeroSearch
-                basePath="/specializations"
-                anchorId="all-specializations"
-                label="Search specializations"
-                placeholder="Search specializations (e.g. Cloud Computing, Cardiology...)"
-              />
 
               {popular.length > 0 && (
                 <div className="flex flex-wrap items-center gap-2 mt-4">

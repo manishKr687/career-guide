@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import ResourcesExplorer from "@/components/listing/ResourcesExplorer";
-import ListingHeroSearch from "@/components/listing/ListingHeroSearch";
 import { StatsStrip, ValuePoints, SignpostPanel } from "@/components/listing/ListingKit";
 import { getResources } from "@/data/resources";
 
@@ -51,12 +50,6 @@ export default async function ResourcesPage() {
                 Guides, courses, articles and official portals, each tied to the careers, exams and
                 skills it actually helps with.
               </p>
-              <ListingHeroSearch
-                basePath="/resources"
-                anchorId="all-resources"
-                label="Search resources"
-                placeholder="Search resources (e.g. JEE, machine learning, NCERT...)"
-              />
             </div>
             <div className="lg:col-span-3 relative min-h-[220px]">
               <SignpostPanel

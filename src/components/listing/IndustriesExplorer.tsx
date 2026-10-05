@@ -193,6 +193,10 @@ export default function IndustriesExplorer({
         </ResultsColumn>
 
         <FilterRail
+          query={query}
+          onQueryChange={setQuery}
+          searchPlaceholder="Search industries..."
+          searchLabel="Search industries"
           sort={sort}
           onSortChange={setSort}
           sorts={SORTS}

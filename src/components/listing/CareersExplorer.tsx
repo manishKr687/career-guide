@@ -405,7 +405,12 @@ export default function CareersExplorer({
               {/* Compact rows: a dot carries the colour and the label stays
                   plain text. Five full-size demand pills stacked vertically
                   made the panel taller than the first row of results. */}
-              <FilterGroup label="Job Demand">
+              {/* Collapsed by default. Field and salary are what people open this
+                  panel for; five demand labels stacked above the salary buckets
+                  pushed them below the fold on a laptop. It opens by itself when
+                  a demand filter is already set, and the summary carries a count,
+                  so a collapsed filter is never quietly in effect. */}
+              <FilterGroup label="Job Demand" collapsible activeCount={demands.length}>
                 <div className="flex flex-col gap-2">
                   {DEMAND_OPTIONS.map((d) => (
                     <CheckRow

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Icon from "@/components/ui/Icon";
 
 /**
@@ -86,11 +87,63 @@ export function QuickPickRow({ children }: { children: React.ReactNode }) {
 }
 
 /** One labelled block inside the filter card. */
-export function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
+export function FilterGroup({
+  label,
+  children,
+  collapsible = false,
+  activeCount = 0,
+}: {
+  label: string;
+  children: React.ReactNode;
+  /**
+   * Render the group behind a disclosure, closed unless something in it is
+   * already selected. For a filter worth keeping but not worth the vertical
+   * space it takes from the ones people actually use.
+   */
+  collapsible?: boolean;
+  /** How many options in this group are selected. Shown on the summary when closed, so a collapsed filter is never silently in effect. */
+  activeCount?: number;
+}) {
+  // Deliberately NOT <details open={activeCount > 0}>. React re-applies `open`
+  // on every render, so any unrelated state change -- a keystroke in the search
+  // box, a page change -- would snap the panel shut under someone who had just
+  // opened it. The initial value is read once; after that the group is wherever
+  // the reader left it.
+  const [open, setOpen] = useState(activeCount > 0);
+  const panelId = `filter-group-${label.replace(/[^a-z0-9]+/gi, "-").toLowerCase()}`;
+
+  if (!collapsible) {
+    return (
+      <div className="pt-4 mt-4 border-t border-line first:pt-0 first:mt-0 first:border-0">
+        <div className="text-[12.5px] font-bold text-navy mb-2.5">{label}</div>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <div className="pt-4 mt-4 border-t border-line first:pt-0 first:mt-0 first:border-0">
-      <div className="text-[12.5px] font-bold text-navy mb-2.5">{label}</div>
-      {children}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="w-full flex items-center gap-2 text-left text-[12.5px] font-bold text-navy py-1.5"
+      >
+        <Icon
+          name="chevRight"
+          className={`w-3.5 h-3.5 text-subtle shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+        />
+        <span className="flex-1">{label}</span>
+        {activeCount > 0 && (
+          <span className="text-[11px] font-bold text-blue bg-blue-soft rounded-full px-2 py-0.5 shrink-0">
+            {activeCount}
+          </span>
+        )}
+      </button>
+      <div id={panelId} hidden={!open} className="mt-2.5">
+        {children}
+      </div>
     </div>
   );
 }

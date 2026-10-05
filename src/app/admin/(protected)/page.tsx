@@ -52,9 +52,9 @@ const PALETTE = [
   { fg: "text-blue", bg: "bg-blue-soft", hex: "#8a5a2b" },
   { fg: "text-green", bg: "bg-green-soft", hex: "#4a6b3f" },
   { fg: "text-purple", bg: "bg-purple-soft", hex: "#6b5479" },
-  { fg: "text-amber", bg: "bg-amber-soft", hex: "#8a6224" },
+  { fg: "text-amber", bg: "bg-amber-soft", hex: "#846020" },
   { fg: "text-teal", bg: "bg-teal-soft", hex: "#2f6b63" },
-  { fg: "text-pink", bg: "bg-pink-soft", hex: "#a05259" },
+  { fg: "text-pink", bg: "bg-pink-soft", hex: "#984a52" },
   { fg: "text-slate", bg: "bg-slate-soft", hex: "#4f5560" },
 ];
 

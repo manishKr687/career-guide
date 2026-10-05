@@ -24,9 +24,17 @@
    of this change was to leave the layout alone. Renaming is a separate,
    mechanical pass.
 
-   Contrast was checked, not assumed. --color-subtle was #9199ae on #f8fafc,
-   about 2.9:1 -- below AA for the small meta text it is used for. It is now
-   #6f7178 on the new ground, about 4.8:1. That is a fix, not a side effect.
+   Contrast was checked, not assumed, and the first pass got two of fourteen
+   pairs wrong. --color-subtle was #9199ae on #f8fafc, about 2.9:1 -- below AA
+   for the small meta text it is used for; it is now #6f7178, about 4.8:1.
+   amber and pink then came out at 4.49 and 4.40 against their own soft fills,
+   which is how chips and badges use them, so both were darkened to 4.71 and
+   4.92. Every one of the fourteen accent-on-soft pairs now clears 4.5:1, and
+   white on every solid accent clears 5.4:1.
+
+   If you change an accent, recompute it against its own -soft. These are a
+   hair above the line by design, not by accident: muting a colour raises its
+   lightness, and the pair fails long before it looks wrong.
    ───────────────────────────────────────────────────────────────────────── */
 
 :root {
@@ -63,9 +71,9 @@
   --color-teal-soft: #dde9e6;
   --color-green: #4a6b3f;
   --color-green-soft: #e4ebdf;
-  --color-amber: #8a6224;
+  --color-amber: #846020;
   --color-amber-soft: #f3e8d3;
-  --color-pink: #a05259;
+  --color-pink: #984a52;
   --color-pink-soft: #f3e3e4;
   --color-purple: #6b5479;
   --color-purple-soft: #ece6ef;
@@ -79,11 +87,11 @@
      stage chip is never mistaken for a call to action. */
   --color-stage-10th: #4a6b3f;
   --color-stage-10th-soft: #e4ebdf;
-  --color-stage-12th: #a05259;
+  --color-stage-12th: #984a52;
   --color-stage-12th-soft: #f3e3e4;
   --color-stage-grad: #6b5479;
   --color-stage-grad-soft: #ece6ef;
-  --color-stage-pg: #8a6224;
+  --color-stage-pg: #846020;
   --color-stage-pg-soft: #f3e8d3;
   --color-stage-work: #4a5a74;
   --color-stage-work-soft: #e4e8ef;

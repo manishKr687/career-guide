@@ -159,9 +159,6 @@ export default function ResourcesExplorer({ initialResources }: { initialResourc
             title="All Resources"
             subtitle="Each one tied to the careers, exams and skills it actually helps with."
             countLabel={countLabel(sorted.length, safePage, PAGE_SIZE, "resource")}
-            sort={sort}
-            onSortChange={setSort}
-            sorts={SORTS}
             view={view}
             onViewChange={setView}
           />
@@ -235,6 +232,9 @@ export default function ResourcesExplorer({ initialResources }: { initialResourc
         </ResultsColumn>
 
         <FilterRail
+          sort={sort}
+          onSortChange={setSort}
+          sorts={SORTS}
           title="Filter Resources"
           open={filtersOpen}
           onOpenChange={setFiltersOpen}

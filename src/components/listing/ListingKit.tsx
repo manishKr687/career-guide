@@ -213,9 +213,15 @@ export function ResultsHeader({
   title: string;
   subtitle: string;
   countLabel: string;
-  sort: string;
-  onSortChange: (v: string) => void;
-  sorts: { value: string; label: string }[];
+  /**
+   * Omitted when FilterRail owns sort, which is the case on every listing page
+   * now -- one control that changes what you see, not two at opposite ends of
+   * the page. Kept optional rather than deleted so a future page that has a
+   * sort but no filter rail still has somewhere to put it.
+   */
+  sort?: string;
+  onSortChange?: (v: string) => void;
+  sorts?: { value: string; label: string }[];
   view: ViewMode;
   onViewChange: (v: ViewMode) => void;
 }) {
@@ -234,6 +240,7 @@ export function ResultsHeader({
 
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-[13px] font-semibold text-subtle">{countLabel}</span>
+        {sort !== undefined && onSortChange && sorts && (
         <label className="flex items-center gap-2">
           <span className="text-[12.5px] font-semibold text-muted">Sort by</span>
           <select
@@ -248,6 +255,7 @@ export function ResultsHeader({
             ))}
           </select>
         </label>
+        )}
         <div className="flex items-center rounded-xl border border-line overflow-hidden">
           {(["grid", "list"] as const).map((v) => (
             <button
@@ -287,6 +295,9 @@ export function FilterRail({
   anchorId,
   children,
   extra,
+  sort,
+  onSortChange,
+  sorts,
 }: {
   title: string;
   open: boolean;
@@ -299,9 +310,18 @@ export function FilterRail({
   anchorId: string;
   children: React.ReactNode;
   extra?: React.ReactNode;
+  /**
+   * Sort lives in this panel rather than in ResultsHeader, so there is one
+   * place that changes what you see instead of two at opposite ends of the
+   * page. Pass all three or none.
+   */
+  sort?: string;
+  onSortChange?: (v: string) => void;
+  sorts?: { value: string; label: string }[];
 }) {
+  const ownsSort = sort !== undefined && onSortChange !== undefined && sorts !== undefined;
   return (
-    <aside className="w-full lg:w-[264px] lg:shrink-0 order-1 lg:order-2 lg:sticky lg:top-24">
+    <aside className="w-full lg:w-[264px] lg:shrink-0 order-1 lg:sticky lg:top-24">
       <button
         type="button"
         onClick={() => onOpenChange(!open)}
@@ -310,7 +330,10 @@ export function FilterRail({
       >
         <span className="flex items-center gap-2 font-display font-extrabold text-navy text-[14px]">
           <Icon name="filter" className="w-4 h-4 text-blue" />
-          Filters
+          {/* Named for what is inside it. On a phone this button is the only way
+              to reach sort now that the rail owns it, so calling it "Filters"
+              would hide a control people use more often than any filter. */}
+          {ownsSort ? "Filter & sort" : "Filters"}
           {activeCount > 0 && (
             <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue text-white">
               {activeCount}
@@ -340,6 +363,26 @@ export function FilterRail({
             </button>
           </div>
 
+          {ownsSort && (
+            <div className="pb-4 mb-4 border-b border-line">
+              <label htmlFor={`${anchorId}-sort`} className="block text-[12.5px] font-bold text-navy mb-2.5">
+                Sort by
+              </label>
+              <select
+                id={`${anchorId}-sort`}
+                value={sort}
+                onChange={(e) => onSortChange?.(e.target.value)}
+                className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
+              >
+                {sorts?.map((s) => (
+                  <option key={s.value} value={s.value}>
+                    {s.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+
           {children}
 
           {/* Where a mock usually puts "Apply Filters". Filtering is live on
@@ -366,13 +409,14 @@ export function FilterRail({
   );
 }
 
-/** The two-column body: results on the left, sticky rail on the right. */
+/** The two-column body: sticky filter rail on the left, results on the right.
+ *  On a phone both collapse to one column with the filter toggle on top. */
 export function ListingLayout({ children }: { children: React.ReactNode }) {
   return <div className="flex flex-col lg:flex-row lg:items-start gap-8">{children}</div>;
 }
 
 export function ResultsColumn({ children }: { children: React.ReactNode }) {
-  return <div className="flex-1 min-w-0 order-2 lg:order-1">{children}</div>;
+  return <div className="flex-1 min-w-0 order-2">{children}</div>;
 }
 
 /** The empty state, with a way out of whatever filter caused it. */

@@ -218,9 +218,6 @@ export default function JobRolesExplorer({
             title="All Job Roles"
             subtitle="The posts you can be hired into, and what each one pays."
             countLabel={countLabel(sorted.length, safePage, PAGE_SIZE, "job role")}
-            sort={sort}
-            onSortChange={setSort}
-            sorts={SORTS}
             view={view}
             onViewChange={setView}
           />
@@ -279,6 +276,9 @@ export default function JobRolesExplorer({
         </ResultsColumn>
 
         <FilterRail
+          sort={sort}
+          onSortChange={setSort}
+          sorts={SORTS}
           title="Filter Job Roles"
           open={filtersOpen}
           onOpenChange={setFiltersOpen}

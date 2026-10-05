@@ -227,9 +227,6 @@ export default function SpecializationsExplorer({
             title="All Specializations"
             subtitle="Each one is a focused area inside a career, with its own page."
             countLabel={countLabel(sorted.length, safePage, PAGE_SIZE, "specialization")}
-            sort={sort}
-            onSortChange={setSort}
-            sorts={SORTS}
             view={view}
             onViewChange={setView}
           />
@@ -288,6 +285,9 @@ export default function SpecializationsExplorer({
         </ResultsColumn>
 
         <FilterRail
+          sort={sort}
+          onSortChange={setSort}
+          sorts={SORTS}
           title="Filter Specializations"
           open={filtersOpen}
           onOpenChange={setFiltersOpen}

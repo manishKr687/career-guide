@@ -223,7 +223,7 @@ export default function DegreesExplorer({
 
       <div className="flex flex-col lg:flex-row lg:items-start gap-8">
         {/* ------------------------------------------------------------ Results */}
-        <div className="flex-1 min-w-0 order-2 lg:order-1">
+        <div className="flex-1 min-w-0 order-2">
           <div id="all-degrees" className="flex flex-wrap items-end justify-between gap-4 mb-6 scroll-mt-24">
             <div>
               <h2 className="flex items-center gap-2.5 font-display font-extrabold text-navy text-[22px]">
@@ -243,20 +243,6 @@ export default function DegreesExplorer({
                   ? `Showing ${(safePage - 1) * PAGE_SIZE + 1}–${Math.min(safePage * PAGE_SIZE, sorted.length)} of ${sorted.length} degrees`
                   : `${sorted.length} degree${sorted.length === 1 ? "" : "s"}`}
               </span>
-              <label className="flex items-center gap-2">
-                <span className="text-[12.5px] font-semibold text-muted">Sort by</span>
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="rounded-xl border border-line bg-white px-3 py-2 text-[13px] font-semibold text-navy"
-                >
-                  {SORTS.map((s) => (
-                    <option key={s.value} value={s.value}>
-                      {s.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
               <div className="flex items-center rounded-xl border border-line overflow-hidden">
                 {(["grid", "list"] as const).map((v) => (
                   <button
@@ -341,7 +327,7 @@ export default function DegreesExplorer({
         </div>
 
         {/* ------------------------------------------------------------ Sidebar */}
-        <aside className="w-full lg:w-[264px] lg:shrink-0 order-1 lg:order-2 lg:sticky lg:top-24">
+        <aside className="w-full lg:w-[264px] lg:shrink-0 order-1 lg:sticky lg:top-24">
           <button
             type="button"
             onClick={() => setFiltersOpen((v) => !v)}
@@ -350,7 +336,9 @@ export default function DegreesExplorer({
           >
             <span className="flex items-center gap-2 font-display font-extrabold text-navy text-[14px]">
               <Icon name="filter" className="w-4 h-4 text-blue" />
-              Filters
+              {/* Named for what is inside it: on a phone this button is the
+                  only route to sort now that the panel owns it. */}
+              Filter &amp; sort
               {activeCount > 0 && (
                 <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-blue text-white">
                   {activeCount}
@@ -378,6 +366,28 @@ export default function DegreesExplorer({
                 >
                   Reset
                 </button>
+              </div>
+
+              {/* Sort lives in this panel, not in the results header, so one
+                  place changes what you see instead of two at opposite ends of
+                  the page. On a phone the panel toggle is the only route to it,
+                  which is why that button says "Filter & sort". */}
+              <div className="pb-4 mb-4 border-b border-line">
+                <label htmlFor="DegreesExplorer-sort" className="block text-[12.5px] font-bold text-navy mb-2.5">
+                  Sort by
+                </label>
+                <select
+                  id="DegreesExplorer-sort"
+                  value={sort}
+                  onChange={(e) => setSort(e.target.value)}
+                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
+                >
+                  {SORTS.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <FilterGroup label="Category">

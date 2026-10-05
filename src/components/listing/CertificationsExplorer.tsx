@@ -157,9 +157,6 @@ export default function CertificationsExplorer({
             title="All Certifications"
             subtitle="Credentials that sit alongside a qualification rather than replace it."
             countLabel={countLabel(sorted.length, safePage, PAGE_SIZE, "certification")}
-            sort={sort}
-            onSortChange={setSort}
-            sorts={SORTS}
             view={view}
             onViewChange={setView}
           />
@@ -233,6 +230,9 @@ export default function CertificationsExplorer({
         </ResultsColumn>
 
         <FilterRail
+          sort={sort}
+          onSortChange={setSort}
+          sorts={SORTS}
           title="Filter Certifications"
           open={filtersOpen}
           onOpenChange={setFiltersOpen}

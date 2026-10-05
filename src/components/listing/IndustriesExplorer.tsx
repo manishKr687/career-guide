@@ -141,9 +141,6 @@ export default function IndustriesExplorer({
             title="All Industries"
             subtitle="Sectors are where the work happens; employers are who hires."
             countLabel={countLabel(sorted.length, safePage, PAGE_SIZE, "industry")}
-            sort={sort}
-            onSortChange={setSort}
-            sorts={SORTS}
             view={view}
             onViewChange={setView}
           />
@@ -196,6 +193,9 @@ export default function IndustriesExplorer({
         </ResultsColumn>
 
         <FilterRail
+          sort={sort}
+          onSortChange={setSort}
+          sorts={SORTS}
           title="Filter Industries"
           open={filtersOpen}
           onOpenChange={setFiltersOpen}

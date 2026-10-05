@@ -70,12 +70,25 @@ const SORTS = [
 ];
 
 
+/**
+ * The fields this listing renders. `careerOfferings` is deliberately absent: it
+ * is 44 KB across 90 colleges -- 35% of /api/colleges -- and appears only on a
+ * college's own page, never on a card here. Because the Explorer is a client
+ * component, anything passed in is serialised into the RSC payload as well as
+ * the HTML, so an unused field costs twice.
+ */
+export type CollegeListItem = Pick<
+  College,
+  | "slug" | "name" | "location" | "type" | "ownershipType" | "stateSlug" | "citySlug"
+  | "nirfRank" | "nirfLabel" | "established" | "description" | "degreeOfferings" | "examSlugs"
+>;
+
 export default function CollegesExplorer({
   initialColleges,
   states,
   cities,
 }: {
-  initialColleges: College[];
+  initialColleges: CollegeListItem[];
   states: State[];
   cities: City[];
 }) {
@@ -614,7 +627,7 @@ function CollegeListCard({
   city,
   view,
 }: {
-  college: College;
+  college: CollegeListItem;
   state?: State;
   city?: City;
   view: "grid" | "list";

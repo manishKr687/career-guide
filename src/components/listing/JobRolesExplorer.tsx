@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
-import { Career, Category, JobRole } from "@/lib/types";
+import { CareerRef, Category, JobRole } from "@/lib/types";
 import { indexBySlug } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
 import { usePagedList } from "@/hooks/usePagedList";
@@ -72,7 +72,7 @@ export default function JobRolesExplorer({
   fieldsByRole,
 }: {
   initialJobRoles: JobRole[];
-  careers: Career[];
+  careers: CareerRef[];
   categories: Category[];
   /** slug -> the category slugs of this role's parent career(s). */
   fieldsByRole: Record<string, string[]>;
@@ -357,7 +357,7 @@ function JobRoleListCard({
   view,
 }: {
   jobRole: JobRole;
-  parent?: Career;
+  parent?: CareerRef;
   view: ViewMode;
 }) {
   const salary =

@@ -224,9 +224,22 @@ export default async function SpecializationsPage() {
       </Container>
 
       <Suspense fallback={null}>
+        {/* Trimmed to the fields the listing renders. The Explorer is a client
+            component, so whatever is passed here is serialised into the RSC
+            payload on top of the HTML -- every unused field is paid for twice.
+            `overview` alone is 117 KB across 263 rows and appears nowhere on
+            this page. See SpecializationListItem for the full reasoning. */}
         <SpecializationsExplorer
-          initialSpecializations={specializations}
-          careers={careers}
+          initialSpecializations={specializations.map((s) => ({
+            slug: s.slug,
+            name: s.name,
+            description: s.description,
+            icon: s.icon,
+            careerSlugs: s.careerSlugs,
+            primaryCareerSlug: s.primaryCareerSlug,
+            relatedJobRoleSlugs: s.relatedJobRoleSlugs,
+          }))}
+          careers={careers.map((c) => ({ slug: c.slug, title: c.title, categorySlug: c.categorySlug }))}
           categories={categories}
           fieldsBySpec={Object.fromEntries(fieldsBySpec)}
         />

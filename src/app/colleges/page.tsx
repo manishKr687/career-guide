@@ -203,7 +203,12 @@ export default async function CollegesPage() {
       </Container>
 
       <Suspense fallback={null}>
-        <CollegesExplorer initialColleges={colleges} states={states} cities={cities} />
+        <CollegesExplorer initialColleges={colleges.map((c) => ({
+            slug: c.slug, name: c.name, location: c.location, type: c.type,
+            ownershipType: c.ownershipType, stateSlug: c.stateSlug, citySlug: c.citySlug,
+            nirfRank: c.nirfRank, nirfLabel: c.nirfLabel, established: c.established,
+            description: c.description, degreeOfferings: c.degreeOfferings, examSlugs: c.examSlugs,
+          }))} states={states} cities={cities} />
       </Suspense>
     </>
   );

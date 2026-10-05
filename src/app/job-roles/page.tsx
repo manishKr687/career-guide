@@ -220,7 +220,7 @@ export default async function JobRolesPage() {
       <Suspense fallback={null}>
         <JobRolesExplorer
           initialJobRoles={jobRoles}
-          careers={careers}
+          careers={careers.map((c) => ({ slug: c.slug, title: c.title, categorySlug: c.categorySlug }))}
           categories={categories}
           fieldsByRole={Object.fromEntries(fieldsByRole)}
         />

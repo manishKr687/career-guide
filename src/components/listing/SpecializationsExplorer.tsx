@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
-import { Career, Category, Specialization } from "@/lib/types";
+import { CareerRef, Category, Specialization } from "@/lib/types";
 import { indexBySlug } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
 import { usePagedList } from "@/hooks/usePagedList";
@@ -49,14 +49,34 @@ const SORTS = [
   { value: "career", label: "By career" },
 ];
 
+/**
+ * The fields this listing actually reads.
+ *
+ * Typed as a narrow Pick rather than `Specialization` so the page can hand over
+ * only these and the compiler enforces the rest. The full entity carries
+ * `overview`, which V134-V146 filled for all 263 specializations -- 117 KB of
+ * prose, 40% of /api/specializations, that this page never renders. Because the
+ * list is a prop to a client component, every byte was serialised twice: once
+ * into the HTML and again into the RSC payload for hydration. That alone was
+ * roughly 234 KB of a 584 KB page.
+ *
+ * Narrowing the type is what makes the saving stick. Passing a trimmed object
+ * into a `Specialization[]` prop would compile today and silently regrow the
+ * moment someone passed the raw list again.
+ */
+export type SpecializationListItem = Pick<
+  Specialization,
+  "slug" | "name" | "description" | "icon" | "careerSlugs" | "primaryCareerSlug" | "relatedJobRoleSlugs"
+>;
+
 export default function SpecializationsExplorer({
   initialSpecializations,
   careers,
   categories,
   fieldsBySpec,
 }: {
-  initialSpecializations: Specialization[];
-  careers: Career[];
+  initialSpecializations: SpecializationListItem[];
+  careers: CareerRef[];
   categories: Category[];
   /** slug -> the category slugs of this specialization's parent career(s). */
   fieldsBySpec: Record<string, string[]>;
@@ -351,8 +371,8 @@ function SpecializationListCard({
   parent,
   view,
 }: {
-  specialization: Specialization;
-  parent?: Career;
+  specialization: SpecializationListItem;
+  parent?: CareerRef;
   view: ViewMode;
 }) {
   const roles = specialization.relatedJobRoleSlugs.length;

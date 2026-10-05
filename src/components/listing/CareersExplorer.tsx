@@ -82,11 +82,23 @@ const SORTS = [
 ];
 
 
+/**
+ * The fields this listing renders. Absent on purpose: `description` (22 KB),
+ * `growthStages` (17 KB) and `typicalWork` (13 KB), none of which a card shows --
+ * the cards use `tagline`. Together with the other unused relations that is most
+ * of a 153 KB payload, serialised twice because this is a client component.
+ */
+export type CareerListItem = Pick<
+  Career,
+  | "slug" | "title" | "categorySlug" | "tagline" | "demand" | "icon"
+  | "salaryMinLpa" | "salaryMaxLpa" | "relatedSkillSlugs" | "relatedSpecializationSlugs"
+>;
+
 export default function CareersExplorer({
   initialCareers,
   categories,
 }: {
-  initialCareers: Career[];
+  initialCareers: CareerListItem[];
   categories: Category[];
 }) {
   const {
@@ -503,7 +515,7 @@ function ExploreCareerCard({
   category,
   view,
 }: {
-  career: Career;
+  career: CareerListItem;
   category?: Category;
   view: "grid" | "list";
 }) {

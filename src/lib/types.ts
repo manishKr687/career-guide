@@ -251,6 +251,21 @@ export interface Education {
   title: string;
 }
 
+/**
+ * Just enough of a {@link Career} to label one somewhere else.
+ *
+ * The listing pages for specializations and job roles each need a career's name
+ * to show which field a row belongs to, and nothing more. They were handed the
+ * whole `Career[]` -- 153 KB across 55 rows, carrying growthStages, typicalWork,
+ * salary bands and every relation. Those pages render a client component, so the
+ * entire thing was serialised into the RSC payload on top of the HTML, paid for
+ * twice, to print a title.
+ *
+ * Narrow on purpose: widening this type is how the saving would quietly come
+ * back.
+ */
+export type CareerRef = Pick<Career, "slug" | "title" | "categorySlug">;
+
 export interface Career {
   slug: string;
   title: string;

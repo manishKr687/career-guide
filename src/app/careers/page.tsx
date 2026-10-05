@@ -183,7 +183,12 @@ export default async function CareersPage() {
 
       <Suspense fallback={null}>
         <CareersExplorer
-          initialCareers={careers}
+          initialCareers={careers.map((c) => ({
+            slug: c.slug, title: c.title, categorySlug: c.categorySlug, tagline: c.tagline,
+            demand: c.demand, icon: c.icon, salaryMinLpa: c.salaryMinLpa, salaryMaxLpa: c.salaryMaxLpa,
+            relatedSkillSlugs: c.relatedSkillSlugs,
+            relatedSpecializationSlugs: c.relatedSpecializationSlugs,
+          }))}
           categories={usedCategories}
         />
       </Suspense>

@@ -16,8 +16,6 @@ import {
   ListingLayout,
   NONE,
   NoResults,
-  QuickPick,
-  QuickPickRow,
   ResultsColumn,
   ResultsHeader,
   ViewMode,
@@ -128,12 +126,6 @@ export default function IndustriesExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <QuickPickRow>
-        <QuickPick active={kind === "all"} onClick={() => setKind("all")} icon="grid" label="All" count={initialIndustries.length} noun="industry" />
-        <QuickPick active={kind === "sector"} onClick={() => setKind(kind === "sector" ? "all" : "sector")} icon="compass" label="Sectors" count={sectorCount} noun="sector" />
-        <QuickPick active={kind === "employer"} onClick={() => setKind(kind === "employer" ? "all" : "employer")} icon="building" label="Employers" count={initialIndustries.length - sectorCount} noun="employer" />
-      </QuickPickRow>
-
       <ListingLayout>
         <ResultsColumn>
           <ResultsHeader

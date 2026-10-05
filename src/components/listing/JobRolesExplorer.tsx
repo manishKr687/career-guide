@@ -14,11 +14,10 @@ import {
   Chip,
   FilterGroup,
   FilterRail,
+  FilterSelect,
   ListingLayout,
   NONE,
   NoResults,
-  QuickPick,
-  QuickPickRow,
   ResultsColumn,
   ResultsHeader,
   ViewMode,
@@ -189,28 +188,6 @@ export default function JobRolesExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <QuickPickRow>
-        <QuickPick
-          active={field === "all"}
-          onClick={() => setField("all")}
-          icon="grid"
-          label="All Job Roles"
-          count={initialJobRoles.length}
-          noun="role"
-        />
-        {fieldCounts.map(({ category: c, count }) => (
-          <QuickPick
-            key={c!.slug}
-            active={field === c!.slug}
-            onClick={() => setField(field === c!.slug ? "all" : c!.slug)}
-            icon={c!.icon}
-            label={c!.name}
-            count={count}
-            noun="role"
-          />
-        ))}
-      </QuickPickRow>
-
       <ListingLayout>
         <ResultsColumn>
           <ResultsHeader
@@ -292,19 +269,17 @@ export default function JobRolesExplorer({
           ctaLabel={`Show ${sorted.length} job role${sorted.length === 1 ? "" : "s"}`}
         >
           <FilterGroup label="Field">
-            <div className="flex flex-col gap-2">
-              {fieldCounts.map(({ category: c, count }) => (
-                <CheckRow
-                  key={c!.slug}
-                  checked={field === c!.slug}
-                  onChange={() => setField(field === c!.slug ? "all" : c!.slug)}
-                  count={count}
-                >
-                  <Icon name={c!.icon} className="w-3.5 h-3.5 text-subtle shrink-0" />
-                  <span className="text-[12.5px] text-ink/80 truncate">{c!.name}</span>
-                </CheckRow>
-              ))}
-            </div>
+            <FilterSelect
+              id="all-job-roles-field"
+              value={field}
+              onChange={setField}
+              allLabel="All fields"
+              options={fieldCounts.map(({ category: c, count }) => ({
+                value: c!.slug,
+                label: c!.name,
+                count,
+              }))}
+            />
           </FilterGroup>
 
           <FilterGroup label="Seniority">

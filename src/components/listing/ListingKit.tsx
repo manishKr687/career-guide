@@ -36,55 +36,20 @@ export function toggleParam(list: string[], value: string, set: (v: string) => v
   set(joinParam(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]));
 }
 
-/** A category tile in the strip above the results. */
-export function QuickPick({
-  active,
-  onClick,
-  icon,
-  label,
-  count,
-  noun = "item",
-}: {
-  active: boolean;
-  onClick: () => void;
-  icon: string;
-  label: string;
-  count: number;
-  /** Singular noun for the count line, e.g. "career". */
-  noun?: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-pressed={active}
-      className={`flex items-center gap-3 shrink-0 rounded-2xl border px-4 py-3 transition-colors text-left ${
-        active ? "border-blue bg-blue-soft" : "border-line bg-white hover:border-blue/40"
-      }`}
-    >
-      <span
-        className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${
-          active ? "bg-blue text-white" : "bg-bg-soft text-navy"
-        }`}
-      >
-        <Icon name={icon} className="w-[17px] h-[17px]" />
-      </span>
-      <span>
-        <span className="block font-display font-bold text-navy text-[13.5px] whitespace-nowrap">
-          {label}
-        </span>
-        <span className="block text-[11.5px] text-muted whitespace-nowrap">
-          {count} {noun}
-          {count === 1 ? "" : "s"}
-        </span>
-      </span>
-    </button>
-  );
-}
-
-export function QuickPickRow({ children }: { children: React.ReactNode }) {
-  return <div className="flex gap-3 overflow-x-auto pb-2 mb-8 -mx-1 px-1">{children}</div>;
-}
+/*
+ * QuickPick and QuickPickRow lived here: the horizontally scrolling strip of
+ * category tiles that sat above the results on nine of the ten listing pages.
+ *
+ * Every one of them drove the same state as the first group in the filter
+ * panel, so each page shipped its primary facet twice -- and because the strips
+ * were truncated to fit (Degrees' top 7 of 14, Exams' top 8 of 13) the two
+ * copies disagreed about which options existed at all. Careers had already
+ * dropped its strip when the filters moved into the left rail; this is the rest
+ * of the pages catching up.
+ *
+ * Deleted rather than left as unused exports, so nothing reintroduces the
+ * duplicate by reaching for a component that is still here.
+ */
 
 /** One labelled block inside the filter card. */
 export function FilterGroup({
@@ -145,6 +110,51 @@ export function FilterGroup({
         {children}
       </div>
     </div>
+  );
+}
+
+/**
+ * A single-select facet, as a dropdown.
+ *
+ * Four of these started life as CheckRow lists, which was the wrong control
+ * twice over. Ticking one box cleared the box you had ticked before, so they
+ * were radios wearing a checkbox; and the longest of them, Exams' 13
+ * categories, was most of the rail's height for a facet whose options mostly
+ * pick out one or two rows. The counts move into the option labels, so nothing
+ * the checkbox list told you is lost.
+ *
+ * Multi-select facets stay as CheckRow lists -- a dropdown cannot show two
+ * things chosen at once.
+ */
+export function FilterSelect({
+  id,
+  value,
+  onChange,
+  allLabel,
+  options,
+}: {
+  id: string;
+  value: string;
+  onChange: (v: string) => void;
+  /** The cleared state, e.g. "All fields". Selecting it sets the value to NONE. */
+  allLabel: string;
+  options: { value: string; label: string; count?: number }[];
+}) {
+  return (
+    <select
+      id={id}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
+    >
+      <option value={NONE}>{allLabel}</option>
+      {options.map((o) => (
+        <option key={o.value} value={o.value}>
+          {o.label}
+          {o.count !== undefined ? ` (${o.count})` : ""}
+        </option>
+      ))}
+    </select>
   );
 }
 

@@ -13,11 +13,10 @@ import {
   Chip,
   FilterGroup,
   FilterRail,
+  FilterSelect,
   ListingLayout,
   NONE,
   NoResults,
-  QuickPick,
-  QuickPickRow,
   ResultsColumn,
   ResultsHeader,
   ViewMode,
@@ -31,6 +30,12 @@ const PAGE_SIZE = 12;
 // Level is free text on the entity, so the options come from the data rather
 // than a fixed list -- and a certification with none is shown as such rather
 // than dropped.
+//
+// Every one of the 12 rows has a null level today, which made this facet a
+// single "Unspecified" option matching the whole catalog. The group is gated on
+// `levelled` below rather than deleted, the same way Colleges gates its NIRF
+// buckets: the filter is dead because the column is empty, and it should come
+// back by itself on the day someone fills it in.
 const UNSET = "Unspecified";
 
 const SORTS = [
@@ -63,6 +68,7 @@ export default function CertificationsExplorer({
   // rather than on the raw param string, which is what forced an
   // exhaustive-deps suppression here.
   const levels = useMemo(() => splitParam(levelParam), [levelParam]);
+  const levelled = initialCertifications.some((c) => Boolean(c.level));
 
   function reset() {
     setLevelParam(NONE);
@@ -128,28 +134,6 @@ export default function CertificationsExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <QuickPickRow>
-        <QuickPick
-          active={levels.length === 0}
-          onClick={() => setLevelParam(NONE)}
-          icon="grid"
-          label="All Certifications"
-          count={initialCertifications.length}
-          noun="certification"
-        />
-        {levelCounts.map(([l, count]) => (
-          <QuickPick
-            key={l}
-            active={levels.includes(l)}
-            onClick={() => toggleParam(levels, l, setLevelParam)}
-            icon="award"
-            label={l}
-            count={count}
-            noun="certification"
-          />
-        ))}
-      </QuickPickRow>
-
       <ListingLayout>
         <ResultsColumn>
           <ResultsHeader
@@ -245,29 +229,26 @@ export default function CertificationsExplorer({
           anchorId="all-certifications"
           ctaLabel={`Show ${sorted.length} certification${sorted.length === 1 ? "" : "s"}`}
         >
-          <FilterGroup label="Level">
-            <div className="flex flex-col gap-2">
-              {levelCounts.map(([l, count]) => (
-                <CheckRow key={l} checked={levels.includes(l)} onChange={() => toggleParam(levels, l, setLevelParam)} count={count}>
-                  <span className="text-[12.5px] text-ink/80">{l}</span>
-                </CheckRow>
-              ))}
-            </div>
-          </FilterGroup>
+          {levelled && (
+            <FilterGroup label="Level">
+              <div className="flex flex-col gap-2">
+                {levelCounts.map(([l, count]) => (
+                  <CheckRow key={l} checked={levels.includes(l)} onChange={() => toggleParam(levels, l, setLevelParam)} count={count}>
+                    <span className="text-[12.5px] text-ink/80">{l}</span>
+                  </CheckRow>
+                ))}
+              </div>
+            </FilterGroup>
+          )}
 
           <FilterGroup label="Provider">
-            <select
+            <FilterSelect
+              id="all-certifications-provider"
               value={provider}
-              onChange={(e) => setProvider(e.target.value)}
-              className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
-            >
-              <option value="all">All providers</option>
-              {providers.map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
+              onChange={setProvider}
+              allLabel="All providers"
+              options={providers.map((p) => ({ value: p, label: p }))}
+            />
           </FilterGroup>
         </FilterRail>
       </ListingLayout>

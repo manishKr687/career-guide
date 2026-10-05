@@ -13,8 +13,8 @@ import {
   CheckRow,
   Chip,
   FilterGroup,
+  FilterSelect,
   NONE,
-  QuickPick,
   joinParam,
   splitParam,
 } from "@/components/listing/ListingKit";
@@ -74,18 +74,14 @@ export default function ExamsExplorer({
     setFilter2: setLevelParam,
     filter3: freqParam,
     setFilter3: setFreqParam,
-    filter4: body,
-    setFilter4: setBody,
+    filter4: sort,
+    setFilter4: setSort,
     page,
     setPage,
-  } = useUrlListState("field", "all", "level", NONE, "frequency", NONE, "body", "all");
+  } = useUrlListState("field", "all", "level", NONE, "frequency", NONE, "sort", "popularity");
 
   const [view, setView] = useState<"grid" | "list">("grid");
   const [filtersOpen, setFiltersOpen] = useState(false);
-  // Sort is not in the URL here: with four filter slots already taken by
-  // field/level/frequency/body, there is no fifth, and of the five bits of
-  // state on this page sort is the one a shared link least needs.
-  const [sort, setSort] = useState("popularity");
 
   const categoriesBySlug = useMemo(() => indexBySlug(categories), [categories]);
   // Memoised so the filter memo below can depend on the parsed arrays rather
@@ -102,16 +98,11 @@ export default function ExamsExplorer({
     setField("all");
     setLevelParam(NONE);
     setFreqParam(NONE);
-    setBody("all");
     setQuery("");
   }
 
   const activeCount =
-    (field !== "all" ? 1 : 0) +
-    levels.length +
-    freqs.length +
-    (body !== "all" ? 1 : 0) +
-    (query.trim() ? 1 : 0);
+    (field !== "all" ? 1 : 0) + levels.length + freqs.length + (query.trim() ? 1 : 0);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -126,10 +117,12 @@ export default function ExamsExplorer({
       }
       if (levels.length > 0 && !levels.includes(e.level)) return false;
       if (freqs.length > 0 && !freqs.includes(e.frequencyType)) return false;
-      if (body !== "all" && e.conductedBy !== body) return false;
       if (q === "") return true;
       // The full name is what someone typing "joint entrance examination" is
-      // after; matching only the acronym would miss it.
+      // after; matching only the acronym would miss it. Matching the conducting
+      // body here is also what let the "Conducting Body" dropdown go: typing
+      // "NTA" finds the same four exams that facet's 27 options did, 26 of
+      // which picked out one or two rows.
       return (
         e.name.toLowerCase().includes(q) ||
         e.fullName.toLowerCase().includes(q) ||
@@ -137,7 +130,7 @@ export default function ExamsExplorer({
         e.conductedBy.toLowerCase().includes(q)
       );
     });
-  }, [initialExams, query, field, levels, freqs, body]);
+  }, [initialExams, query, field, levels, freqs]);
 
   const sorted = useMemo(() => {
     const list = [...filtered];
@@ -198,11 +191,6 @@ export default function ExamsExplorer({
     }));
   }, [initialExams]);
 
-  const bodies = useMemo(
-    () => [...new Set(initialExams.map((e) => e.conductedBy))].sort((a, b) => a.localeCompare(b)),
-    [initialExams]
-  );
-
   // Exams with no field (CUET, NTSE) are reachable through "All Exams" and
   // their own chip rather than being filed under a category they do not
   // belong to.
@@ -210,35 +198,6 @@ export default function ExamsExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <div className="flex gap-3 overflow-x-auto pb-2 mb-8 -mx-1 px-1">
-        <QuickPick
-          active={field === "all"}
-          onClick={() => setField("all")}
-          icon="grid"
-          label="All Exams"
-          count={initialExams.length}
-        />
-        {fieldCounts.slice(0, 8).map(({ category: c, count }) => (
-          <QuickPick
-            key={c!.slug}
-            active={field === c!.slug}
-            onClick={() => setField(field === c!.slug ? "all" : c!.slug)}
-            icon={c!.icon}
-            label={c!.name}
-            count={count}
-          />
-        ))}
-        {unfiled > 0 && (
-          <QuickPick
-            active={field === "none"}
-            onClick={() => setField(field === "none" ? "all" : "none")}
-            icon="compass"
-            label="All Fields"
-            count={unfiled}
-          />
-        )}
-      </div>
-
       <div className="flex flex-col lg:flex-row lg:items-start gap-8">
         {/* ------------------------------------------------------------ Results */}
         <div className="flex-1 min-w-0 order-2">
@@ -296,7 +255,6 @@ export default function ExamsExplorer({
                   {f}
                 </Chip>
               ))}
-              {body !== "all" && <Chip onRemove={() => setBody("all")}>{body}</Chip>}
               <button
                 type="button"
                 onClick={reset}
@@ -428,30 +386,31 @@ export default function ExamsExplorer({
                 </select>
               </div>
 
+              {/* 13 categories, 12 of which hold two exams or fewer. As a
+                  checkbox list that was most of the rail; the strip above the
+                  results showed only the top 8, so the two copies disagreed
+                  about which categories you could even reach.
+
+                  The unfiled option is labelled for what it means here. In a
+                  dropdown sitting under "All categories", the old "All Fields"
+                  read as the cleared state rather than as its opposite. */}
               <FilterGroup label="Category">
-                <div className="flex flex-col gap-2">
-                  {fieldCounts.map(({ category: c, count }) => (
-                    <CheckRow
-                      key={c!.slug}
-                      checked={field === c!.slug}
-                      onChange={() => setField(field === c!.slug ? "all" : c!.slug)}
-                      count={count}
-                    >
-                      <Icon name={c!.icon} className="w-3.5 h-3.5 text-subtle shrink-0" />
-                      <span className="text-[12.5px] text-ink/80 truncate">{c!.name}</span>
-                    </CheckRow>
-                  ))}
-                  {unfiled > 0 && (
-                    <CheckRow
-                      checked={field === "none"}
-                      onChange={() => setField(field === "none" ? "all" : "none")}
-                      count={unfiled}
-                    >
-                      <Icon name="compass" className="w-3.5 h-3.5 text-subtle shrink-0" />
-                      <span className="text-[12.5px] text-ink/80 truncate">All Fields</span>
-                    </CheckRow>
-                  )}
-                </div>
+                <FilterSelect
+                  id="all-exams-field"
+                  value={field}
+                  onChange={setField}
+                  allLabel="All categories"
+                  options={[
+                    ...fieldCounts.map(({ category: c, count }) => ({
+                      value: c!.slug,
+                      label: c!.name,
+                      count,
+                    })),
+                    ...(unfiled > 0
+                      ? [{ value: "none", label: "No single field", count: unfiled }]
+                      : []),
+                  ]}
+                />
               </FilterGroup>
 
               <FilterGroup label="Exam Level">
@@ -467,21 +426,6 @@ export default function ExamsExplorer({
                     </CheckRow>
                   ))}
                 </div>
-              </FilterGroup>
-
-              <FilterGroup label="Conducting Body">
-                <select
-                  value={body}
-                  onChange={(e) => setBody(e.target.value)}
-                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
-                >
-                  <option value="all">All Conducting Bodies</option>
-                  {bodies.map((b) => (
-                    <option key={b} value={b}>
-                      {b}
-                    </option>
-                  ))}
-                </select>
               </FilterGroup>
 
               <FilterGroup label="Frequency">

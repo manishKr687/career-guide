@@ -13,8 +13,8 @@ import {
   CheckRow,
   Chip,
   FilterGroup,
+  FilterSelect,
   NONE,
-  QuickPick,
   joinParam,
   splitParam,
 } from "@/components/listing/ListingKit";
@@ -192,35 +192,8 @@ export default function DegreesExplorer({
     }));
   }, [initialDegrees]);
 
-  // The quick-pick strip above the results: the biggest categories, plus an
-  // "All" chip. Same source as the sidebar list, so the two cannot disagree.
-  const quickPicks = categoryCounts.slice(0, 7);
-
   return (
     <Container className="py-8 pb-24">
-      {/* Category quick-picks, the mock's strip under the hero. A second way
-          into the same filter the sidebar offers -- kept because it is the one
-          most readers will actually use. */}
-      <div className="flex gap-3 overflow-x-auto pb-2 mb-8 -mx-1 px-1">
-        <QuickPick
-          active={category === "all"}
-          onClick={() => setCategory("all")}
-          icon="grid"
-          label="All Degrees"
-          count={initialDegrees.length}
-        />
-        {quickPicks.map(({ category: c, count }) => (
-          <QuickPick
-            key={c!.slug}
-            active={category === c!.slug}
-            onClick={() => setCategory(category === c!.slug ? "all" : c!.slug)}
-            icon={c!.icon}
-            label={c!.name}
-            count={count}
-          />
-        ))}
-      </div>
-
       <div className="flex flex-col lg:flex-row lg:items-start gap-8">
         {/* ------------------------------------------------------------ Results */}
         <div className="flex-1 min-w-0 order-2">
@@ -411,32 +384,23 @@ export default function DegreesExplorer({
                 </select>
               </div>
 
+              {/* One control, not three. Category used to be a quick-pick strip
+                  above the results, this dropdown, and a checkbox list of the
+                  top 8 -- all single-select, all calling setCategory, so the
+                  strip and the list disagreed with the dropdown about which of
+                  the 14 categories you could even reach. */}
               <FilterGroup label="Category">
-                <select
+                <FilterSelect
+                  id="all-degrees-category"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy mb-2.5"
-                >
-                  <option value="all">All Categories</option>
-                  {categoryCounts.map(({ category: c }) => (
-                    <option key={c!.slug} value={c!.slug}>
-                      {c!.name}
-                    </option>
-                  ))}
-                </select>
-                <div className="flex flex-col gap-2">
-                  {categoryCounts.slice(0, 8).map(({ category: c, count }) => (
-                    <CheckRow
-                      key={c!.slug}
-                      checked={category === c!.slug}
-                      onChange={() => setCategory(category === c!.slug ? "all" : c!.slug)}
-                      count={count}
-                    >
-                      <Icon name={c!.icon} className="w-3.5 h-3.5 text-subtle shrink-0" />
-                      <span className="text-[12.5px] text-ink/80 truncate">{c!.name}</span>
-                    </CheckRow>
-                  ))}
-                </div>
+                  onChange={setCategory}
+                  allLabel="All categories"
+                  options={categoryCounts.map(({ category: c, count }) => ({
+                    value: c!.slug,
+                    label: c!.name,
+                    count,
+                  }))}
+                />
               </FilterGroup>
 
               <FilterGroup label="Degree Level">

@@ -14,11 +14,10 @@ import {
   Chip,
   FilterGroup,
   FilterRail,
+  FilterSelect,
   ListingLayout,
   NONE,
   NoResults,
-  QuickPick,
-  QuickPickRow,
   ResultsColumn,
   ResultsHeader,
   ViewMode,
@@ -198,28 +197,6 @@ export default function SpecializationsExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <QuickPickRow>
-        <QuickPick
-          active={field === "all"}
-          onClick={() => handleFieldChange("all")}
-          icon="grid"
-          label="All Specializations"
-          count={initialSpecializations.length}
-          noun="area"
-        />
-        {fieldCounts.map(({ category: c, count }) => (
-          <QuickPick
-            key={c!.slug}
-            active={field === c!.slug}
-            onClick={() => handleFieldChange(field === c!.slug ? "all" : c!.slug)}
-            icon={c!.icon}
-            label={c!.name}
-            count={count}
-            noun="area"
-          />
-        ))}
-      </QuickPickRow>
-
       <ListingLayout>
         <ResultsColumn>
           <ResultsHeader
@@ -303,35 +280,32 @@ export default function SpecializationsExplorer({
           {/* Field, not a category of its own: a specialization has none, and
               adding one would be a second copy of what its parent career
               already says. */}
+          {/* Field then career, parent above child: choosing a field narrows the
+              career list below it. Both are dropdowns because both are
+              single-select -- as CheckRow lists, ticking one field silently
+              unticked the last, and 12 of them filled the rail. */}
           <FilterGroup label="Field">
-            <div className="flex flex-col gap-2">
-              {fieldCounts.map(({ category: c, count }) => (
-                <CheckRow
-                  key={c!.slug}
-                  checked={field === c!.slug}
-                  onChange={() => handleFieldChange(field === c!.slug ? "all" : c!.slug)}
-                  count={count}
-                >
-                  <Icon name={c!.icon} className="w-3.5 h-3.5 text-subtle shrink-0" />
-                  <span className="text-[12.5px] text-ink/80 truncate">{c!.name}</span>
-                </CheckRow>
-              ))}
-            </div>
+            <FilterSelect
+              id="all-specializations-field"
+              value={field}
+              onChange={handleFieldChange}
+              allLabel="All fields"
+              options={fieldCounts.map(({ category: c, count }) => ({
+                value: c!.slug,
+                label: c!.name,
+                count,
+              }))}
+            />
           </FilterGroup>
 
           <FilterGroup label="Parent career">
-            <select
+            <FilterSelect
+              id="all-specializations-career"
               value={career}
-              onChange={(e) => setCareer(e.target.value)}
-              className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
-            >
-              <option value="all">All careers</option>
-              {availableCareers.map((c) => (
-                <option key={c.slug} value={c.slug}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
+              onChange={setCareer}
+              allLabel="All careers"
+              options={availableCareers.map((c) => ({ value: c.slug, label: c.title }))}
+            />
           </FilterGroup>
 
           {/* Not "Demand": `demand` is set on 1 of 263 specializations, so a

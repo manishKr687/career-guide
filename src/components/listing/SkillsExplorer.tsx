@@ -13,8 +13,8 @@ import {
   CheckRow,
   Chip,
   FilterGroup,
+  FilterSelect,
   NONE,
-  QuickPick,
   joinParam,
   splitParam,
 } from "@/components/listing/ListingKit";
@@ -208,26 +208,6 @@ export default function SkillsExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <div className="flex gap-3 overflow-x-auto pb-2 mb-8 -mx-1 px-1">
-        <QuickPick
-          active={cats.length === 0}
-          onClick={() => setCategoryParam(NONE)}
-          icon="grid"
-          label="All Skills"
-          count={initialSkills.length}
-        />
-        {categoryCounts.map(({ category: c, count }) => (
-          <QuickPick
-            key={c}
-            active={cats.includes(c)}
-            onClick={() => toggle(cats, c, setCategoryParam)}
-            icon={CATEGORY_ICONS[c] ?? "gear"}
-            label={CATEGORY_LABELS[c] ?? c}
-            count={count}
-          />
-        ))}
-      </div>
-
       <div className="flex flex-col lg:flex-row lg:items-start gap-8">
         {/* ------------------------------------------------------------ Results */}
         <div className="flex-1 min-w-0 order-2">
@@ -464,18 +444,17 @@ export default function SkillsExplorer({
                   a 42-entry dropdown of careers would be unusable, and the
                   category a skill's careers sit in is the useful granularity. */}
               <FilterGroup label="Relevant to field">
-                <select
+                <FilterSelect
+                  id="all-skills-field"
                   value={field}
-                  onChange={(e) => setField(e.target.value)}
-                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
-                >
-                  <option value="all">All fields</option>
-                  {fieldOptions.map(({ category: c, count }) => (
-                    <option key={c!.slug} value={c!.slug}>
-                      {c!.name} ({count})
-                    </option>
-                  ))}
-                </select>
+                  onChange={setField}
+                  allLabel="All fields"
+                  options={fieldOptions.map(({ category: c, count }) => ({
+                    value: c!.slug,
+                    label: c!.name,
+                    count,
+                  }))}
+                />
               </FilterGroup>
 
               <button

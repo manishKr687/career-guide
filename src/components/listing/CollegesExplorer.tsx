@@ -13,8 +13,8 @@ import {
   CheckRow,
   Chip,
   FilterGroup,
+  FilterSelect,
   NONE,
-  QuickPick,
   joinParam,
   splitParam,
 } from "@/components/listing/ListingKit";
@@ -255,26 +255,6 @@ export default function CollegesExplorer({
 
   return (
     <Container className="py-8 pb-24">
-      <div className="flex gap-3 overflow-x-auto pb-2 mb-8 -mx-1 px-1">
-        <QuickPick
-          active={type === "all"}
-          onClick={() => setType("all")}
-          icon="grid"
-          label="All Colleges"
-          count={initialColleges.length}
-        />
-        {typeCounts.map(({ type: t, count }) => (
-          <QuickPick
-            key={t}
-            active={type === t}
-            onClick={() => setType(type === t ? "all" : t)}
-            icon={TYPE_ICONS[t] ?? "bank"}
-            label={t}
-            count={count}
-          />
-        ))}
-      </div>
-
       <div className="flex flex-col lg:flex-row lg:items-start gap-8">
         {/* ------------------------------------------------------------ Results */}
         <div className="flex-1 min-w-0 order-2">
@@ -471,19 +451,13 @@ export default function CollegesExplorer({
                   this app records separately and which gets its own facet
                   below. Collapsing the two would lose one of them. */}
               <FilterGroup label="Institute Type">
-                <div className="flex flex-col gap-2">
-                  {typeCounts.map(({ type: t, count }) => (
-                    <CheckRow
-                      key={t}
-                      checked={type === t}
-                      onChange={() => setType(type === t ? "all" : t)}
-                      count={count}
-                    >
-                      <Icon name={TYPE_ICONS[t] ?? "bank"} className="w-3.5 h-3.5 text-subtle shrink-0" />
-                      <span className="text-[12.5px] text-ink/80">{t}</span>
-                    </CheckRow>
-                  ))}
-                </div>
+                <FilterSelect
+                  id="all-colleges-type"
+                  value={type}
+                  onChange={setType}
+                  allLabel="All institute types"
+                  options={typeCounts.map(({ type: t, count }) => ({ value: t, label: t, count }))}
+                />
               </FilterGroup>
 
               <FilterGroup label="Ownership">

@@ -17,8 +17,6 @@ import {
   ListingLayout,
   NONE,
   NoResults,
-  QuickPick,
-  QuickPickRow,
   ResultsColumn,
   ResultsHeader,
   ViewMode,
@@ -130,28 +128,6 @@ export default function ResourcesExplorer({ initialResources }: { initialResourc
 
   return (
     <Container className="py-8 pb-24">
-      <QuickPickRow>
-        <QuickPick
-          active={types.length === 0}
-          onClick={() => setTypeParam(NONE)}
-          icon="grid"
-          label="All Resources"
-          count={initialResources.length}
-          noun="resource"
-        />
-        {typeCounts.map(([t, count]) => (
-          <QuickPick
-            key={t}
-            active={types.includes(t)}
-            onClick={() => toggleParam(types, t, setTypeParam)}
-            icon={TYPE_ICONS[t] ?? "doc"}
-            label={t}
-            count={count}
-            noun="resource"
-          />
-        ))}
-      </QuickPickRow>
-
       <ListingLayout>
         <ResultsColumn>
           <ResultsHeader

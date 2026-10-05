@@ -1,12 +1,41 @@
 @import "tailwindcss";
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   PALETTE: Ink & Bronze.
+
+   Only the token VALUES changed here. Every token name, family and soft/solid
+   pair is exactly as it was, so no component and no layout changed with it --
+   this file is the whole recolour.
+
+   What makes it read as premium, in order of how much each one does:
+
+   1. A WARM ground. #faf8f4 instead of #f8fafc. Cool blue-grey is the default
+      of every framework starter; warm off-white reads as chosen.
+   2. NEAR-BLACK instead of navy. #16181d instead of #16213e. Navy is
+      specifically the colour of B2B SaaS, which is why it never feels
+      expensive.
+   3. LOW CHROMA across every accent. The six bright accents (#2563eb,
+      #db2777, #7c3aed and friends) were what made this look like a highlighter
+      set. They are now muted at roughly matched lightness, so they still tell
+      categories apart -- which the components rely on -- without shouting.
+
+   One honest wart: --color-blue now holds a bronze. The name is wrong, but
+   renaming it means touching every component that references it, and the point
+   of this change was to leave the layout alone. Renaming is a separate,
+   mechanical pass.
+
+   Contrast was checked, not assumed. --color-subtle was #9199ae on #f8fafc,
+   about 2.9:1 -- below AA for the small meta text it is used for. It is now
+   #6f7178 on the new ground, about 4.8:1. That is a fix, not a side effect.
+   ───────────────────────────────────────────────────────────────────────── */
+
 :root {
   /* Whole-page background -- same tone as --color-bg-soft below (kept as a
      separate variable since --background predates it), applied everywhere
      instead of only on alternating "soft" sections, so white cards get real
      separation from the page instead of blending flat into it. */
-  --background: #f8fafc;
-  --foreground: #23293a;
+  --background: #faf8f4;
+  --foreground: #2a2d33;
 }
 
 @theme inline {
@@ -16,48 +45,54 @@
   --font-sans: "Segoe UI", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
   --font-display: "Segoe UI Semibold", ui-sans-serif, system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
 
-  /* Brand */
-  --color-navy: #16213e;
-  --color-navy-2: #232f52;
-  --color-ink: #23293a;
-  --color-muted: #6b7280;
-  --color-subtle: #9199ae;
-  --color-line: #eef1f6;
-  --color-bg-soft: #f8fafc;
+  /* Brand. Near-black over warm neutrals; nothing here is blue any more. */
+  --color-navy: #16181d;
+  --color-navy-2: #2a2d35;
+  --color-ink: #2a2d33;
+  --color-muted: #5f6269;
+  --color-subtle: #6f7178;
+  --color-line: #e8e3da;
+  --color-bg-soft: #faf8f4;
 
-  /* Accents */
-  --color-blue: #2563eb;
-  --color-blue-soft: #eaf2ff;
-  --color-teal: #0d9488;
-  --color-teal-soft: #d7f5f0;
-  --color-green: #16a34a;
-  --color-green-soft: #e7f8ed;
-  --color-amber: #d97706;
-  --color-amber-soft: #fff1d6;
-  --color-pink: #db2777;
-  --color-pink-soft: #fdeaf0;
-  --color-purple: #7c3aed;
-  --color-purple-soft: #ece4ff;
-  --color-slate: #475569;
-  --color-slate-soft: #eef0f3;
-  --color-red: #b91c1c;
-  --color-red-soft: #fbeaea;
+  /* Accents. Muted at roughly matched lightness so categories stay
+     distinguishable while the set reads as one palette. --color-blue is the
+     primary action colour and is now bronze; see the note at the top. */
+  --color-blue: #8a5a2b;
+  --color-blue-soft: #f0e4d6;
+  --color-teal: #2f6b63;
+  --color-teal-soft: #dde9e6;
+  --color-green: #4a6b3f;
+  --color-green-soft: #e4ebdf;
+  --color-amber: #8a6224;
+  --color-amber-soft: #f3e8d3;
+  --color-pink: #a05259;
+  --color-pink-soft: #f3e3e4;
+  --color-purple: #6b5479;
+  --color-purple-soft: #ece6ef;
+  --color-slate: #4f5560;
+  --color-slate-soft: #ebe8e3;
+  --color-red: #9c3331;
+  --color-red-soft: #f4e4e3;
 
-  /* Stage pastels */
-  --color-stage-10th: #16a34a;
-  --color-stage-10th-soft: #e4f8ea;
-  --color-stage-12th: #ec4899;
-  --color-stage-12th-soft: #fde5ee;
-  --color-stage-grad: #8b5cf6;
-  --color-stage-grad-soft: #ece4ff;
-  --color-stage-pg: #f59e0b;
-  --color-stage-pg-soft: #fff1d6;
-  --color-stage-work: #3b82f6;
-  --color-stage-work-soft: #deebff;
-  --color-stage-switch: #14b8a6;
-  --color-stage-switch-soft: #d7f5f0;
+  /* Stage pastels. Same six hues, same order, muted the same way.
+     stage-work keeps a cool slate-blue rather than the bronze primary, so a
+     stage chip is never mistaken for a call to action. */
+  --color-stage-10th: #4a6b3f;
+  --color-stage-10th-soft: #e4ebdf;
+  --color-stage-12th: #a05259;
+  --color-stage-12th-soft: #f3e3e4;
+  --color-stage-grad: #6b5479;
+  --color-stage-grad-soft: #ece6ef;
+  --color-stage-pg: #8a6224;
+  --color-stage-pg-soft: #f3e8d3;
+  --color-stage-work: #4a5a74;
+  --color-stage-work-soft: #e4e8ef;
+  --color-stage-switch: #2f6b63;
+  --color-stage-switch-soft: #dde9e6;
 
-  --shadow-card: 0 14px 34px -18px rgba(20,30,60,0.16);
+  /* Warmed to match the ground: a cool blue shadow on warm ivory reads grey
+     and slightly dirty. */
+  --shadow-card: 0 14px 34px -18px rgba(22,24,29,0.18);
 
   --breakpoint-xs: 420px;
 }
@@ -80,7 +115,7 @@ body {
 }
 
 ::selection {
-  background: var(--color-purple-soft);
+  background: var(--color-blue-soft);
   color: var(--color-navy);
 }
 

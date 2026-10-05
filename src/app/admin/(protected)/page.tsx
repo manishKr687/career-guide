@@ -40,15 +40,22 @@ const ICONS: Record<string, string> = {
 };
 
 /** Cycled per card, and reused as the donut's segment colours so the chart and
- *  the cards agree on which colour means which entity. */
+ *  the cards agree on which colour means which entity.
+ *
+ *  THE HEXES DUPLICATE globals.css ON PURPOSE and have to be kept in step with
+ *  it: an SVG `fill` cannot take a Tailwind class, so the donut needs literal
+ *  values while the cards use the token classes beside them. They were missed
+ *  once already -- the Ink & Bronze recolour changed the tokens and left these
+ *  on the old bright palette, so for one commit the chart and its own legend
+ *  disagreed. If you change a token here, grep for its old hex. */
 const PALETTE = [
-  { fg: "text-blue", bg: "bg-blue-soft", hex: "#2563eb" },
-  { fg: "text-green", bg: "bg-green-soft", hex: "#16a34a" },
-  { fg: "text-purple", bg: "bg-purple-soft", hex: "#7c3aed" },
-  { fg: "text-amber", bg: "bg-amber-soft", hex: "#d97706" },
-  { fg: "text-teal", bg: "bg-teal-soft", hex: "#0d9488" },
-  { fg: "text-pink", bg: "bg-pink-soft", hex: "#db2777" },
-  { fg: "text-slate", bg: "bg-slate-soft", hex: "#475569" },
+  { fg: "text-blue", bg: "bg-blue-soft", hex: "#8a5a2b" },
+  { fg: "text-green", bg: "bg-green-soft", hex: "#4a6b3f" },
+  { fg: "text-purple", bg: "bg-purple-soft", hex: "#6b5479" },
+  { fg: "text-amber", bg: "bg-amber-soft", hex: "#8a6224" },
+  { fg: "text-teal", bg: "bg-teal-soft", hex: "#2f6b63" },
+  { fg: "text-pink", bg: "bg-pink-soft", hex: "#a05259" },
+  { fg: "text-slate", bg: "bg-slate-soft", hex: "#4f5560" },
 ];
 
 function paletteFor(i: number) {

@@ -121,14 +121,22 @@ isn't done, which is why these were left showing.
 The page also carries `DRAFT` and a line saying no lawyer has reviewed it.
 Remove both only when both are untrue.
 
-### 1.2 Domain and hosting
+### 1.2 Domain and hosting — DECIDED
 
-- The domain, with DNS you control.
-- Where the backend runs (a VPS with Docker is the smallest thing that works —
-  the backend is already containerised).
-- Where the frontend runs. **It is not containerised**: there is no Dockerfile
-  at the repo root. So either `npm run build && npx next start` behind your
-  reverse proxy, or a Node host such as Vercel.
+| | Where | Why |
+|---|---|---|
+| Frontend | **Vercel**, region `bom1` (Mumbai) — pinned in `vercel.json` | Vercel's Mumbai region runs on AWS Mumbai, the same region as the API |
+| Backend + Postgres | **AWS Lightsail, Mumbai, 2 GB plan** (~$12/month) | Runs the existing `docker compose` unchanged. Measured locally: API 512 MB + Postgres 59 MB idle, so 2 GB leaves headroom; 1 GB would not |
+
+Two hostnames, because Vercel serves the site and Lightsail serves the API:
+
+```
+yourdomain.com       -> Vercel     (the site)
+api.yourdomain.com   -> Lightsail  (the API, behind Caddy)
+```
+
+Vercel's Hobby plan does not allow commercial use; a startup site needs Pro
+(~$20/month).
 
 ### 1.3 WhatsApp number
 
@@ -137,19 +145,82 @@ real number or leave the feature off deliberately.
 
 ---
 
-## Phase 2 — Infrastructure
+## Phase 2 — Infrastructure: AWS Lightsail
 
-1. **Provision the host**, install Docker and Docker Compose.
-2. **DNS** → your server's IP.
-3. **TLS.** There is no TLS anywhere in this repo today. Put a reverse proxy in
-   front — Caddy is the least work, since it obtains and renews certificates
-   automatically; nginx with certbot is the conventional alternative. Terminate
-   HTTPS there and proxy to the API and the site over localhost.
-4. **Firewall**: allow 80 and 443 only. Nothing else should be reachable —
-   not 8081, not 5432, not 9000.
+### 2.1 Create the server
 
-Postgres is already correctly bound to `127.0.0.1:5432` in the compose file.
-Leave it that way.
+In the Lightsail console → **Create instance**:
+
+- Region: **Mumbai (ap-south-1)**
+- Platform: Linux/Unix → **OS Only → Ubuntu 24.04 LTS**
+- Plan: **2 GB RAM**
+
+Then, on the instance:
+
+- **Networking → Attach static IP.** Without one the IP changes on restart and
+  DNS breaks. Free while attached.
+- **Networking → IPv4 firewall:** keep SSH (22) and HTTP (80), add HTTPS (443),
+  delete anything else. If you restrict SSH to your own IP, keep **"Allow
+  Lightsail browser SSH"** ticked or the console's SSH button stops working.
+  **Repeat for the IPv6 firewall** — it is a separate list.
+- **Snapshots → Enable automatic snapshots.** A daily copy of the whole disk,
+  which also covers the "off-machine copy" gap in 7.1 below.
+
+### 2.2 DNS
+
+At your domain registrar: an **A record** for `api` → the static IP. (The site's
+own records come from Vercel in Phase 5.)
+
+### 2.3 Prepare the server
+
+SSH in from the Lightsail console (browser SSH works), then:
+
+```bash
+# 2 GB swap: the image builds on this box, and the Maven build plus a running
+# Postgres is the peak memory moment
+sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile
+sudo mkswap /swapfile && sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+
+# Docker
+curl -fsSL https://get.docker.com | sudo sh
+sudo usermod -aG docker ubuntu
+exit    # log out and back in so the group change applies
+
+# The code
+git clone https://github.com/manishKr687/career-guide.git
+```
+
+### 2.4 HTTPS with Caddy
+
+There is no TLS in the app itself; Caddy terminates it and obtains and renews
+the certificate on its own. `deploy/Caddyfile` is ready to use:
+
+```bash
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' \
+  | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' \
+  | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update && sudo apt install -y caddy
+
+sudo cp ~/career-guide/deploy/Caddyfile /etc/caddy/Caddyfile
+sudo sed -i 's/api.yourdomain.com/api.YOURREALDOMAIN.com/' /etc/caddy/Caddyfile
+sudo systemctl reload caddy
+```
+
+What that Caddyfile does, each point tested locally against the real API:
+
+- Only `/api/*` and `/actuator/health` are public. Swagger UI, `/v3/api-docs`
+  and `/actuator/info` return 404 — they list every admin endpoint.
+- It **ignores any `X-Forwarded-For` the client sends** and sets the real
+  address. The rate limiter keys on that header, so this matters: sending five
+  counselling submissions with a different forged IP each time, the API alone
+  accepted all five; through Caddy the 4th and 5th got 429.
+
+That second point is also why the API must only be reachable through Caddy.
+The compose file publishes it on `127.0.0.1:8081` and Postgres on
+`127.0.0.1:5432` — loopback only. Leave both that way.
 
 ---
 
@@ -170,8 +241,9 @@ openssl rand -base64 24      # SPRING_DATASOURCE_PASSWORD
 openssl rand -base64 18      # CAREERGUIDE_ADMIN_PASSWORD
 ```
 
-Put them in `backend/.env` on the server — gitignored, and Docker Compose loads
-it automatically. **Never in `docker-compose.yml`.**
+Put them in `~/career-guide/backend/.env` on the server (`nano` works) —
+gitignored, and Docker Compose loads it automatically. **Never in
+`docker-compose.yml`.**
 
 ```ini
 SPRING_PROFILES_ACTIVE=prod
@@ -179,8 +251,18 @@ CAREERGUIDE_ADMIN_PASSWORD=<generated>
 CAREERGUIDE_ADMIN_TOKEN_SECRET=<generated, >=32 chars>
 CAREERGUIDE_USER_TOKEN_SECRET=<generated, >=32 chars>
 SPRING_DATASOURCE_PASSWORD=<generated>
-CAREERGUIDE_CORS_ALLOWED_ORIGINS=https://yourdomain.com
+CAREERGUIDE_CORS_ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 ```
+
+CORS lists the **site's** origins, not the API's: browsers call the API
+directly from the site for login, sign-up and the counselling form. Comma-
+separated, no trailing slashes.
+
+Until this was fixed, `docker-compose.yml` set the CORS value as a literal, and
+compose reads `.env` only to fill `${...}` placeholders — so this line never
+reached the container, which kept the localhost list, and `ProdSecretsCheck`
+then refused to start. It is a placeholder now; `docker compose config` on the
+server shows the value the container will actually get.
 
 ### Why the token secrets matter more than the password
 
@@ -203,13 +285,24 @@ published in a public repository.
 ## Phase 4 — Deploy the backend
 
 ```bash
-cd backend
+cd ~/career-guide/backend
 docker compose up -d --build
 docker compose logs api | grep -E "relationship integrity|Started CareerGuideApplication"
+curl -s https://api.yourdomain.com/actuator/health
 ```
 
-Expect `relationship integrity: OK` and a started application. Flyway applies
-all 146 migrations to the empty database and the catalogue arrives with them.
+Expect `relationship integrity: OK`, a started application, and
+`{"status":"UP"}` over HTTPS. Flyway applies all 146 migrations to the empty
+database and the catalogue arrives with them.
+
+**That catalogue matches the local one, with one exception** — checked by
+building a database from the migrations alone and comparing all 75 tables,
+timestamps excluded. The only content that exists locally and not in the
+migrations is the specialization *Additive Manufacturing*: `demand = HIGH`,
+`salary_min_lpa = 2.5` with no maximum, and its links to B.Eng, B.Tech, M.Eng
+and M.Tech. Re-enter it through the admin after launch if it was meant, skip it
+if it was a test edit. Nothing else needs copying, and the one local user and
+one counselling request rightly stay behind.
 
 If the app refuses to start, read the message — under the prod profile that is
 almost always a missing or rejected secret, and it says which.
@@ -222,8 +315,39 @@ almost always a missing or rejected secret, and it says which.
 running server has no effect. Get them wrong and the site builds and serves
 happily while pointing at the wrong host — the failure is silent.
 
+On Vercel:
+
+1. **Add New → Project**, import `manishKr687/career-guide`. Framework is
+   detected as Next.js; the root directory is the repo root.
+2. **Before the first deploy**, under Environment Variables (Production):
+
+   | Name | Value |
+   |---|---|
+   | `NEXT_PUBLIC_API_BASE_URL` | `https://api.yourdomain.com` — **no `/api` on the end** |
+   | `NEXT_PUBLIC_SITE_URL` | `https://yourdomain.com` |
+   | `NEXT_PUBLIC_COUNSELLING_WHATSAPP_NUMBER` | the number, or leave unset |
+
+   **Why no `/api`:** the frontend adds `/api/...` itself, two different ways.
+   Catalogue pages use `new URL("/api/careers", base)`, which ignores any path
+   in the base, so they work either way. Login, sign-up and the admin build
+   `` `${base}/api/...` `` by string, so a base ending in `/api` produces
+   `/api/api/admin/login`. The result is a site whose pages all load while
+   every login, registration and admin action returns 404 — the earlier
+   version of this runbook said to use `.../api`, which would have done exactly
+   that.
+
+3. Deploy. `vercel.json` pins the functions to `bom1`; check it under
+   Settings → Functions. Every page calls the API per request, so a US region
+   would pay the round trip to Mumbai several times per page.
+4. **Settings → Domains**: add `yourdomain.com` and `www.yourdomain.com`, and
+   create the DNS records Vercel shows you.
+
+Deploy the backend first: the site's pages fetch from the API as they render.
+
+The same build, done by hand for a local check:
+
 ```bash
-NEXT_PUBLIC_API_BASE_URL=https://yourdomain.com/api \
+NEXT_PUBLIC_API_BASE_URL=https://api.yourdomain.com \
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com \
 NEXT_PUBLIC_COUNSELLING_WHATSAPP_NUMBER=<number> \
 npm ci && npm run build
@@ -258,7 +382,7 @@ Reading your own config proves nothing. Test the deployed system.
 ### 6.1 The one check that matters most
 
 ```bash
-curl -s -X POST https://yourdomain.com/api/admin/login \
+curl -s -X POST https://api.yourdomain.com/api/admin/login \
   -H "Content-Type: application/json" -d '{"password":"admin123"}'
 ```
 
@@ -269,30 +393,38 @@ seconds, and decisive in a way reading a config file is not.
 ### 6.2 The rest
 
 ```bash
-# HTTPS, and HTTP redirects to it
+# HTTPS, and HTTP redirects to it -- for the site and the API
 curl -sI http://yourdomain.com | head -1
 curl -sI https://yourdomain.com | head -1
+curl -sI http://api.yourdomain.com/actuator/health | head -1
 
-# Nothing but 80/443 is reachable — all three must fail from outside
-curl --max-time 5 https://yourdomain.com:8081/actuator/health
-curl --max-time 5 https://yourdomain.com:9000
-nc -zv yourdomain.com 5432
+# On the server nothing but 80/443 is reachable -- all three must fail from outside
+curl --max-time 5 http://api.yourdomain.com:8081/actuator/health
+nc -zv -w 5 api.yourdomain.com 5432
+nc -zv -w 5 api.yourdomain.com 9000
+
+# Swagger and the API docs stay internal -- both must print 404
+curl -s -o /dev/null -w "%{http_code}\n" https://api.yourdomain.com/swagger-ui.html
+curl -s -o /dev/null -w "%{http_code}\n" https://api.yourdomain.com/v3/api-docs
 
 # The catalogue is really there
-curl -s https://yourdomain.com/api/careers | head -c 200
+curl -s https://api.yourdomain.com/api/careers | head -c 200
 
 # Every page renders
-SITE=https://yourdomain.com API=https://yourdomain.com npm run smoke -- --sample 25
+SITE=https://yourdomain.com API=https://api.yourdomain.com npm run smoke -- --sample 25
 
 # SEO files point at the real domain
 curl -s https://yourdomain.com/robots.txt
 curl -s https://yourdomain.com/sitemap.xml | head -20
 
-# The counselling fix from Phase 0 actually holds
-for i in $(seq 1 30); do curl -s -o /dev/null -w "%{http_code} " -X POST \
-  https://yourdomain.com/api/counselling-requests -H "Content-Type: application/json" \
-  -d '{"name":"t","email":"t@example.invalid","phone":"9000000000","consent":true}'; done
-# expect 429s to appear
+# The counselling rate limit holds, and a forged IP cannot dodge it.
+# An empty body on purpose: the limiter counts the request before validation
+# rejects it, so this proves the limit without leaving fake enquiries in the
+# production database.
+for i in 1 2 3 4 5; do curl -s -o /dev/null -w "%{http_code} " -X POST \
+  https://api.yourdomain.com/api/counselling-requests -H "Content-Type: application/json" \
+  -H "X-Forwarded-For: 10.0.0.$i" -d '{}'; done
+# expect: 400 400 400 429 429   (five 400s means the forged header is trusted)
 ```
 
 Then by hand: log into `/admin` with the real password, edit one record, confirm
@@ -341,8 +473,8 @@ in the restored `flyway_schema_history`. Do it again on the server.
 
 There is none. At minimum, something that tells you the site is down —
 an uptime checker on `https://yourdomain.com` and on
-`https://yourdomain.com/api/careers`, since the site can render while the API is
-broken.
+`https://api.yourdomain.com/api/careers`, since the site can render while the
+API is broken.
 
 ---
 
@@ -350,7 +482,6 @@ broken.
 
 | | |
 |---|---|
-| 42 of 55 careers have no salary band | The 13 that do came from published pay matrices. The rest are private-sector, where the only figures available are survey aggregates that would have to be invented. Left null on purpose. |
 | 31 exams have no syllabus overview; 20 lack mode and eligibility | Needs a pass against each conducting body's information bulletin. |
 | Assessment content is SQL-only | 155 rows across questions, options and weights have no admin screen. Subjects and `degree_subjects` (100 rows) likewise. |
 | 22 of 26 backend services have no tests | The auth layer is covered — password hashing, both token signers, login and registration. `CollegeService` and `SpecializationService` relationship sync are not. |

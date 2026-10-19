@@ -372,8 +372,16 @@ export function FilterRail({
       </button>
 
       <div className={`${open ? "flex" : "hidden"} lg:flex flex-col gap-5`}>
-        <div className="rounded-3xl border border-line bg-white p-5">
-          <div className="flex items-center justify-between mb-4">
+        {/* On a desktop the card is capped at the viewport and its options
+            scroll inside it, between a fixed title row and a fixed CTA. At
+            1366x768 the panel was taller than the screen on five pages
+            (Colleges 884px against ~670px visible below the header), so while
+            pinned its bottom groups and the "Show N" button sat off-screen
+            with no way to reach them short of scrolling to the end of the
+            results. 7.5rem is the rail's top-24 offset plus a 1.5rem gap. On a
+            phone the panel is inline and uncapped, as before. */}
+        <div className="flex flex-col rounded-3xl border border-line bg-white lg:max-h-[calc(100vh-7.5rem)]">
+          <div className="flex items-center justify-between px-5 pt-5 pb-4 shrink-0">
             <h2 className="flex items-center gap-2 font-display font-extrabold text-navy text-[15px]">
               <Icon name="filter" className="w-4 h-4 text-blue" />
               {title}
@@ -388,64 +396,71 @@ export function FilterRail({
             </button>
           </div>
 
-          {ownsSearch && (
-            <div className="pb-4 mb-4 border-b border-line">
-              <label htmlFor={`${anchorId}-q`} className="block text-[12.5px] font-bold text-navy mb-2.5">
-                Search
-              </label>
-              <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1 focus-within:border-blue/50 transition-colors">
-                <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
-                <input
-                  id={`${anchorId}-q`}
-                  type="search"
-                  value={query}
-                  onChange={(e) => onQueryChange?.(e.target.value)}
-                  placeholder={searchPlaceholder}
-                  aria-label={searchLabel}
-                  className="flex-1 min-w-0 bg-transparent py-1.5 text-[13px] text-ink placeholder:text-subtle outline-none"
-                />
+          {/* min-h-0 lets this flex child shrink below its content height,
+              which is what makes overflow-y-auto engage at all. */}
+          <div className="px-5 min-h-0 lg:overflow-y-auto overscroll-contain [scrollbar-width:thin]">
+            {ownsSearch && (
+              <div className="pb-4 mb-4 border-b border-line">
+                <label htmlFor={`${anchorId}-q`} className="block text-[12.5px] font-bold text-navy mb-2.5">
+                  Search
+                </label>
+                <div className="flex items-center gap-2 rounded-xl border border-line bg-white px-3 py-1 focus-within:border-blue/50 transition-colors">
+                  <Icon name="search" className="w-3.5 h-3.5 text-subtle shrink-0" />
+                  <input
+                    id={`${anchorId}-q`}
+                    type="search"
+                    value={query}
+                    onChange={(e) => onQueryChange?.(e.target.value)}
+                    placeholder={searchPlaceholder}
+                    aria-label={searchLabel}
+                    className="flex-1 min-w-0 bg-transparent py-1.5 text-[13px] text-ink placeholder:text-subtle outline-none"
+                  />
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {ownsSort && (
-            <div className="pb-4 mb-4 border-b border-line">
-              <label htmlFor={`${anchorId}-sort`} className="block text-[12.5px] font-bold text-navy mb-2.5">
-                Sort by
-              </label>
-              <select
-                id={`${anchorId}-sort`}
-                value={sort}
-                onChange={(e) => onSortChange?.(e.target.value)}
-                className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
-              >
-                {sorts?.map((s) => (
-                  <option key={s.value} value={s.value}>
-                    {s.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+            {ownsSort && (
+              <div className="pb-4 mb-4 border-b border-line">
+                <label htmlFor={`${anchorId}-sort`} className="block text-[12.5px] font-bold text-navy mb-2.5">
+                  Sort by
+                </label>
+                <select
+                  id={`${anchorId}-sort`}
+                  value={sort}
+                  onChange={(e) => onSortChange?.(e.target.value)}
+                  className="w-full rounded-xl border border-line bg-white px-3 py-2.5 text-[13px] font-semibold text-navy"
+                >
+                  {sorts?.map((s) => (
+                    <option key={s.value} value={s.value}>
+                      {s.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
-          {children}
+            {children}
+          </div>
 
           {/* Where a mock usually puts "Apply Filters". Filtering is live on
               every listing page here, so a button labelled Apply would imply
               the results behind it were stale. It says what it does instead:
-              jump to the results, closing the panel on a phone. */}
-          <button
-            type="button"
-            onClick={() => {
-              onOpenChange(false);
-              document
-                .getElementById(anchorId)
-                ?.scrollIntoView({ behavior: "smooth", block: "start" });
-            }}
-            className="w-full mt-5 text-[13.5px] font-bold text-white bg-blue py-3 rounded-xl hover:opacity-90 transition-opacity"
-          >
-            {ctaLabel}
-          </button>
+              jump to the results, closing the panel on a phone. Outside the
+              scrolling body, so it is always on screen. */}
+          <div className="px-5 pt-5 pb-5 shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                onOpenChange(false);
+                document
+                  .getElementById(anchorId)
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+              className="w-full text-[13.5px] font-bold text-white bg-blue py-3 rounded-xl hover:opacity-90 transition-opacity"
+            >
+              {ctaLabel}
+            </button>
+          </div>
         </div>
 
         {extra}

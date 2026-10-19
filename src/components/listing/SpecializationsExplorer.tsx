@@ -422,9 +422,11 @@ function SpecializationListCard({
           )}
         </span>
       </div>
-      <p className="px-5 text-[12.5px] text-ink/70 leading-relaxed line-clamp-2 flex-1">
-        {specialization.description}
-      </p>
+      {/* flex-1 on a wrapper, not on the clamped paragraph: a stretched
+          clamp box shows the lines it was hiding, cut mid-word. */}
+      <div className="px-5 flex-1">
+        <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{specialization.description}</p>
+      </div>
       <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft">{figures}</div>
     </Link>
   );

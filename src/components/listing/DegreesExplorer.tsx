@@ -354,16 +354,20 @@ function DegreeListCard({
   specializations: number;
   view: "grid" | "list";
 }) {
-  const figures = (
-    <div className="flex items-center gap-4 text-[12px]">
-      <span className="flex items-center gap-1.5 min-w-0">
-        <Icon name="cap" className="w-3.5 h-3.5 text-subtle shrink-0" />
-        <span
-          className={`font-bold text-[11.5px] px-2 py-0.5 rounded-full ${LEVEL_STYLES[degree.level] ?? "bg-slate-soft text-slate"}`}
-        >
-          {degree.level}
-        </span>
-      </span>
+  const level = (
+    <span
+      className={`inline-block font-bold text-[11.5px] px-2 py-0.5 rounded-full whitespace-nowrap ${LEVEL_STYLES[degree.level] ?? "bg-slate-soft text-slate"}`}
+    >
+      {degree.level}
+    </span>
+  );
+
+  // Duration and specializations: the two figures that fit one footer line at
+  // grid-card width. The level pill used to sit here too, which made the row
+  // about 347px of content in a 252px card; its wrapper was min-w-0, so it
+  // shrank to nothing and "Undergraduate" was drawn on top of "4 years".
+  const meta = (
+    <>
       {degree.durationLabel && (
         <span className="flex items-center gap-1.5 text-muted whitespace-nowrap">
           <Icon name="clock" className="w-3.5 h-3.5 text-subtle shrink-0" />
@@ -376,7 +380,7 @@ function DegreeListCard({
           {specializations} specializations
         </span>
       )}
-    </div>
+    </>
   );
 
   if (view === "list") {
@@ -396,7 +400,10 @@ function DegreeListCard({
             {degree.fullTitle ?? degree.description}
           </span>
         </span>
-        <span className="hidden sm:block shrink-0">{figures}</span>
+        <span className="hidden sm:flex items-center gap-4 text-[12px] shrink-0">
+          {level}
+          {meta}
+        </span>
         <Icon
           name="chevRight"
           className="w-4 h-4 text-subtle shrink-0 group-hover:text-blue transition-colors"
@@ -429,12 +436,17 @@ function DegreeListCard({
               {degree.fullTitle}
             </span>
           )}
+          <span className="block mt-2">{level}</span>
         </span>
       </div>
-      <p className="px-5 text-[12.5px] text-ink/70 leading-relaxed line-clamp-3 flex-1">
-        {degree.description}
-      </p>
-      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft">{figures}</div>
+      {/* flex-1 on a wrapper, not on the clamped paragraph: a stretched
+          clamp box shows the lines it was hiding, cut mid-word. */}
+      <div className="px-5 flex-1">
+        <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-3">{degree.description}</p>
+      </div>
+      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft flex items-center gap-4 text-[12px]">
+        {meta}
+      </div>
     </Link>
   );
 }

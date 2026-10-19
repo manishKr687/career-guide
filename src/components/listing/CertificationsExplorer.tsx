@@ -38,6 +38,12 @@ const PAGE_SIZE = 12;
 // back by itself on the day someone fills it in.
 const UNSET = "Unspecified";
 
+// The card footer carries level, duration and career links. All three are
+// empty on every certification today, which left a bare grey band at the foot
+// of each card -- so the footer renders only when it has something to show.
+const hasFooter = (c: Certification) =>
+  Boolean(c.level || c.duration || c.relatedCareerSlugs.length > 0);
+
 const SORTS = [
   { value: "az", label: "A – Z" },
   { value: "provider", label: "By provider" },
@@ -183,9 +189,12 @@ export default function CertificationsExplorer({
                         )}
                       </span>
                     </div>
-                    {c.description && (
-                      <p className="px-5 text-[12.5px] text-ink/70 leading-relaxed line-clamp-2 flex-1">{c.description}</p>
-                    )}
+                    <div className={`px-5 flex-1 ${hasFooter(c) ? "" : "pb-2"}`}>
+                      {c.description && (
+                        <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{c.description}</p>
+                      )}
+                    </div>
+                    {hasFooter(c) && (
                     <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft flex items-center gap-4 text-[12px]">
                       {c.level && (
                         <span className="font-bold text-[11.5px] px-2 py-0.5 rounded-full bg-purple-soft text-purple">{c.level}</span>
@@ -203,6 +212,7 @@ export default function CertificationsExplorer({
                         </span>
                       )}
                     </div>
+                    )}
                   </Link>
                 ))}
               </div>

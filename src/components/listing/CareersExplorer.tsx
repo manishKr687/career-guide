@@ -522,10 +522,37 @@ function ExploreCareerCard({
           )}
         </span>
       </div>
-      <p className="px-5 text-[12.5px] text-ink/70 leading-relaxed line-clamp-2 flex-1">
-        {career.tagline}
-      </p>
-      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft">{figures}</div>
+      {/* flex-1 on a wrapper, not on the clamped paragraph: a stretched
+          clamp box shows the lines it was hiding, cut mid-word. */}
+      <div className="px-5 flex-1">
+        <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{career.tagline}</p>
+      </div>
+      {/* Two fixed lines, so every footer in a row is the same height: demand
+          and salary on the first, specializations on the second. The list
+          view's three value-over-label columns needed about 340px; in a 252px
+          grid card "High Demand" wrapped, "Specializations" was cut off, and
+          footers sat at different heights. The pill and the "LPA" figure
+          explain themselves, so they lose their labels here. */}
+      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft text-[12px]">
+        <div className="flex items-center justify-between gap-3">
+          <span
+            className={`font-bold text-[11.5px] px-2 py-0.5 rounded-full whitespace-nowrap ${DEMAND_STYLES[career.demand]}`}
+          >
+            {career.demand}
+          </span>
+          {salary && (
+            <span className="font-display font-bold text-navy text-[13px] whitespace-nowrap">
+              {salary}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-1.5 text-muted mt-2">
+          <Icon name="book" className="w-3.5 h-3.5 text-subtle shrink-0" />
+          {specializations > 0
+            ? `${specializations} specialization${specializations === 1 ? "" : "s"}`
+            : "No specializations listed"}
+        </div>
+      </div>
     </Link>
   );
 }

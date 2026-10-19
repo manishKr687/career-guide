@@ -177,9 +177,11 @@ export default function ResourcesExplorer({ initialResources }: { initialResourc
                         )}
                       </span>
                     </div>
-                    {r.description && (
-                      <p className="px-5 text-[12.5px] text-ink/70 leading-relaxed line-clamp-2 flex-1">{r.description}</p>
-                    )}
+                    <div className="px-5 flex-1">
+                      {r.description && (
+                        <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{r.description}</p>
+                      )}
+                    </div>
                     <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft flex items-center gap-4 text-[12px]">
                       {r.resourceType && (
                         <span className="font-bold text-[11.5px] px-2 py-0.5 rounded-full bg-blue-soft text-blue">{r.resourceType}</span>

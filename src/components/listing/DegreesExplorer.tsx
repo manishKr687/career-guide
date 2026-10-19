@@ -436,7 +436,8 @@ function DegreeListCard({
               {degree.fullTitle}
             </span>
           )}
-          <span className="block mt-2">{level}</span>
+          {/* Not for Certificate and Diploma, whose level is their title. */}
+          {degree.level !== degree.title && <span className="block mt-2">{level}</span>}
         </span>
       </div>
       {/* flex-1 on a wrapper, not on the clamped paragraph: a stretched

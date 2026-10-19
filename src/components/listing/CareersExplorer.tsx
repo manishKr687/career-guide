@@ -6,7 +6,7 @@ import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { Career, Category } from "@/lib/types";
-import { indexBySlug } from "@/lib/utils";
+import { indexBySlug, isCareerTaglineStub } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
 import { usePagedList } from "@/hooks/usePagedList";
 import {
@@ -436,6 +436,12 @@ function ExploreCareerCard({
   view: "grid" | "list";
 }) {
   const specializations = career.relatedSpecializationSlugs.length;
+  // Every tagline today is the generated "<title> -- specializations, skills &
+  // career paths", which restates the bold title right above it; and for
+  // Agriculture and Law the category name is the title again. Neither earns
+  // a line on the card.
+  const tagline = isCareerTaglineStub(career) ? null : career.tagline;
+  const categoryName = category && category.name !== career.title ? category.name : null;
   const salary =
     career.salaryMinLpa !== null && career.salaryMaxLpa !== null
       ? `₹ ${career.salaryMinLpa}–${career.salaryMaxLpa} LPA`
@@ -483,9 +489,11 @@ function ExploreCareerCard({
           <span className="block font-display font-bold text-navy text-[15.5px]">
             {career.title}
           </span>
-          <span className="block text-[12.5px] text-muted mt-0.5 line-clamp-1">
-            {career.tagline}
-          </span>
+          {(tagline ?? categoryName) && (
+            <span className="block text-[12.5px] text-muted mt-0.5 line-clamp-1">
+              {tagline ?? categoryName}
+            </span>
+          )}
         </span>
         <span className="hidden sm:block shrink-0">{figures}</span>
         <Icon
@@ -515,9 +523,9 @@ function ExploreCareerCard({
               className="w-4 h-4 text-subtle shrink-0 mt-1 group-hover:text-blue transition-colors"
             />
           </span>
-          {category && (
+          {categoryName && (
             <span className="block text-[11.5px] font-semibold text-subtle mt-1">
-              {category.name}
+              {categoryName}
             </span>
           )}
         </span>
@@ -525,7 +533,9 @@ function ExploreCareerCard({
       {/* flex-1 on a wrapper, not on the clamped paragraph: a stretched
           clamp box shows the lines it was hiding, cut mid-word. */}
       <div className="px-5 flex-1">
-        <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{career.tagline}</p>
+        {tagline && (
+          <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{tagline}</p>
+        )}
       </div>
       {/* Two fixed lines, so every footer in a row is the same height: demand
           and salary on the first, specializations on the second. The list
@@ -533,7 +543,7 @@ function ExploreCareerCard({
           grid card "High Demand" wrapped, "Specializations" was cut off, and
           footers sat at different heights. The pill and the "LPA" figure
           explain themselves, so they lose their labels here. */}
-      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft text-[12px]">
+      <div className={`${tagline ? "mt-4" : ""} px-5 py-3.5 border-t border-line bg-bg-soft text-[12px]`}>
         <div className="flex items-center justify-between gap-3">
           <span
             className={`font-bold text-[11.5px] px-2 py-0.5 rounded-full whitespace-nowrap ${DEMAND_STYLES[career.demand]}`}

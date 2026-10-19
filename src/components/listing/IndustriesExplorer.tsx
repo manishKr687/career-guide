@@ -169,8 +169,15 @@ export default function IndustriesExplorer({
                     <span className="min-w-0 flex-1">
                       <span className="block font-display font-bold text-navy text-[14.5px] truncate">{i.name}</span>
                       <span className="block text-[12px] text-muted mt-0.5">
-                        {i.isSector ? "Sector" : "Employer"}
-                        {reachOf(i.slug) > 0 && ` · ${careersOf(i.slug)} careers, ${rolesOf(i.slug)} roles`}
+                        {/* Zero parts dropped: "20 careers, 0 roles" was on 14 of
+                            the first 24 cards and the 0 told nobody anything. */}
+                        {[
+                          i.isSector ? "Sector" : "Employer",
+                          careersOf(i.slug) > 0 && `${careersOf(i.slug)} career${careersOf(i.slug) === 1 ? "" : "s"}`,
+                          rolesOf(i.slug) > 0 && `${rolesOf(i.slug)} role${rolesOf(i.slug) === 1 ? "" : "s"}`,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
                       </span>
                     </span>
                     <Icon name="chevRight" className="w-4 h-4 text-subtle shrink-0 group-hover:text-blue transition-colors" />

@@ -6,7 +6,7 @@ import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Pagination from "@/components/ui/Pagination";
 import { CareerRef, Category, Specialization } from "@/lib/types";
-import { indexBySlug } from "@/lib/utils";
+import { indexBySlug, isGeneratedStub } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
 import { usePagedList } from "@/hooks/usePagedList";
 import {
@@ -361,14 +361,14 @@ function SpecializationListCard({
         <Icon name="users" className="w-3.5 h-3.5 text-subtle shrink-0" />
         {roles} job role{roles === 1 ? "" : "s"}
       </span>
-      {parent && (
-        <span className="flex items-center gap-1.5 text-muted min-w-0" title={parent.title}>
-          <Icon name="brief" className="w-3.5 h-3.5 text-subtle shrink-0" />
-          <span className="truncate">{parent.title}</span>
-        </span>
-      )}
     </div>
   );
+
+  // 262 of 263 descriptions are the generated "<name> is a specialization
+  // within <parent>.", and the parent was also in the subtitle and the footer:
+  // three mentions of one fact per card. The subtitle keeps it; the filler
+  // description and the footer copy go. A written description still shows.
+  const description = isGeneratedStub(specialization) ? null : specialization.description;
 
   if (view === "list") {
     return (
@@ -383,9 +383,11 @@ function SpecializationListCard({
           <span className="block font-display font-bold text-navy text-[15px] truncate">
             {specialization.name}
           </span>
-          <span className="block text-[12.5px] text-muted mt-0.5 truncate">
-            {specialization.description}
-          </span>
+          {parent && (
+            <span className="block text-[12.5px] text-muted mt-0.5 truncate">
+              within {parent.title}
+            </span>
+          )}
         </span>
         <span className="hidden sm:block shrink-0 max-w-[40%]">{figures}</span>
         <Icon
@@ -425,9 +427,11 @@ function SpecializationListCard({
       {/* flex-1 on a wrapper, not on the clamped paragraph: a stretched
           clamp box shows the lines it was hiding, cut mid-word. */}
       <div className="px-5 flex-1">
-        <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{specialization.description}</p>
+        {description && (
+          <p className="text-[12.5px] text-ink/70 leading-relaxed line-clamp-2">{description}</p>
+        )}
       </div>
-      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft">{figures}</div>
+      <div className={`${description ? "mt-4" : "mt-1"} px-5 py-3.5 border-t border-line bg-bg-soft`}>{figures}</div>
     </Link>
   );
 }

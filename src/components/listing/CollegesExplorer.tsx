@@ -582,12 +582,17 @@ function CollegeListCard({
             className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full bg-white text-navy shadow-card"
             title={college.nirfLabel ?? undefined}
           >
-            #{college.nirfRank} {college.nirfLabel}
+            {/* "· Medical" is dropped when it is the college's own type, which
+                the subtitle already states; "· Engineering" on an IIT is not,
+                so it stays. The full label is still in the tooltip. */}
+            #{college.nirfRank}{" "}
+            {college.nirfLabel?.endsWith(` · ${college.type}`)
+              ? college.nirfLabel.slice(0, -` · ${college.type}`.length)
+              : college.nirfLabel}
           </span>
         )}
-        <span className="absolute top-3 right-3 text-[11px] font-bold px-2.5 py-1 rounded-full bg-white/90 text-navy">
-          {college.type}
-        </span>
+        {/* No type badge here: the banner is already tinted and iconned by
+            type, and "Government · IIT" says it in words just below. */}
       </div>
 
       <div className="flex items-start justify-between gap-2 p-5 pb-2">

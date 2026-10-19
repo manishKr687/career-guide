@@ -28,7 +28,7 @@ import { getManyJobRoles } from "@/data/jobRoles";
 import { getManyResources, getResourcesByCareer } from "@/data/resources";
 import { getDegrees } from "@/data/degrees";
 import { getCategories } from "@/data/categories";
-import { indexBySlug } from "@/lib/utils";
+import { indexBySlug, isGeneratedStub } from "@/lib/utils";
 import type { Career, Education } from "@/lib/types";
 
 // The SPECIALIZATION page: one focused area within a career. Same layout as
@@ -79,28 +79,6 @@ const RESOURCE_ICONS: Record<string, string> = {
 
 // No generateStaticParams: the catalog lives in Postgres and can change at any
 // time, so specialization pages render dynamically per request.
-
-/**
- * Whether `description` is the generated placeholder rather than written prose.
- *
- * 262 of 263 specializations carry a description of the exact form "<name> is a
- * specialization within <career>." It says nothing the <h1> and the category
- * chip beside it do not already say, and it was filling the two places on this
- * page a reader and a crawler look first: the paragraph under the title, and the
- * meta description Google prints as the search snippet.
- *
- * V134-V146 wrote a real `overview` for every specialization, so there is now
- * something better to show in both places. This detects the stub instead of
- * ignoring `description` altogether, because a description someone has actually
- * written is worth showing and the admin form can set one.
- *
- * Matched by prefix rather than by regex: names contain characters that would
- * need escaping (UI/UX Design, Petroleum & Petrochemicals, CAD/CAM).
- */
-function isGeneratedStub({ name, description }: { name: string; description: string }): boolean {
-  const d = description.trim();
-  return d.length === 0 || d.startsWith(`${name} is a specialization within `);
-}
 
 /** Trim to a whole word for use as a meta description. */
 function toSnippet(text: string, max = 155): string {

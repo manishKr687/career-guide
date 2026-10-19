@@ -284,25 +284,79 @@ published in a public repository.
 
 ## Phase 4 — Deploy the backend
 
+Production starts as **an exact copy of the local database**, not a rebuild
+from the migrations. A rebuild would miss whatever was entered through the
+admin — checked: comparing a migrations-only database against the local one,
+the specialization *Additive Manufacturing* (its demand, a minimum salary and
+four degree links) existed only locally.
+
+### 4.1 Take the dump — on your Windows machine, right before deploying
+
+```bash
+cd backend
+bash scripts/backup-db.sh for-production
+```
+
+It writes `backend/backups/careerguide_<timestamp>_for-production.sql` and
+checks the file is complete. `backups/*.sql` is gitignored, and must stay so:
+the dump holds user password hashes and counselling enquiries, and the repo is
+public. Take it as late as possible — anything edited locally after the dump is
+not in it. **After launch, production is the source of truth**: edit there, not
+locally.
+
+### 4.2 Copy it to the server — from PowerShell
+
+Lightsail → Account → SSH keys → download the default key for Mumbai. Then:
+
+```powershell
+scp -i C:\path\to\LightsailDefaultKey-ap-south-1.pem `
+  "C:\F Drive\StartUP\career-guide\backend\backups\careerguide_<timestamp>_for-production.sql" `
+  ubuntu@<static-ip>:~/career-guide/backend/backups/
+```
+
+### 4.3 Restore it, then start the API — on the server
+
+Database first, so the API's first start finds the data already there:
+
 ```bash
 cd ~/career-guide/backend
-docker compose up -d --build
-docker compose logs api | grep -E "relationship integrity|Started CareerGuideApplication"
+docker compose up -d postgres
+docker compose exec -T postgres psql -U careerguide -d careerguide \
+  -v ON_ERROR_STOP=1 --single-transaction -q \
+  -f /backups/careerguide_<timestamp>_for-production.sql
+echo "exit: $?"          # must be 0
+
+docker compose up -d --build api
+docker compose logs api | grep -E "No migration necessary|relationship integrity|Started CareerGuideApplication"
 curl -s https://api.yourdomain.com/actuator/health
 ```
 
-Expect `relationship integrity: OK`, a started application, and
-`{"status":"UP"}` over HTTPS. Flyway applies all 146 migrations to the empty
-database and the catalogue arrives with them.
+Expect exit `0`, `Schema "public" is up to date. No migration necessary.`,
+`relationship integrity: OK`, and `{"status":"UP"}` over HTTPS.
 
-**That catalogue matches the local one, with one exception** — checked by
-building a database from the migrations alone and comparing all 75 tables,
-timestamps excluded. The only content that exists locally and not in the
-migrations is the specialization *Additive Manufacturing*: `demand = HIGH`,
-`salary_min_lpa = 2.5` with no maximum, and its links to B.Eng, B.Tech, M.Eng
-and M.Tech. Re-enter it through the admin after launch if it was meant, skip it
-if it was a test edit. Nothing else needs copying, and the one local user and
-one counselling request rightly stay behind.
+Not `scripts/restore-db.sh` here: it runs `psql` without `ON_ERROR_STOP`, so a
+dump that failed halfway would still print "Restored". With `ON_ERROR_STOP` and
+`--single-transaction` the restore either completes or changes nothing.
+
+**Rehearsed locally** on a brand-new empty Postgres, exactly as above: restore
+exit 0 with no errors; the API started with all 146 migrations validated and
+none applied; and the copy matched the local database in every column of every
+row — 76 tables, 7,386 rows, 0 differences.
+
+### 4.4 Optional: drop the local test data
+
+The copy includes the one local user account and the one counselling enquiry.
+If they were tests, the enquiry is a stranger's name, email and phone with no
+reason to be in production:
+
+```bash
+docker compose exec -T postgres psql -U careerguide -d careerguide \
+  -v ON_ERROR_STOP=1 -c "BEGIN; DELETE FROM counselling_requests; DELETE FROM users; COMMIT;"
+```
+
+Tried on the rehearsal copy: removes exactly those two rows. Deleting the user
+cascades only into its own tables (saved careers, progress, profile and so on),
+all empty; the catalogue is untouched.
 
 If the app refuses to start, read the message — under the prod profile that is
 almost always a missing or rejected secret, and it says which.
@@ -440,7 +494,7 @@ it changes on the public page. That proves the whole write path.
 production database lives. Put a cron entry on the server:
 
 ```cron
-0 2 * * * cd /path/to/backend && KEEP_DAYS=30 ./scripts/backup-db.sh
+0 2 * * * cd /home/ubuntu/career-guide/backend && KEEP_DAYS=30 ./scripts/backup-db.sh
 ```
 
 Then **copy the dumps off that machine.** A backup on the same disk as the

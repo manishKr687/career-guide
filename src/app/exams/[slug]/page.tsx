@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Container from "@/components/ui/Container";
 import Icon from "@/components/ui/Icon";
 import Breadcrumb from "@/components/ui/Breadcrumb";
+import SaveButton from "@/components/ui/SaveButton";
 import {
   Card,
   CardTitle,
@@ -195,17 +196,24 @@ export default async function ExamDetailPage({
               <MetricRow metrics={metrics} />
             </div>
 
-            {exam.officialWebsite && (
-              <a
-                href={exam.officialWebsite}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 mt-6 text-[13.5px] font-bold text-white bg-navy px-5 py-3 rounded-xl hover:bg-navy-2 transition-colors"
-              >
-                Official website
-                <Icon name="external" className="w-3.5 h-3.5" />
-              </a>
-            )}
+            {/* Save sits with the official link, as on the career page. Exams
+                were savable all along -- the backend has the endpoints and
+                My Career has a Saved Exams tab -- but no page had the button,
+                so that tab could never fill. */}
+            <div className="flex flex-wrap gap-3 mt-6">
+              <SaveButton type="exams" slug={exam.slug} />
+              {exam.officialWebsite && (
+                <a
+                  href={exam.officialWebsite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-[13.5px] font-bold text-white bg-navy px-5 py-3 rounded-xl hover:bg-navy-2 transition-colors"
+                >
+                  Official website
+                  <Icon name="external" className="w-3.5 h-3.5" />
+                </a>
+              )}
+            </div>
           </div>
 
           <div className="lg:col-span-5">

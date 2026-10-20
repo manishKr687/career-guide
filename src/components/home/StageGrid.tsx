@@ -15,7 +15,7 @@ export default async function StageGrid() {
             kicker="Choose Your Stage"
             kickerColor="bg-blue-soft text-blue"
             title="Get guidance for exactly where you are"
-            description="CareerGuide isn't just for after 10th — pick the stage that matches your journey today."
+            description="ChoosePath isn't just for after 10th — pick the stage that matches your journey today."
           />
         </Reveal>
         <Reveal delay={100} className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">

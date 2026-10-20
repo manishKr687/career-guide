@@ -13,7 +13,7 @@ import { getStates } from "@/data/states";
 import { getCities } from "@/data/cities";
 
 export const metadata: Metadata = {
-  title: "Explore Colleges — CareerGuide",
+  title: "Explore Colleges",
   description:
     "Discover colleges and institutes, explore the degrees they offer, check admission details and find the best fit for your career goals.",
 };

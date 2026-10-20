@@ -8,7 +8,7 @@ import CompareBar from "@/components/ui/CompareBar";
 import { UserProvider } from "@/components/providers/UserProvider";
 import { SavedItemsProvider } from "@/components/providers/SavedItemsProvider";
 
-const TITLE = "CareerGuide — Your Complete Career Journey";
+const TITLE = "ChoosePath — Your Complete Career Journey";
 const DESCRIPTION =
   "From school to career and beyond. Explore careers, degrees, exams and colleges, take a career assessment, and build your personalized roadmap — for every stage of your journey.";
 
@@ -21,14 +21,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: TITLE,
-    // Detail pages already set their own full title, so this only applies to
-    // pages that set a bare one.
-    template: "%s | CareerGuide",
+    // Applied to every page's string title, so pages set a bare one ("Explore
+    // Careers") and the brand comes from here. They used to end their own
+    // titles in "— CareerGuide" as well, which this template then repeated:
+    // "Explore Careers — CareerGuide | CareerGuide" on every live page.
+    template: "%s | ChoosePath",
   },
   description: DESCRIPTION,
   openGraph: {
     type: "website",
-    siteName: "CareerGuide",
+    siteName: "ChoosePath",
     title: TITLE,
     description: DESCRIPTION,
     locale: "en_IN",

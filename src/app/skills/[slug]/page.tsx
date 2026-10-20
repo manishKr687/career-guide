@@ -83,7 +83,7 @@ export async function generateMetadata({
   const skill = await getSkill(slug);
   if (!skill) return {};
   return {
-    title: `${skill.name} — CareerGuide`,
+    title: skill.name,
     description:
       skill.description ?? `The careers, job roles and qualifications that ask for ${skill.name}.`,
   };

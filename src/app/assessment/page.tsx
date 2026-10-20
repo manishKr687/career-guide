@@ -4,7 +4,7 @@ import PageHero from "@/components/ui/PageHero";
 import AssessmentFlow from "@/components/assessment/AssessmentFlow";
 
 export const metadata: Metadata = {
-  title: "Career Assessment — CareerGuide",
+  title: "Career Assessment",
   description: "A short, adaptive questionnaire covering interests, strengths, academics and goals.",
 };
 

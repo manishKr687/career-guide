@@ -17,8 +17,8 @@ import { getResources } from "@/data/resources";
 import { getCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
-  title: "Search — CareerGuide",
-  description: "Search across every career, degree, exam, college, skill and more on CareerGuide.",
+  title: "Search",
+  description: "Search across every career, degree, exam, college, skill and more on ChoosePath.",
 };
 
 const PREVIEW_LIMIT = 5;
@@ -42,7 +42,7 @@ export default async function SearchPage({
         <PageHero
           kicker="Search"
           kickerColor="bg-blue-soft text-blue"
-          title="Search CareerGuide"
+          title="Search ChoosePath"
           description="Find careers, degrees, exams, colleges, skills, industries, job roles, certifications and resources -- all in one place."
         />
         <Container className="pb-24">

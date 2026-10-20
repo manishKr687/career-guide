@@ -12,7 +12,7 @@ import { getExams } from "@/data/exams";
 import { getSpecializations } from "@/data/specializations";
 
 export const metadata: Metadata = {
-  title: "Career Categories — CareerGuide",
+  title: "Career Categories",
   description:
     "The 20 fields every career, degree and exam in this catalog is filed under, and how much sits behind each.",
 };

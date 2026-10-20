@@ -42,7 +42,7 @@ export async function generateMetadata({
   const industry = await getIndustry(slug);
   if (!industry) return {};
   return {
-    title: `${industry.name} — CareerGuide`,
+    title: industry.name,
     description: `The careers and job roles linked to ${industry.name}.`,
   };
 }

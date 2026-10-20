@@ -3,7 +3,7 @@ import CompareView from "@/components/compare/CompareView";
 import { getManyCareers } from "@/data/careers";
 
 export const metadata: Metadata = {
-  title: "Compare Careers — CareerGuide",
+  title: "Compare Careers",
   description: "Compare careers side by side on demand, education, salary, skills and growth path.",
 };
 

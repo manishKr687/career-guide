@@ -13,7 +13,7 @@ import { getCareers } from "@/data/careers";
 import { getCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
-  title: "Explore Specializations — CareerGuide",
+  title: "Explore Specializations",
   description:
     "Browse the focused areas within every career, see the job roles each one leads to, and find the one to specialise in.",
 };

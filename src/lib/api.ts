@@ -1,7 +1,7 @@
 const DEFAULT_API_BASE_URL = "http://localhost:8081";
 
 /**
- * Base URL of the CareerGuide content API (the Spring Boot / Postgres
+ * Base URL of the ChoosePath content API (the Spring Boot / Postgres
  * backend in backend/). Override with NEXT_PUBLIC_API_BASE_URL if it's not
  * on localhost:8081 (see backend/docker-compose.yml for the default port).
  *

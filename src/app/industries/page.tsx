@@ -8,7 +8,7 @@ import { getCareers } from "@/data/careers";
 import { getJobRoles } from "@/data/jobRoles";
 
 export const metadata: Metadata = {
-  title: "Explore Industries — CareerGuide",
+  title: "Explore Industries",
   description:
     "The sectors careers are practised in and the employers that hire for them, with the roles behind each.",
 };

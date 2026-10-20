@@ -68,7 +68,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const college = await getCollege(slug);
   if (!college) return {};
-  return { title: `${college.name} — CareerGuide`, description: college.description };
+  return { title: college.name, description: college.description };
 }
 
 export default async function CollegeDetailPage({

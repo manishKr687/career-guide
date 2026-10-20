@@ -15,7 +15,7 @@ import { getExams } from "@/data/exams";
 import type { Category } from "@/lib/types";
 
 export const metadata: Metadata = {
-  title: "Explore Careers — CareerGuide",
+  title: "Explore Careers",
   description:
     "Browse careers across every field, with specializations, education paths, skills, exams and salary ranges.",
 };

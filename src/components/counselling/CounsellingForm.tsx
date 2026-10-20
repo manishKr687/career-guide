@@ -265,7 +265,7 @@ export default function CounsellingForm({ stages, career }: { stages: Stage[]; c
               className="mt-0.5 w-4 h-4 shrink-0 accent-navy"
             />
             <span className="text-[12.5px] text-ink/75 leading-snug">
-              I agree to CareerGuide contacting me about this enquiry, and to my details being
+              I agree to ChoosePath contacting me about this enquiry, and to my details being
               stored for that purpose. If you are under 18, please ask a parent or guardian before
               submitting.{" "}
               <Link href="/privacy" className="font-bold text-navy hover:underline">

@@ -12,7 +12,7 @@ import { getCareer, getCareers } from "@/data/careers";
 import { getCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
-  title: "Explore Degrees — CareerGuide",
+  title: "Explore Degrees",
   description:
     "Discover degree options, compare eligibility, duration and career scope, and find the right qualification for your goals.",
 };

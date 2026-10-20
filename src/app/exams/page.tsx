@@ -11,7 +11,7 @@ import { getExams } from "@/data/exams";
 import { getCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
-  title: "Explore Exams — CareerGuide",
+  title: "Explore Exams",
   description:
     "Discover entrance and competitive exams, understand eligibility and exam pattern, and explore the career opportunities they lead to.",
 };

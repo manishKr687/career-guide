@@ -6,7 +6,7 @@ import Icon from "@/components/ui/Icon";
 import { getStages } from "@/data/stages";
 
 export const metadata: Metadata = {
-  title: "Career Roadmap — CareerGuide",
+  title: "Career Roadmap",
   description: "The step-by-step journey from choosing your stage to growing your career.",
 };
 
@@ -31,7 +31,7 @@ export default async function RoadmapPage() {
         kicker="Plan"
         kickerColor="bg-teal-soft text-teal"
         title="Your Career Roadmap"
-        description="An example journey through CareerGuide — from wherever you start today to a career you're actively growing."
+        description="An example journey through ChoosePath — from wherever you start today to a career you're actively growing."
       />
       <Container className="pb-24">
         <div className="flex flex-col gap-4 max-w-3xl mx-auto mt-6">

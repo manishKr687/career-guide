@@ -33,7 +33,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const stage = await getStage(slug);
   if (!stage) return {};
-  return { title: `${stage.name} — CareerGuide`, description: stage.description };
+  return { title: stage.name, description: stage.description };
 }
 
 export default async function StageDetailPage({

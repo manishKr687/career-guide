@@ -106,7 +106,7 @@ export default function AdminCounsellingInbox() {
       ) : (
         <div className="space-y-3">
           {requests.map((r) => {
-            const whatsAppMessage = `Hi ${r.name}, this is CareerGuide following up on your counselling request${
+            const whatsAppMessage = `Hi ${r.name}, this is ChoosePath following up on your counselling request${
               r.careerSlug ? ` about ${r.careerSlug}` : ""
             }.`;
             return (

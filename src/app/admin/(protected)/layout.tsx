@@ -134,7 +134,7 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
           <Icon name="compass" className="w-[18px] h-[18px]" />
         </span>
         <span className="font-display font-extrabold text-white text-[14.5px] leading-tight">
-          CareerGuide
+          ChoosePath
           <span className="block text-[11px] font-bold text-white/45 tracking-wide uppercase">Admin</span>
         </span>
       </div>

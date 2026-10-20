@@ -107,7 +107,7 @@ export async function generateMetadata({
       : undefined
     : specialization.description;
   return {
-    title: `${specialization.name} — CareerGuide`,
+    title: specialization.name,
     ...(snippet ? { description: snippet } : {}),
   };
 }

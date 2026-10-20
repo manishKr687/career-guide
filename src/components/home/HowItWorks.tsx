@@ -21,7 +21,7 @@ export default function HowItWorks() {
       <Container>
         <Reveal>
           <SectionHeader
-            kicker="How CareerGuide Works"
+            kicker="How ChoosePath Works"
             kickerColor="bg-teal-soft text-teal"
             title="A simple, step-by-step journey"
             align="center"

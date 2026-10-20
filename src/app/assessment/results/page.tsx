@@ -4,7 +4,7 @@ import PageHero from "@/components/ui/PageHero";
 import AssessmentResults from "@/components/assessment/AssessmentResults";
 
 export const metadata: Metadata = {
-  title: "Your Career Recommendations — CareerGuide",
+  title: "Your Career Recommendations",
   description: "Personalized career recommendations based on your assessment answers.",
 };
 

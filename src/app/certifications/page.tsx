@@ -6,7 +6,7 @@ import { StatsStrip, ValuePoints, SignpostPanel } from "@/components/listing/Lis
 import { getCertifications } from "@/data/certifications";
 
 export const metadata: Metadata = {
-  title: "Explore Certifications — CareerGuide",
+  title: "Explore Certifications",
   description:
     "Credentials that strengthen a career or job role, with the provider, level and skills each one covers.",
 };

@@ -4,7 +4,7 @@ import PageHero from "@/components/ui/PageHero";
 import ProfileView from "@/components/profile/ProfileView";
 
 export const metadata: Metadata = {
-  title: "My Career — CareerGuide",
+  title: "My Career",
   description: "Your career journey: assessment results, saved careers and colleges, and progress.",
 };
 

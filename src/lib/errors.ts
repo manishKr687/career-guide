@@ -33,7 +33,7 @@ export function getFriendlyErrorMessage(error: unknown): string {
   if (statusMatch) return messageForStatus(Number(statusMatch[1]));
 
   if (/fetch failed|ECONNREFUSED|ENOTFOUND|NetworkError|Failed to fetch/i.test(text)) {
-    return "We couldn't reach CareerGuide's servers. Check your connection and try again.";
+    return "We couldn't reach ChoosePath's servers. Check your connection and try again.";
   }
 
   return "Something went wrong. Please try again.";

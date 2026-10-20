@@ -47,7 +47,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const resource = await getResource(slug);
   if (!resource) return {};
-  return { title: `${resource.title} — CareerGuide`, description: resource.description };
+  return { title: resource.title, description: resource.description };
 }
 
 export default async function ResourceDetailPage({

@@ -54,7 +54,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const jobRole = await getJobRole(slug);
   if (!jobRole) return {};
-  return { title: `${jobRole.name} — CareerGuide`, description: jobRole.description };
+  return { title: jobRole.name, description: jobRole.description };
 }
 
 export default async function JobRoleDetailPage({

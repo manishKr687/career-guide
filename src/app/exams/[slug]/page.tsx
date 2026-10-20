@@ -45,7 +45,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const exam = await getExam(slug);
   if (!exam) return {};
-  return { title: `${exam.name} — ${exam.fullName} — CareerGuide`, description: exam.description };
+  return { title: `${exam.name} — ${exam.fullName}`, description: exam.description };
 }
 
 export default async function ExamDetailPage({

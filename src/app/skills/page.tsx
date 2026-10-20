@@ -14,7 +14,7 @@ import { getJobRoles } from "@/data/jobRoles";
 import { getCategories } from "@/data/categories";
 
 export const metadata: Metadata = {
-  title: "Explore Skills — CareerGuide",
+  title: "Explore Skills",
   description:
     "Discover the skills behind every career, see which job roles need them, and find the ones worth building next.",
 };

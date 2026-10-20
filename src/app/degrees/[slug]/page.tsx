@@ -57,7 +57,7 @@ export async function generateMetadata({
   const degree = await getDegree(slug);
   if (!degree) return {};
   return {
-    title: `${degree.title}${degree.fullTitle ? ` (${degree.fullTitle})` : ""} — CareerGuide`,
+    title: `${degree.title}${degree.fullTitle ? ` (${degree.fullTitle})` : ""}`,
     description: degree.description,
   };
 }

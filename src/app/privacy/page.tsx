@@ -4,9 +4,9 @@ import Container from "@/components/ui/Container";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — CareerGuide",
+  title: "Privacy Policy",
   description:
-    "What personal information CareerGuide collects, why, how long it is kept, and how to have it removed.",
+    "What personal information ChoosePath collects, why, how long it is kept, and how to have it removed.",
 };
 
 /**
@@ -49,7 +49,7 @@ export default function PrivacyPage() {
           Privacy Policy
         </h1>
         <p className="text-[14.5px] text-muted mt-3">
-          How CareerGuide handles the personal information you give us.
+          How ChoosePath handles the personal information you give us.
         </p>
 
         <div className="mt-6 rounded-2xl border border-amber/40 bg-amber-soft/40 px-5 py-4">

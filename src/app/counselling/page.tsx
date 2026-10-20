@@ -8,7 +8,7 @@ import { getStages } from "@/data/stages";
 import { getCareer } from "@/data/careers";
 
 export const metadata: Metadata = {
-  title: "Book a Counselling Call — CareerGuide",
+  title: "Book a Counselling Call",
   description: "Talk to a career counsellor about your options -- book a call or message us on WhatsApp.",
 };
 

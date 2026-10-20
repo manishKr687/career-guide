@@ -57,7 +57,7 @@ export default function Footer() {
                 <Icon name="cap" className="w-5 h-5 text-white" />
               </span>
               <span className="font-display font-extrabold text-[17px]">
-                CareerGuide
+                ChoosePath
               </span>
             </Link>
             <p className="text-[13.5px] text-white/60 mt-4 leading-relaxed max-w-xs">
@@ -91,7 +91,7 @@ export default function Footer() {
             One Platform. Every Career Stage.
           </div>
           <div className="text-[12px] text-white/50">
-            &copy; {new Date().getFullYear()} CareerGuide. Built for every
+            &copy; {new Date().getFullYear()} ChoosePath. Built for every
             stage of the journey.
           </div>
         </div>

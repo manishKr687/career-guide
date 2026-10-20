@@ -6,7 +6,7 @@ import { StatsStrip, ValuePoints, SignpostPanel } from "@/components/listing/Lis
 import { getResources } from "@/data/resources";
 
 export const metadata: Metadata = {
-  title: "Explore Resources — CareerGuide",
+  title: "Explore Resources",
   description:
     "Guides, courses, articles and official portals linked to the careers, exams and skills in this catalog.",
 };

@@ -84,7 +84,7 @@ export default function Navbar() {
             </span>
             <span className="leading-tight">
               <span className="block font-display font-extrabold text-navy text-[17px] tracking-tight">
-                CareerGuide
+                ChoosePath
               </span>
               <span className="block text-[10px] font-semibold text-subtle tracking-wide -mt-0.5">
                 Explore &middot; Learn &middot; Plan &middot; Grow

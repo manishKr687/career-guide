@@ -40,7 +40,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const stream = await getStream(slug);
   if (!stream) return {};
-  return { title: `${stream.name} Stream — CareerGuide`, description: stream.description };
+  return { title: `${stream.name} Stream`, description: stream.description };
 }
 
 export default async function StreamDetailPage({

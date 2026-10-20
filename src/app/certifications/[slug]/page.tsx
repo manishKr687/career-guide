@@ -35,7 +35,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const certification = await getCertification(slug);
   if (!certification) return {};
-  return { title: `${certification.name} — CareerGuide`, description: certification.description };
+  return { title: certification.name, description: certification.description };
 }
 
 export default async function CertificationDetailPage({

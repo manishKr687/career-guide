@@ -452,7 +452,30 @@ function ExamListCard({
           {exam.category}
         </span>
       </div>
-      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft">{figures}</div>
+      {/* Conducting body on its own line. Sharing one line with level and
+          frequency left it about 80px, so "National Testing Agency (NTA)"
+          read as "Na..." and "IIT (rotating zone)" as "IIT (r...". Every exam
+          has one, so every footer is two lines and a row stays aligned. */}
+      <div className="mt-4 px-5 py-3.5 border-t border-line bg-bg-soft text-[12px]">
+        <div className="flex items-center gap-4">
+          <span className="flex items-center gap-1.5 shrink-0">
+            <Icon name="cap" className="w-3.5 h-3.5 text-subtle shrink-0" />
+            <span
+              className={`font-bold text-[11.5px] px-2 py-0.5 rounded-full whitespace-nowrap ${LEVEL_STYLES[exam.level] ?? "bg-slate-soft text-slate"}`}
+            >
+              {exam.level}
+            </span>
+          </span>
+          <span className="flex items-center gap-1.5 text-muted whitespace-nowrap" title={exam.frequency}>
+            <Icon name="cal" className="w-3.5 h-3.5 text-subtle shrink-0" />
+            {exam.frequencyType}
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5 text-muted mt-2 min-w-0" title={exam.conductedBy}>
+          <Icon name="bld" className="w-3.5 h-3.5 text-subtle shrink-0" />
+          <span className="truncate">{exam.conductedBy}</span>
+        </div>
+      </div>
     </Link>
   );
 }

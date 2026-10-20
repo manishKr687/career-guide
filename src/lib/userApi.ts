@@ -206,3 +206,119 @@ export function saveEntity(type: SavedEntityType, slug: string): Promise<void> {
 export function unsaveEntity(type: SavedEntityType, slug: string): Promise<void> {
   return meFetch<void>(`/api/me/saved/${type}/${encodeURIComponent(slug)}`, { method: "DELETE" });
 }
+
+// --- My Career: goal, line, focus items, learning log (V148).
+// Every call returns the whole journey, so the page re-renders from the
+// server's answer instead of patching its own copy.
+
+export type GoalType =
+  | "career" | "exam" | "college" | "degree"
+  | "job_role" | "company" | "sector" | "certification";
+
+export interface GoalSkill {
+  slug: string;
+  name: string;
+}
+
+export interface Goal {
+  type: GoalType;
+  slug: string;
+  name: string;
+  facts: string[];
+  /** "YYYY-MM", or null when no date is set. */
+  targetMonth: string | null;
+  /** "skills": pick from suggestedSkills. "own": type your own subjects or topics. */
+  focusMode: "skills" | "own";
+  suggestedSkills: GoalSkill[];
+  logTargets: string[];
+  mockTarget: string | null;
+  mockMax: number | null;
+}
+
+export interface GoalStation {
+  id: number;
+  name: string;
+  kind: string;
+  detail: string;
+  nextStep: string | null;
+  done: boolean;
+  custom: boolean;
+}
+
+export interface GoalFocus {
+  id: number;
+  name: string;
+  skillSlug: string | null;
+  /** 0 not started, 1 learning, 2 comfortable, 3 confident. */
+  level: number;
+  minutesLogged: number;
+}
+
+export interface LearningLogEntry {
+  id: number;
+  loggedOn: string;
+  note: string;
+  target: string;
+  minutes: number;
+  score: number | null;
+  scoreMax: number | null;
+}
+
+export interface Journey {
+  goal: Goal | null;
+  stations: GoalStation[];
+  focus: GoalFocus[];
+  recent: LearningLogEntry[];
+  /** Minutes per day for the last 84 days; index 0 is today (India time). */
+  minutesByDay: number[];
+  streak: number;
+  weekMinutes: number;
+  readiness: number;
+  mocks: { loggedOn: string; score: number; scoreMax: number }[];
+}
+
+const JSON_HEADERS = { "Content-Type": "application/json" };
+
+export function getJourney(): Promise<Journey> {
+  return meFetch<Journey>("/api/me/journey");
+}
+
+export function setGoal(type: GoalType, slug: string, targetMonth: string | null): Promise<Journey> {
+  return meFetch<Journey>("/api/me/goal", {
+    method: "PUT", headers: JSON_HEADERS, body: JSON.stringify({ type, slug, targetMonth }),
+  });
+}
+
+export function addGoalStation(name: string): Promise<Journey> {
+  return meFetch<Journey>("/api/me/goal/stations", { method: "POST", headers: JSON_HEADERS, body: JSON.stringify({ name }) });
+}
+
+export function setGoalStationDone(id: number, done: boolean): Promise<Journey> {
+  return meFetch<Journey>(`/api/me/goal/stations/${id}`, { method: "PATCH", headers: JSON_HEADERS, body: JSON.stringify({ done }) });
+}
+
+export function removeGoalStation(id: number): Promise<Journey> {
+  return meFetch<Journey>(`/api/me/goal/stations/${id}`, { method: "DELETE" });
+}
+
+export function addGoalFocus(name: string, skillSlug: string | null): Promise<Journey> {
+  return meFetch<Journey>("/api/me/goal/focus", { method: "POST", headers: JSON_HEADERS, body: JSON.stringify({ name, skillSlug }) });
+}
+
+export function setGoalFocusLevel(id: number, level: number): Promise<Journey> {
+  return meFetch<Journey>(`/api/me/goal/focus/${id}`, { method: "PATCH", headers: JSON_HEADERS, body: JSON.stringify({ level }) });
+}
+
+export function removeGoalFocus(id: number): Promise<Journey> {
+  return meFetch<Journey>(`/api/me/goal/focus/${id}`, { method: "DELETE" });
+}
+
+export function addLearningLog(entry: {
+  note: string; target: string; minutes: number; score?: number | null; scoreMax?: number | null;
+}): Promise<Journey> {
+  return meFetch<Journey>("/api/me/learning-log", { method: "POST", headers: JSON_HEADERS, body: JSON.stringify(entry) });
+}
+
+export function removeLearningLog(id: number): Promise<Journey> {
+  return meFetch<Journey>(`/api/me/learning-log/${id}`, { method: "DELETE" });
+}

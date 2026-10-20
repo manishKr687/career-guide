@@ -9,6 +9,7 @@ import Button from "@/components/ui/Button";
 import CollegeCard from "@/components/cards/CollegeCard";
 import CareerCard from "@/components/cards/CareerCard";
 import ExamCard from "@/components/cards/ExamCard";
+import MyCareerJourney from "@/components/profile/MyCareerJourney";
 import { useUser } from "@/components/providers/UserProvider";
 import { useSavedItems } from "@/components/providers/SavedItemsProvider";
 import { loadAssessment, submitAssessment } from "@/lib/assessment";
@@ -152,11 +153,11 @@ export default function ProfileView() {
           </div>
           <div className="flex-1">
             <div className="font-display font-extrabold text-navy text-[15px]">
-              Sign in to save your progress across devices
+              Sign in to set a goal and track your learning
             </div>
             <p className="text-[13px] text-subtle mt-1">
-              Your saved careers, colleges and exams are stored on this device only.
-              Create a free account to keep them synced everywhere.
+              Pick a career, exam, college or job to work towards, and log what you learn each day.
+              Your saved careers, colleges and exams are on this device only until you sign in.
             </p>
           </div>
           <Link
@@ -165,6 +166,12 @@ export default function ProfileView() {
           >
             Sign In
           </Link>
+        </div>
+      )}
+
+      {!userLoading && user && (
+        <div className="mb-14">
+          <MyCareerJourney />
         </div>
       )}
 

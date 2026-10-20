@@ -255,6 +255,8 @@ public class CareerService {
         career.setExperienceMinYears(request.experienceMinYears());
         career.setExperienceMaxYears(request.experienceMaxYears());
         career.setJobOpenings(request.jobOpenings());
+        // A cleared admin field arrives as "": no image, stored as null.
+        career.setImageUrl(request.imageUrl() == null || request.imageUrl().isEmpty() ? null : request.imageUrl());
         syncGrowthStages(career, request.growthStages());
         syncSalaryBands(career, request.salaryBands());
         career.setIcon(request.icon());

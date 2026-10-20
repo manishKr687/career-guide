@@ -269,6 +269,8 @@ export type CareerRef = Pick<Career, "slug" | "title" | "categorySlug">;
 export interface Career {
   slug: string;
   title: string;
+  /** V147: card thumbnail, a site path or an https URL; null for none. */
+  imageUrl?: string | null;
   categorySlug: string;
   tagline: string;
   demand: "High Demand" | "Emerging" | "Evergreen" | "Stable" | "Competitive";
@@ -521,6 +523,8 @@ export interface CollegeCareerOffering {
 export interface College {
   slug: string;
   name: string;
+  /** V147: card thumbnail, a site path or an https URL; null for none. */
+  imageUrl?: string | null;
   location: string;
   type: "IIT" | "NIT" | "Medical" | "Law" | "Management" | "Polytechnic" | "University" | "ITI";
   established: number;

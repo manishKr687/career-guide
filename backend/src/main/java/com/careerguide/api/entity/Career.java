@@ -135,6 +135,10 @@ public class Career {
     @Column(nullable = false, length = 32)
     private String icon;
 
+    /** Card thumbnail (V147): a site path or an https URL, or null for none. */
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     @Column(nullable = false, columnDefinition = "text")
     private String description;
 
@@ -227,7 +231,8 @@ public class Career {
     // Public rather than protected: JPA only needs a no-arg constructor
     // (Hibernate uses reflection regardless of visibility), but the admin
     // write path also calls `new Career()` directly from CareerService,
-    // which is in a different package.
+    // which is in a different package.
+
     // V115 added created_at/updated_at to this table; updated_at is
     // maintained by a database trigger, not by the services, so it is
     // mapped read-only -- Hibernate must never write it back.
@@ -460,5 +465,13 @@ public class Career {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

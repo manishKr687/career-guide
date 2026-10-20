@@ -72,6 +72,11 @@ public record CareerUpsertRequest(
         // rendering a placeholder.
         @Min(0) Short experienceMinYears,
         @Min(0) Short experienceMaxYears,
-        @Min(1) Integer jobOpenings
+        @Min(1) Integer jobOpenings,
+        // V147. A site path or an https URL; null clears it. See ImageUrls.
+        @Size(max = ImageUrls.MAX_LENGTH)
+        @Pattern(regexp = ImageUrls.PATTERN,
+                message = "must be a site path like /thumbnails/x.webp or an https:// URL")
+        String imageUrl
 ) {
 }

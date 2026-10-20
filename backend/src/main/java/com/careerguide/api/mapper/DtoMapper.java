@@ -130,7 +130,8 @@ public final class DtoMapper {
                 c.getExperienceMaxYears(),
                 c.getJobOpenings()
         ,
-                c.getUpdatedAt()
+                c.getUpdatedAt(),
+                c.getImageUrl()
         );
     }
 
@@ -295,7 +296,8 @@ public final class DtoMapper {
                 c.getNirfYear(),
                 c.getNirfRank() == null ? null : "NIRF " + c.getNirfYear() + " \u00b7 " + c.getNirfCategory()
         ,
-                c.getUpdatedAt()
+                c.getUpdatedAt(),
+                c.getImageUrl()
         );
     }
 

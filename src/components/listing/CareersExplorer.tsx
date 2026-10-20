@@ -10,16 +10,18 @@ import { indexBySlug, isCareerTaglineStub } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
 import { usePagedList } from "@/hooks/usePagedList";
 import {
+  CardBanner,
+  CardThumb,
   CheckRow,
   Chip,
   FilterGroup,
   FilterRail,
   ListingLayout,
+  NONE,
   NoResults,
   ResultsColumn,
   ResultsHeader,
   countLabel,
-  NONE,
   joinParam,
   splitParam,
 } from "@/components/listing/ListingKit";
@@ -98,6 +100,7 @@ export type CareerListItem = Pick<
   Career,
   | "slug" | "title" | "categorySlug" | "tagline" | "demand" | "icon"
   | "salaryMinLpa" | "salaryMaxLpa" | "relatedSkillSlugs" | "relatedSpecializationSlugs"
+  | "imageUrl"
 >;
 
 export default function CareersExplorer({
@@ -482,9 +485,7 @@ function ExploreCareerCard({
         href={`/careers/${career.slug}`}
         className="group flex items-center gap-4 rounded-2xl border border-line bg-white p-4 hover:border-blue/40 hover:shadow-card transition-all"
       >
-        <span className="w-12 h-12 rounded-xl bg-blue-soft text-blue flex items-center justify-center shrink-0">
-          <Icon name={career.icon} className="w-6 h-6" />
-        </span>
+        <CardThumb imageUrl={career.imageUrl} tint="bg-blue-soft text-blue" icon={career.icon} />
         <span className="min-w-0 flex-1">
           <span className="block font-display font-bold text-navy text-[15.5px]">
             {career.title}
@@ -509,10 +510,12 @@ function ExploreCareerCard({
       href={`/careers/${career.slug}`}
       className="group flex flex-col rounded-2xl border border-line bg-white overflow-hidden hover:border-blue/40 hover:shadow-card transition-all"
     >
+      {/* The career's photo when an admin has set one (V147), otherwise its
+          icon on the tint -- the same banner the college cards use, so the two
+          listings read as one system. The icon moves up here from beside the
+          title, where it would now say the same thing twice. */}
+      <CardBanner imageUrl={career.imageUrl} tint="bg-blue-soft text-blue" icon={career.icon} />
       <div className="flex items-start gap-3.5 p-5 pb-4">
-        <span className="w-12 h-12 rounded-xl bg-blue-soft text-blue flex items-center justify-center shrink-0">
-          <Icon name={career.icon} className="w-6 h-6" />
-        </span>
         <span className="min-w-0 flex-1">
           <span className="flex items-start justify-between gap-2">
             <span className="font-display font-bold text-navy text-[15.5px] leading-snug">

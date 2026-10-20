@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Icon from "@/components/ui/Icon";
 
 /**
@@ -50,6 +51,91 @@ export function toggleParam(list: string[], value: string, set: (v: string) => v
  * Deleted rather than left as unused exports, so nothing reintroduces the
  * duplicate by reaching for a component that is still here.
  */
+
+/*
+ * Card images (V147: careers and colleges carry an optional imageUrl).
+ *
+ * `unoptimized` on purpose. An admin can paste an https URL from any host, and
+ * next/image only resizes remote images from hosts listed in remotePatterns --
+ * opening that to every host would let anyone run the site's optimiser on any
+ * image, against the Vercel Hobby plan's 5,000 transformations a month. So the
+ * file is served as-is, which is why the admin field asks for pre-sized images.
+ *
+ * Both fall back to the tinted icon when there is no image or it fails to
+ * load, so a dead link shows the card as it looked before images existed
+ * rather than a broken-image box. alt="" because the card's title sits right
+ * beside the picture; describing it again would make a screen reader say the
+ * name twice.
+ */
+
+/** The banner across the top of a grid card. */
+export function CardBanner({
+  imageUrl,
+  tint,
+  icon,
+  children,
+}: {
+  imageUrl?: string | null;
+  /** Background and text colour for the no-image state, e.g. "bg-blue-soft text-blue". */
+  tint: string;
+  icon: string;
+  /** Overlays such as a ranking badge. */
+  children?: React.ReactNode;
+}) {
+  const [failed, setFailed] = useState(false);
+  const showImage = Boolean(imageUrl) && !failed;
+  return (
+    <div
+      className={`relative h-28 flex items-center justify-center overflow-hidden ${showImage ? "bg-bg-soft" : tint}`}
+    >
+      {showImage ? (
+        <Image
+          src={imageUrl!}
+          alt=""
+          fill
+          unoptimized
+          className="object-cover"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <Icon name={icon} aria-hidden className="w-10 h-10 opacity-30" />
+      )}
+      {children}
+    </div>
+  );
+}
+
+/** The square at the start of a list-view row. */
+export function CardThumb({
+  imageUrl,
+  tint,
+  icon,
+}: {
+  imageUrl?: string | null;
+  tint: string;
+  icon: string;
+}) {
+  const [failed, setFailed] = useState(false);
+  const showImage = Boolean(imageUrl) && !failed;
+  return (
+    <span
+      className={`relative w-12 h-12 rounded-xl flex items-center justify-center shrink-0 overflow-hidden ${showImage ? "bg-bg-soft" : tint}`}
+    >
+      {showImage ? (
+        <Image
+          src={imageUrl!}
+          alt=""
+          fill
+          unoptimized
+          className="object-cover"
+          onError={() => setFailed(true)}
+        />
+      ) : (
+        <Icon name={icon} className="w-6 h-6" />
+      )}
+    </span>
+  );
+}
 
 /** One labelled block inside the filter card. */
 export function FilterGroup({

@@ -10,17 +10,19 @@ import { indexBySlug } from "@/lib/utils";
 import { useUrlListState } from "@/hooks/useUrlListState";
 import { usePagedList } from "@/hooks/usePagedList";
 import {
+  CardBanner,
+  CardThumb,
   CheckRow,
   Chip,
   FilterGroup,
   FilterRail,
+  FilterSelect,
   ListingLayout,
+  NONE,
   NoResults,
   ResultsColumn,
   ResultsHeader,
   countLabel,
-  FilterSelect,
-  NONE,
   joinParam,
   splitParam,
 } from "@/components/listing/ListingKit";
@@ -87,6 +89,7 @@ export type CollegeListItem = Pick<
   College,
   | "slug" | "name" | "location" | "type" | "ownershipType" | "stateSlug" | "citySlug"
   | "nirfRank" | "nirfLabel" | "established" | "description" | "degreeOfferings" | "examSlugs"
+  | "imageUrl"
 >;
 
 export default function CollegesExplorer({
@@ -543,11 +546,11 @@ function CollegeListCard({
         href={`/colleges/${college.slug}`}
         className="group flex items-center gap-4 rounded-2xl border border-line bg-white p-4 hover:border-blue/40 hover:shadow-card transition-all"
       >
-        <span
-          className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${TYPE_STYLES[college.type] ?? "bg-bg-soft text-navy"}`}
-        >
-          <Icon name={TYPE_ICONS[college.type] ?? "bank"} className="w-6 h-6" />
-        </span>
+        <CardThumb
+          imageUrl={college.imageUrl}
+          tint={TYPE_STYLES[college.type] ?? "bg-bg-soft text-navy"}
+          icon={TYPE_ICONS[college.type] ?? "bank"}
+        />
         <span className="min-w-0 flex-1">
           <span className="block font-display font-bold text-navy text-[15px] truncate">
             {college.name}
@@ -570,13 +573,14 @@ function CollegeListCard({
       href={`/colleges/${college.slug}`}
       className="group flex flex-col rounded-2xl border border-line bg-white overflow-hidden hover:border-blue/40 hover:shadow-card transition-all"
     >
-      {/* A tinted banner in place of the mock's campus photo: 90 licensed
-          photographs is not a set that stays maintained, and the type tint
-          already distinguishes an IIT from a medical college at a glance. */}
-      <div
-        className={`relative h-20 flex items-center justify-center ${TYPE_STYLES[college.type] ?? "bg-bg-soft text-navy"}`}
+      {/* The college's photo when an admin has set one (V147), otherwise the
+          type tint -- which still tells an IIT from a medical college at a
+          glance while most colleges have no photo. */}
+      <CardBanner
+        imageUrl={college.imageUrl}
+        tint={TYPE_STYLES[college.type] ?? "bg-bg-soft text-navy"}
+        icon={TYPE_ICONS[college.type] ?? "bank"}
       >
-        <Icon name={TYPE_ICONS[college.type] ?? "bank"} aria-hidden className="w-10 h-10 opacity-30" />
         {college.nirfRank !== null && (
           <span
             className="absolute top-3 left-3 text-[11px] font-bold px-2.5 py-1 rounded-full bg-white text-navy shadow-card"
@@ -593,7 +597,7 @@ function CollegeListCard({
         )}
         {/* No type badge here: the banner is already tinted and iconned by
             type, and "Government · IIT" says it in words just below. */}
-      </div>
+      </CardBanner>
 
       <div className="flex items-start justify-between gap-2 p-5 pb-2">
         <span className="min-w-0">

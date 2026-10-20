@@ -231,6 +231,52 @@ class CareerServiceTest {
         verify(careerRepository).deleteById("software-engineer");
     }
 
+    // --- V147 card thumbnails ---
+
+    @Test
+    void createStoresTheImageUrl() {
+        when(careerRepository.existsById("data-scientist")).thenReturn(false);
+        when(categoryRepository.findById("engineering-technology")).thenReturn(Optional.of(mock(Category.class)));
+
+        careerService.create(upsertRequest("data-scientist", "engineering-technology", 7,
+                "/thumbnails/careers/data-scientist.webp"));
+
+        ArgumentCaptor<Career> captor = ArgumentCaptor.forClass(Career.class);
+        verify(careerRepository).save(captor.capture());
+        assertThat(captor.getValue().getImageUrl()).isEqualTo("/thumbnails/careers/data-scientist.webp");
+    }
+
+    @Test
+    void createStoresAClearedImageFieldAsNull() {
+        // The admin form posts a cleared text field as "". Stored as "" it would
+        // fail V147's CHECK; it means "no image", which is null.
+        when(careerRepository.existsById("data-scientist")).thenReturn(false);
+        when(categoryRepository.findById("engineering-technology")).thenReturn(Optional.of(mock(Category.class)));
+
+        careerService.create(upsertRequest("data-scientist", "engineering-technology", 7, ""));
+
+        ArgumentCaptor<Career> captor = ArgumentCaptor.forClass(Career.class);
+        verify(careerRepository).save(captor.capture());
+        assertThat(captor.getValue().getImageUrl()).isNull();
+    }
+
+    @Test
+    void validationRefusesAPlainHttpImageButAcceptsHttpsAndEmpty() {
+        try (jakarta.validation.ValidatorFactory factory = jakarta.validation.Validation.buildDefaultValidatorFactory()) {
+            jakarta.validation.Validator validator = factory.getValidator();
+            java.util.function.Function<String, java.util.Set<String>> badFields = url ->
+                    validator.validate(upsertRequest("data-scientist", "engineering-technology", 7, url)).stream()
+                            .map(v -> v.getPropertyPath().toString())
+                            .collect(java.util.stream.Collectors.toSet());
+
+            assertThat(badFields.apply("http://example.com/a.jpg")).contains("imageUrl");
+            assertThat(badFields.apply("javascript:alert(1)")).contains("imageUrl");
+            assertThat(badFields.apply("https://images.unsplash.com/photo-1?w=640")).doesNotContain("imageUrl");
+            assertThat(badFields.apply("")).doesNotContain("imageUrl");
+            assertThat(badFields.apply(null)).doesNotContain("imageUrl");
+        }
+    }
+
     private static Career careerWithCategory(String slug, String categorySlug) {
         Category category = mock(Category.class);
         when(category.getSlug()).thenReturn(categorySlug);
@@ -241,6 +287,11 @@ class CareerServiceTest {
     }
 
     private static CareerUpsertRequest upsertRequest(String slug, String categorySlug, Integer sortOrder) {
+        return upsertRequest(slug, categorySlug, sortOrder, null);
+    }
+
+    private static CareerUpsertRequest upsertRequest(
+            String slug, String categorySlug, Integer sortOrder, String imageUrl) {
         return new CareerUpsertRequest(
                 slug,
                 "Title",
@@ -267,7 +318,8 @@ class CareerServiceTest {
                 null,
                 null,
                 null,
-                null
+                null,
+                imageUrl
         );
     }
 }

@@ -181,6 +181,7 @@ export default async function CollegesPage() {
             ownershipType: c.ownershipType, stateSlug: c.stateSlug, citySlug: c.citySlug,
             nirfRank: c.nirfRank, nirfLabel: c.nirfLabel, established: c.established,
             description: c.description, degreeOfferings: c.degreeOfferings, examSlugs: c.examSlugs,
+            imageUrl: c.imageUrl ?? null,
           }))} states={states} cities={cities} />
       </Suspense>
     </>

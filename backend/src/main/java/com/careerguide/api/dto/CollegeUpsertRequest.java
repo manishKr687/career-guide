@@ -50,6 +50,11 @@ public record CollegeUpsertRequest(
         // cannot be rendered honestly, and the DB CHECK rejects the pair.
         @Min(1) Integer nirfRank,
         @Size(max = 32) String nirfCategory,
-        @Min(2016) Short nirfYear
+        @Min(2016) Short nirfYear,
+        // V147. A site path or an https URL; null clears it. See ImageUrls.
+        @Size(max = ImageUrls.MAX_LENGTH)
+        @Pattern(regexp = ImageUrls.PATTERN,
+                message = "must be a site path like /thumbnails/x.webp or an https:// URL")
+        String imageUrl
 ) {
 }

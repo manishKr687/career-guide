@@ -98,7 +98,7 @@ class AdminCareerControllerTest {
                 "data-scientist", "", "engineering-technology", "Tagline", "High",
                 "Typical work", new BigDecimal("5"), new BigDecimal("10"), null, null, null, "icon", "Description", null,
                 null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null); // ..., imageUrl
 
         mockMvc.perform(post("/api/admin/careers")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -156,7 +156,7 @@ class AdminCareerControllerTest {
                 "Typical work", new BigDecimal("5"), new BigDecimal("10"), List.of("Junior"), null, null,
                 "icon", "Description", null,
                 null, null, null, null, null, null,
-                null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null); // ..., imageUrl
     }
 
     private static CareerDto sampleDto(String slug) {
@@ -166,6 +166,7 @@ class AdminCareerControllerTest {
                 List.of(), List.of(), "icon", "Description",
                 List.of(), List.of(), List.of(), List.of(), List.of(), null,
                 List.of(), List.of(), List.of(), List.of(), null, null, null,
-                null); // updatedAt -- set by a database trigger, never by a test
+                null, // updatedAt -- set by a database trigger, never by a test
+                null); // imageUrl
     }
 }

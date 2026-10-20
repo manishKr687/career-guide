@@ -197,6 +197,7 @@ export const careerConfig: ResourceConfig = {
     { key: "relatedCollegeSlugs", label: "Related Colleges", type: "multiselect", optionsKey: "colleges" },
     { key: "relatedSpecializationSlugs", label: "Specializations", type: "multiselect", optionsKey: "specializations" },
     { key: "icon", label: "Icon", type: "select", required: true, staticOptions: ICON_OPTIONS },
+    { key: "imageUrl", label: "Card Image URL", type: "text", helpText: "Optional. A site path like /thumbnails/careers/<slug>.webp or an https:// link. Pre-size it to about 640x360 (WebP, under ~60 KB): it is served as-is, not resized. Leave blank to show the icon." },
     { key: "description", label: "Description", type: "textarea", required: true },
     { key: "sortOrder", label: "Sort Order", type: "number", helpText: "Leave blank to auto-place after the last career in this category" },
   ],
@@ -408,6 +409,7 @@ export const collegeConfig: ResourceConfig = {
       ].map((v) => ({ value: v, label: v })),
     },
     { key: "nirfYear", label: "NIRF Year", type: "number", helpText: "e.g. 2024" },
+    { key: "imageUrl", label: "Card Image URL", type: "text", helpText: "Optional. A site path like /thumbnails/colleges/<slug>.webp or an https:// link. Pre-size it to about 640x360 (WebP, under ~60 KB): it is served as-is, not resized. Leave blank to show the icon." },
     { key: "website", label: "Official Website", type: "text" },
     {
       key: "status",

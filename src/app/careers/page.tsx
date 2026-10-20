@@ -182,6 +182,7 @@ export default async function CareersPage() {
             demand: c.demand, icon: c.icon, salaryMinLpa: c.salaryMinLpa, salaryMaxLpa: c.salaryMaxLpa,
             relatedSkillSlugs: c.relatedSkillSlugs,
             relatedSpecializationSlugs: c.relatedSpecializationSlugs,
+            imageUrl: c.imageUrl ?? null,
           }))}
           categories={usedCategories}
         />

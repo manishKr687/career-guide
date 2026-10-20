@@ -92,6 +92,10 @@ public class College {
     @Column(name = "nirf_year")
     private Short nirfYear;
 
+    /** Card thumbnail (V147): a site path or an https URL, or null for none. */
+    @Column(name = "image_url", length = 500)
+    private String imageUrl;
+
     @Column(nullable = false, length = 16)
     private String status;
 
@@ -149,7 +153,8 @@ public class College {
     @OrderBy("sortOrder ASC")
     private List<CollegeCareerDegree> careerOfferings = new ArrayList<>();
 
-    // Public rather than protected -- see the equivalent note in Career.java.
+    // Public rather than protected -- see the equivalent note in Career.java.
+
     // V115 added created_at/updated_at to this table; updated_at is
     // maintained by a database trigger, not by the services, so it is
     // mapped read-only -- Hibernate must never write it back.
@@ -322,5 +327,13 @@ public class College {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

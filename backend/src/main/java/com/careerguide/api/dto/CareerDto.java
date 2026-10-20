@@ -105,6 +105,9 @@ public record CareerDto(
          * whichever service did the writing. Read-only: the upsert requests do
          * not accept it.
          */
-        java.time.Instant updatedAt
+        java.time.Instant updatedAt,
+
+        /** V147: card thumbnail, a site path or an https URL; null for none. */
+        String imageUrl
 ) {
 }

@@ -156,6 +156,8 @@ public class CollegeService {
                 request.nirfCategory() == null || request.nirfCategory().isBlank()
                         ? null : request.nirfCategory());
         college.setNirfYear(request.nirfYear());
+        // A cleared admin field arrives as "": no image, stored as null.
+        college.setImageUrl(request.imageUrl() == null || request.imageUrl().isEmpty() ? null : request.imageUrl());
         college.setStatus(request.status());
         syncDegrees(college, request.degreeOfferings());
         college.setSpecializations(resolveEach(request.specializationSlugs(), specializationRepository::findById, "specialization"));

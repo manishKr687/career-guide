@@ -71,8 +71,12 @@ class MigrationPolicyTest {
 
     private static final String EXEMPTION_MARKER = "POLICY-EXCEPTION:";
 
-    /** Words that can follow UPDATE/DELETE without naming a table (e.g. ON CONFLICT DO UPDATE SET). */
-    private static final Set<String> NOT_TABLE_NAMES = Set.of("set", "from", "only", "where");
+    /**
+     * Words that can follow UPDATE/DELETE without naming a table (e.g. ON CONFLICT DO UPDATE SET).
+     * "on" and "of" are trigger DDL -- {@code BEFORE UPDATE ON t}, {@code UPDATE OF col ON t} --
+     * which V148 was the first post-policy migration to use; SQL has no {@code UPDATE ON} statement.
+     */
+    private static final Set<String> NOT_TABLE_NAMES = Set.of("set", "from", "only", "where", "on", "of");
 
     private static final Pattern DML = Pattern.compile(
             "(?i)\\b(insert\\s+into|update|delete\\s+from|copy)\\s+(?:public\\.)?([a-z_][a-z0-9_]*)");

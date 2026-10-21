@@ -50,8 +50,11 @@ public class UserProfile {
     }
 
     public UserProfile(User user) {
+        // userId is left null on purpose: @MapsId fills it from `user` on
+        // persist. Setting it here made save() treat a brand-new profile as an
+        // existing row, so the first save for every user failed with a
+        // StaleObjectStateException (a 500).
         this.user = user;
-        this.userId = user.getId();
     }
 
     public Long getUserId() {

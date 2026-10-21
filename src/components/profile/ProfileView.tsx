@@ -3,28 +3,31 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Icon from "@/components/ui/Icon";
-import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
-import Button from "@/components/ui/Button";
+import { useToast } from "@/components/ui/Toast";
 import CollegeCard from "@/components/cards/CollegeCard";
 import CareerCard from "@/components/cards/CareerCard";
 import ExamCard from "@/components/cards/ExamCard";
-import MyCareerJourney from "@/components/profile/MyCareerJourney";
+import MyCareerJourney, { PendingGoal, goalKicker } from "@/components/profile/MyCareerJourney";
 import { useUser } from "@/components/providers/UserProvider";
 import { useSavedItems } from "@/components/providers/SavedItemsProvider";
 import { loadAssessment, submitAssessment } from "@/lib/assessment";
 import {
-  UserSkill,
-  getMySkills,
-  upsertMySkill,
-  removeMySkill,
+  GoalType,
+  Journey,
+  User,
+  UserProfile,
+  getJourney,
+  getMyProfile,
   updateMyInterests,
+  updateMyProfile,
 } from "@/lib/userApi";
+import { getFriendlyErrorMessage } from "@/lib/errors";
 import { getManyColleges } from "@/data/colleges";
 import { getManyCareers } from "@/data/careers";
 import { getManyExams } from "@/data/exams";
-import { getSkills } from "@/data/skills";
-import { Category, Career, College, Exam, Skill } from "@/lib/types";
+import { getStages } from "@/data/stages";
+import { getStreams } from "@/data/streams";
+import { Category, Career, College, Exam, Stage, Stream } from "@/lib/types";
 import { indexBySlug, formatDate } from "@/lib/utils";
 
 // Preview counts on the profile page are smaller than the assessment
@@ -35,34 +38,42 @@ import { indexBySlug, formatDate } from "@/lib/utils";
 const PROFILE_TOP_CATEGORY_COUNT = 3;
 const PROFILE_RECOMMENDED_CAREER_COUNT = 3;
 
-const PROFICIENCY_LEVELS = ["Beginner", "Intermediate", "Advanced", "Expert"];
+type TabId = "line" | "saved" | "assessment" | "account";
+type SavedType = "careers" | "colleges" | "exams";
 
-// Every tile now links somewhere real (they used to be plain divs with no
-// href at all). `authHref` is used instead of `href` once the person is
-// logged in, for the two tiles that live inside the account panel below
-// (My Interests, Skill Progress) -- signed out there's nothing at #account
-// to show, so those route to sign-in instead. `soon` tiles (My Education,
-// Applications, Achievements) have no implemented feature anywhere in the
-// app yet, so rather than a dead link they render disabled with a badge.
-const MENU_ITEMS: Array<{
-  icon: string;
-  label: string;
-  href?: string;
-  authHref?: string;
-  primary?: boolean;
-  soon?: boolean;
-}> = [
-  { icon: "cap", label: "My Education", soon: true },
-  { icon: "heart", label: "My Interests", href: "/login?next=/profile", authHref: "#account" },
-  { icon: "target", label: "Career Assessment", href: "#assessment-section", primary: true },
-  { icon: "award", label: "Recommended Careers", href: "#assessment-section" },
-  { icon: "bld", label: "Saved Colleges", href: "#saved-colleges" },
-  { icon: "mappin", label: "My Career Roadmap", href: "/roadmap" },
-  { icon: "cal", label: "Exam Preparation", href: "/exams" },
-  { icon: "trend", label: "Skill Progress", href: "/login?next=/profile", authHref: "#account" },
-  { icon: "clip", label: "Applications", soon: true },
-  { icon: "trophy", label: "Achievements", soon: true },
-];
+const TAB_LABEL: Record<TabId, string> = { line: "Your line", saved: "Saved", assessment: "Assessment", account: "Account" };
+const SAVED_TYPES: SavedType[] = ["careers", "colleges", "exams"];
+const TAB_STORAGE_KEY = "careerguide.profile.tab";
+
+// The page used to be one long scroll with in-page anchors (the old menu
+// tiles linked to these). Mapped onto tabs so a bookmarked link still lands
+// on the right content.
+const LEGACY_HASH: Record<string, { tab: TabId; saved?: SavedType }> = {
+  account: { tab: "account" },
+  "assessment-section": { tab: "assessment" },
+  "saved-items": { tab: "saved" },
+  "saved-careers": { tab: "saved", saved: "careers" },
+  "saved-colleges": { tab: "saved", saved: "colleges" },
+  "saved-exams": { tab: "saved", saved: "exams" },
+};
+
+const CARD = "rounded-3xl border border-line bg-white p-6";
+const BTN_PRIMARY = "inline-flex items-center justify-center min-h-[44px] px-[18px] rounded-xl bg-blue text-white text-[14px] font-bold hover:opacity-90 transition-opacity disabled:opacity-50 whitespace-nowrap";
+const BTN_SECONDARY = "inline-flex items-center justify-center min-h-[44px] px-4 rounded-xl border border-line bg-white text-[13.5px] font-bold text-[#6e4620] hover:border-blue/40 transition-colors disabled:opacity-50 whitespace-nowrap";
+const INPUT = "min-h-[44px] w-full rounded-xl border border-[#ddd6cb] bg-white px-3 text-[14px] text-ink placeholder:text-subtle";
+const LABEL = "text-[12.5px] font-bold text-navy";
+
+function readStoredTab(): string | null {
+  try {
+    return window.localStorage.getItem(TAB_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function isTab(v: string | null | undefined): v is TabId {
+  return v === "line" || v === "saved" || v === "assessment" || v === "account";
+}
 
 export default function ProfileView() {
   const { user, loading: userLoading, logout } = useUser();
@@ -75,6 +86,14 @@ export default function ProfileView() {
   const [savedCareers, setSavedCareers] = useState<Career[]>([]);
   const [savedColleges, setSavedColleges] = useState<College[]>([]);
   const [savedExams, setSavedExams] = useState<Exam[]>([]);
+
+  // The journey is tagged with whose it is, so a different account signing
+  // in never sees the previous one's goal while its own loads.
+  const [journeyState, setJourneyState] = useState<{ userId: number; journey: Journey | null; error: boolean } | null>(null);
+  const [pending, setPending] = useState<PendingGoal | null>(null);
+  const [requestedTab, setRequestedTab] = useState<TabId | null>(null);
+  // null until the person or a link picks one; then the first non-empty type is shown.
+  const [chosenSavedType, setSavedType] = useState<SavedType | null>(null);
 
   // Assessment results are local-only (see lib/assessment) and independent
   // of login state, so this loads once on mount regardless of auth.
@@ -121,536 +140,567 @@ export default function ProfileView() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedReady, user]);
 
-  const categoriesBySlug = indexBySlug(topCategories);
+  useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    getJourney()
+      .then((j) => { if (!cancelled) setJourneyState({ userId: user.id, journey: j, error: false }); })
+      .catch(() => { if (!cancelled) setJourneyState({ userId: user.id, journey: null, error: true }); });
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
-  if (!ready) return null;
+  // Which tab to open: ?tab= first, then an old in-page anchor, then the
+  // tab this person last used on this device.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const legacy = LEGACY_HASH[window.location.hash.slice(1)];
+    const tab = legacy?.tab ?? params.get("tab") ?? readStoredTab();
+    const type = legacy?.saved ?? params.get("type");
+    // Deliberately setState-in-effect: the URL and localStorage are only
+    // readable on the client, and choosing a different tab during the first
+    // render would not match the server's HTML.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isTab(tab)) setRequestedTab(tab);
+    if (SAVED_TYPES.includes(type as SavedType)) setSavedType(type as SavedType);
+  }, []);
 
-  const progress = Math.round(
-    (assessmentDone ? 25 : 0) +
-      (savedCareers.length > 0 ? 25 : 0) +
-      (savedColleges.length > 0 ? 25 : 0) +
-      (savedExams.length > 0 ? 25 : 0)
-  );
+  if (!ready || userLoading) return null;
 
-  const savedTabs = [
-    tabContent("saved-careers", "Careers", savedCareers, "/careers", "careers", (c: Career) => (
-      <CareerCard key={c.slug} career={c} />
-    )),
-    tabContent("saved-colleges", "Colleges", savedColleges, "/colleges", "colleges", (c: College) => (
-      <CollegeCard key={c.slug} college={c} />
-    )),
-    tabContent("saved-exams", "Exams", savedExams, "/exams", "exams", (e: Exam) => (
-      <ExamCard key={e.slug} exam={e} />
-    )),
-  ];
+  const journey = user && journeyState?.userId === user.id ? journeyState.journey : null;
+  const journeyError = !!user && journeyState?.userId === user.id && journeyState.error;
+  const currentGoal = journey?.goal ?? null;
+
+  const allowed: TabId[] = user ? ["line", "saved", "assessment", "account"] : ["saved", "assessment"];
+  const tab: TabId = requestedTab && allowed.includes(requestedTab) ? requestedTab : allowed[0];
+  const savedTotal = savedCareers.length + savedColleges.length + savedExams.length;
+  const savedCounts: Record<SavedType, number> = { careers: savedCareers.length, colleges: savedColleges.length, exams: savedExams.length };
+  const savedType: SavedType = chosenSavedType ?? SAVED_TYPES.find((t) => savedCounts[t] > 0) ?? "careers";
+
+  function writeUrl(nextTab: TabId, nextType: SavedType) {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", nextTab);
+    if (nextTab === "saved") params.set("type", nextType);
+    else params.delete("type");
+    window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
+  }
+
+  function selectTab(id: TabId) {
+    setRequestedTab(id);
+    writeUrl(id, savedType);
+    try {
+      window.localStorage.setItem(TAB_STORAGE_KEY, id);
+    } catch {
+      // Storage unavailable: the tab just isn't remembered.
+    }
+  }
+
+  function selectSavedType(t: SavedType) {
+    setSavedType(t);
+    writeUrl("saved", t);
+  }
+
+  function showTop() {
+    document.getElementById("my-career-tabs")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function askGoal(p: PendingGoal) {
+    setPending(p);
+    selectTab("line");
+    showTop();
+  }
+
+  function logLearning() {
+    selectTab("line");
+    // The log card mounts with the tab; wait a frame for it to exist.
+    requestAnimationFrame(() =>
+      document.getElementById("learning-log")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
+
+  function onTabKey(e: React.KeyboardEvent, id: TabId) {
+    const i = allowed.indexOf(id);
+    let next: TabId | null = null;
+    if (e.key === "ArrowRight") next = allowed[(i + 1) % allowed.length];
+    else if (e.key === "ArrowLeft") next = allowed[(i - 1 + allowed.length) % allowed.length];
+    else if (e.key === "Home") next = allowed[0];
+    else if (e.key === "End") next = allowed[allowed.length - 1];
+    if (!next) return;
+    e.preventDefault();
+    selectTab(next);
+    document.getElementById(`tab-${next}`)?.focus();
+  }
+
+  const goalProps = { signedIn: !!user, currentGoal, onMakeGoal: askGoal };
 
   return (
-    <div>
-      {!userLoading && !user && (
-        <div className="mb-8 rounded-2xl border border-dashed border-line p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 bg-bg-soft">
-          <div className="w-11 h-11 rounded-xl bg-white flex items-center justify-center shrink-0 border border-line">
-            <Icon name="user" className="w-5 h-5 text-navy" />
-          </div>
-          <div className="flex-1">
-            <div className="font-display font-extrabold text-navy text-[15px]">
-              Sign in to set a goal and track your learning
-            </div>
-            <p className="text-[13px] text-subtle mt-1">
+    <div className="flex flex-col gap-5">
+      {user ? (
+        <ProfileHeader user={user} journey={journey} onLogLearning={logLearning} onSetGoal={() => { selectTab("line"); showTop(); }} />
+      ) : (
+        <div className="rounded-3xl border border-dashed border-[#cfc8bc] bg-white p-6 flex flex-wrap items-center gap-5">
+          <div className="flex-1 basis-[320px] min-w-0">
+            <p className="font-display font-extrabold text-navy text-[17px]">Set a goal and track your learning</p>
+            <p className="text-[13.5px] text-muted mt-1">
               Pick a career, exam, college or job to work towards, and log what you learn each day.
-              Your saved careers, colleges and exams are on this device only until you sign in.
+              Your saves below stay on this device until you sign in.
             </p>
           </div>
-          <Link
-            href="/login?next=/profile"
-            className="text-[13.5px] font-bold text-white bg-navy px-5 py-2.5 rounded-xl hover:bg-navy-2 transition-colors whitespace-nowrap"
+          <div className="flex flex-wrap gap-2.5">
+            <Link href="/login?next=/profile" className="inline-flex items-center min-h-[44px] px-[18px] rounded-xl bg-navy text-white text-[14px] font-bold hover:bg-navy-2 transition-colors">
+              Sign in
+            </Link>
+            <Link href="/register?next=/profile" className={BTN_SECONDARY}>Create a free account</Link>
+          </div>
+        </div>
+      )}
+
+      <div id="my-career-tabs" role="tablist" aria-label="My Career sections" className="scroll-mt-24 flex gap-1 overflow-x-auto border-b border-line">
+        {allowed.map((id) => (
+          <button
+            key={id}
+            id={`tab-${id}`}
+            type="button"
+            role="tab"
+            aria-selected={tab === id}
+            aria-controls={`panel-${id}`}
+            tabIndex={tab === id ? 0 : -1}
+            onClick={() => selectTab(id)}
+            onKeyDown={(e) => onTabKey(e, id)}
+            className={`shrink-0 min-h-[48px] px-4 -mb-px border-b-[3px] inline-flex items-center gap-2 text-[14.5px] font-bold transition-colors ${
+              tab === id ? "border-blue text-navy" : "border-transparent text-muted hover:text-navy"
+            }`}
           >
-            Sign In
-          </Link>
-        </div>
-      )}
-
-      {!userLoading && user && (
-        <div className="mb-14">
-          <MyCareerJourney />
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 lg:grid-cols-[0.85fr_1.15fr] gap-6">
-        <div className="rounded-3xl p-7 bg-gradient-to-br from-navy to-navy-2 text-white flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center">
-                <Icon name="user" className="w-5 h-5" />
-              </div>
-              <div className="font-display font-extrabold text-lg">
-                {user ? user.name : "Career Journey"}
-              </div>
-            </div>
-            <p className="text-white/60 text-[13px] mt-3 leading-relaxed">
-              {user
-                ? `Signed in as ${user.email}`
-                : "Complete your assessment and save careers, colleges & exams to build out your profile."}
-            </p>
-          </div>
-          <div className="mt-8">
-            {progress > 0 ? (
-              <>
-                <div className="flex justify-between text-[12px] font-bold text-white/60 mb-2">
-                  <span>Progress</span>
-                  <span className="text-amber">{progress}% Complete</span>
-                </div>
-                <div className="h-2.5 rounded-full bg-white/15 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-amber to-yellow-300 transition-all duration-500"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
-              </>
-            ) : (
-              <div className="rounded-xl bg-white/10 px-4 py-3.5 flex items-center justify-between gap-3">
-                <p className="text-[12.5px] font-semibold text-white/80">
-                  Take the assessment to start building your profile.
-                </p>
-                <Link
-                  href="/assessment"
-                  className="shrink-0 text-[12px] font-bold text-navy bg-amber px-3.5 py-2 rounded-lg hover:bg-yellow-300 transition-colors whitespace-nowrap"
-                >
-                  Start
-                </Link>
-              </div>
+            {TAB_LABEL[id]}
+            {id === "saved" && savedTotal > 0 && (
+              <span className="text-[12px] font-bold text-slate bg-slate-soft rounded-full px-2 py-0.5">{savedTotal}</span>
             )}
-          </div>
-        </div>
+          </button>
+        ))}
+      </div>
 
-        <div className="rounded-3xl border border-line p-6 bg-white">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {MENU_ITEMS.map((item) => {
-              const href = item.soon ? undefined : user && item.authHref ? item.authHref : item.href;
-              const inner = (
-                <>
-                  <span
-                    className={`w-8 h-8 rounded-[9px] flex items-center justify-center shrink-0 ${
-                      item.primary ? "bg-white/15 text-white" : "bg-white text-navy"
-                    }`}
-                  >
-                    <Icon name={item.icon} className="w-4 h-4" />
-                  </span>
-                  <span className="flex-1">{item.label}</span>
-                  {item.soon && (
-                    <span className="text-[9.5px] font-bold uppercase tracking-wide text-subtle bg-white px-1.5 py-0.5 rounded-full shrink-0">
-                      Soon
-                    </span>
-                  )}
-                </>
-              );
+      <div id={`panel-${tab}`} role="tabpanel" aria-labelledby={`tab-${tab}`} tabIndex={-1}>
+        {tab === "line" && user && (
+          <MyCareerJourney
+            journey={journey}
+            loadError={journeyError}
+            onChange={(j) => setJourneyState({ userId: user.id, journey: j, error: false })}
+            pending={pending}
+            onPendingDone={() => setPending(null)}
+          />
+        )}
 
-              if (item.soon) {
-                return (
-                  <div
-                    key={item.label}
-                    aria-disabled="true"
-                    className="flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-[12.5px] font-semibold bg-bg-soft text-ink/40 cursor-not-allowed"
-                  >
-                    {inner}
-                  </div>
-                );
-              }
+        {tab === "saved" && (
+          <SavedPanel
+            type={savedType}
+            onType={selectSavedType}
+            careers={savedCareers}
+            colleges={savedColleges}
+            exams={savedExams}
+            {...goalProps}
+          />
+        )}
 
-              return (
-                <Link
-                  key={item.label}
-                  href={href ?? "/login?next=/profile"}
-                  className={`flex items-center gap-2.5 rounded-xl px-3.5 py-3 text-[12.5px] font-semibold transition-colors ${
-                    item.primary
-                      ? "bg-navy text-white hover:bg-navy-2"
-                      : "bg-bg-soft text-ink/80 hover:bg-line/60"
-                  }`}
-                >
-                  {inner}
-                </Link>
-              );
-            })}
-          </div>
+        {tab === "assessment" && (
+          <AssessmentPanel
+            done={assessmentDone}
+            topCategories={topCategories}
+            recommended={recommended}
+            {...goalProps}
+          />
+        )}
+
+        {tab === "account" && user && <AccountPanel user={user} onLogout={logout} />}
+      </div>
+    </div>
+  );
+}
+
+// ------------------------------------------------------------------ header
+
+function ProfileHeader({ user, journey, onLogLearning, onSetGoal }: {
+  user: User; journey: Journey | null; onLogLearning: () => void; onSetGoal: () => void;
+}) {
+  const goal = journey?.goal ?? null;
+  const initials = user.name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]!.toUpperCase()).join("") || "?";
+  const C = 2 * Math.PI * 22;
+  const readiness = journey?.readiness ?? 0;
+  const details = goal
+    ? [goal.targetMonth ? `Target ${new Date(`${goal.targetMonth}-01T00:00:00`).toLocaleDateString("en-IN", { month: "short", year: "numeric" })}` : null,
+        journey && journey.streak > 0 ? `${journey.streak}-day streak` : null].filter(Boolean).join(" · ")
+    : "";
+
+  return (
+    <div className={`${CARD} !py-5 flex flex-wrap items-center gap-5`}>
+      <div className="flex items-center gap-3.5 flex-1 basis-[260px] min-w-0">
+        <span aria-hidden="true" className="w-[52px] h-[52px] shrink-0 rounded-2xl bg-navy text-white flex items-center justify-center font-display font-extrabold text-[18px]">
+          {initials}
+        </span>
+        <div className="min-w-0">
+          <p className="font-display font-extrabold text-navy text-[18px] truncate">{user.name}</p>
+          <p className="text-[13px] text-muted [overflow-wrap:anywhere]">
+            {user.email} &middot; Member since {formatDate(user.createdAt)}
+          </p>
         </div>
       </div>
 
-      {!userLoading && user && (
-        <div className="mt-14 scroll-mt-24" id="account">
-          <AccountPanel user={user} onLogout={logout} />
-        </div>
-      )}
-
-      <div className="mt-14 scroll-mt-24" id="assessment-section">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-display font-extrabold text-navy text-xl">
-            Career Assessment
-          </h2>
-          <Link
-            href="/assessment"
-            className="text-[13px] font-bold text-navy border border-line rounded-xl px-4 py-2.5 hover:border-navy/30 transition-colors"
-          >
-            {assessmentDone ? "Retake" : "Take Assessment"}
-          </Link>
-        </div>
-        {assessmentDone ? (
+      <div className="flex items-center gap-3.5 flex-1 basis-[300px] min-w-0 sm:border-l sm:border-line sm:pl-5">
+        {goal ? (
           <>
-            <div className="flex flex-wrap gap-2.5 mb-6">
-              {topCategories.map((cat) => (
-                <span
-                  key={cat.slug}
-                  className={`inline-flex items-center gap-2 text-[12.5px] font-bold px-3.5 py-2 rounded-full ${cat.color}`}
-                >
-                  <Icon name={cat.icon} className="w-3.5 h-3.5" />
-                  {cat.name}
-                </span>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-              {recommended.map((c) => (
-                <CareerCard key={c.slug} career={c} category={categoriesBySlug.get(c.categorySlug)} />
-              ))}
+            <svg width="56" height="56" viewBox="0 0 56 56" role="img" aria-label={`${readiness} percent ready for ${goal.name}`} className="shrink-0">
+              <circle cx="28" cy="28" r="22" fill="none" stroke="#efe8dd" strokeWidth="6" />
+              <circle cx="28" cy="28" r="22" fill="none" stroke="#8a5a2b" strokeWidth="6" strokeLinecap="round"
+                strokeDasharray={`${((C * readiness) / 100).toFixed(1)} ${C.toFixed(1)}`} transform="rotate(-90 28 28)" />
+              <text x="28" y="32" textAnchor="middle" fontSize="12" fontWeight="800" fill="#16181d">{readiness}%</text>
+            </svg>
+            <div className="min-w-0">
+              <p className="text-[12.5px] font-bold text-muted">{goalKicker(goal.type)}</p>
+              <p className="font-display font-extrabold text-navy text-[16px] leading-snug">{goal.name}</p>
+              {details && <p className="text-[12.5px] text-muted">{details}</p>}
             </div>
           </>
         ) : (
-          <div className="rounded-2xl border border-dashed border-line p-8 text-center text-muted text-[13.5px]">
-            You haven&rsquo;t taken the career assessment yet.
+          <div className="min-w-0">
+            <p className="font-display font-extrabold text-navy text-[15px]">No goal yet</p>
+            <p className="text-[12.5px] text-muted">Pick what you&rsquo;re working towards to start your line.</p>
           </div>
         )}
       </div>
 
-      <SavedItemsTabs tabs={savedTabs} />
+      {goal ? (
+        <button type="button" onClick={onLogLearning} className={BTN_PRIMARY}>+ Log learning</button>
+      ) : journey ? (
+        <button type="button" onClick={onSetGoal} className={BTN_PRIMARY}>Set a goal</button>
+      ) : null}
     </div>
   );
 }
 
-/**
- * Renders one saved-item tab's content ahead of time (rather than passing
- * the raw items + render callback through to SavedItemsTabs) so that
- * component can stay a plain, non-generic function -- four different item
- * types (Career/College/Exam) can't share one generic prop type
- * without losing type safety on the individual `render` callbacks above.
- */
-function tabContent<T extends { slug: string }>(
-  id: string,
-  label: string,
-  items: T[],
-  emptyHref: string,
-  emptyLabel: string,
-  render: (item: T) => React.ReactNode
-): { id: string; label: string; count: number; content: React.ReactNode } {
-  return {
-    id,
-    label,
-    count: items.length,
-    content:
-      items.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">{items.map(render)}</div>
-      ) : (
-        <div className="rounded-2xl border border-dashed border-line p-8 text-center text-muted text-[13.5px]">
-          No saved {emptyLabel} yet. Browse{" "}
-          <Link href={emptyHref} className="font-bold text-navy underline">
-            {emptyLabel}
-          </Link>{" "}
-          and save the ones you&rsquo;re considering.
-        </div>
-      ),
-  };
+// ------------------------------------------------------------- goal action
+
+type GoalActionProps = {
+  signedIn: boolean;
+  currentGoal: { type: GoalType; slug: string } | null;
+  onMakeGoal: (p: PendingGoal) => void;
+};
+
+function GoalAction({ type, slug, name, signedIn, currentGoal, onMakeGoal }: GoalActionProps & PendingGoal) {
+  if (!signedIn) return null;
+  if (currentGoal && currentGoal.type === type && currentGoal.slug === slug) {
+    return <span className="self-start text-[12.5px] font-bold text-[#24554e] bg-teal-soft rounded-full px-3 py-1.5">Your current goal</span>;
+  }
+  return (
+    <button type="button" onClick={() => onMakeGoal({ type, slug, name })} className={`${BTN_SECONDARY} self-start border-blue`}>
+      Make this my goal
+    </button>
+  );
 }
 
-/**
- * Replaces four separately-stacked "Saved X" sections (each with its own
- * near-identical empty state) with one tabbed section. Defaults to the
- * first tab (Careers) rather than the first non-empty one -- picking a
- * data-dependent default would mean waiting on the saved-items fetch
- * before rendering, which isn't worth the complexity here. A quick-link
- * tile (e.g. "Saved Colleges" -> #saved-colleges) can still land directly on
- * the right tab via the URL hash, checked once on mount below.
- */
-function SavedItemsTabs({
-  tabs,
-}: {
-  tabs: Array<{ id: string; label: string; count: number; content: React.ReactNode }>;
-}) {
-  const [activeId, setActiveId] = useState(tabs[0]?.id ?? "");
+// ------------------------------------------------------------------- saved
 
-  useEffect(() => {
-    const hash = window.location.hash.replace("#", "");
-    if (tabs.some((t) => t.id === hash)) {
-      // Deliberately setState-in-effect, which the rule below flags. The
-      // alternative -- deriving the initial tab lazily in useState -- cannot
-      // work: a URL fragment is never sent to the server, so the server always
-      // renders the first tab, and computing a different one during the client's
-      // first render is a hydration mismatch. Reading location.hash after mount
-      // is the only correct point to do it.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setActiveId(hash);
-    }
-    // Intentionally only on mount: this is for landing on a quick-link's
-    // hash, not for following later hash changes while on the page.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+function SavedPanel({ type, onType, careers, colleges, exams, ...goal }: {
+  type: SavedType;
+  onType: (t: SavedType) => void;
+  careers: Career[];
+  colleges: College[];
+  exams: Exam[];
+} & GoalActionProps) {
+  const counts: Record<SavedType, number> = { careers: careers.length, colleges: colleges.length, exams: exams.length };
+  const label: Record<SavedType, string> = { careers: "Careers", colleges: "Colleges", exams: "Exams" };
 
-  const active = tabs.find((t) => t.id === activeId) ?? tabs[0];
-  if (!active) return null;
+  const empty = (
+    <div className="rounded-3xl border border-dashed border-line p-8 text-center text-muted text-[13.5px]">
+      No saved {type} yet. Browse{" "}
+      <Link href={`/${type}`} className="font-bold text-navy underline">{type}</Link>{" "}
+      and save the ones you&rsquo;re considering.
+    </div>
+  );
+  const grid = "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5";
+  const cell = "flex flex-col gap-2.5";
 
   return (
-    <div className="mt-14 scroll-mt-24" id="saved-items">
-      <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-        <h2 className="font-display font-extrabold text-navy text-xl">Saved Items</h2>
-        <div className="flex gap-1 p-1 rounded-xl bg-bg-soft">
-          {tabs.map((t) => (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div role="group" aria-label="Saved type" className="inline-flex gap-1 p-1 rounded-2xl bg-slate-soft">
+          {SAVED_TYPES.map((t) => (
             <button
-              key={t.id}
+              key={t}
               type="button"
-              onClick={() => setActiveId(t.id)}
-              className={`text-[12.5px] font-bold px-3.5 py-2 rounded-lg transition-colors ${
-                active.id === t.id ? "bg-white text-navy shadow-sm" : "text-subtle hover:text-ink/70"
+              aria-pressed={type === t}
+              onClick={() => onType(t)}
+              className={`min-h-[44px] px-3.5 rounded-xl text-[13.5px] font-bold transition-colors ${
+                type === t ? "bg-white text-navy shadow-sm" : "text-slate hover:text-navy"
               }`}
             >
-              {t.label}
-              {t.count > 0 && (
-                <span className={active.id === t.id ? "text-navy/50 ml-1.5" : "text-subtle/70 ml-1.5"}>
-                  {t.count}
-                </span>
-              )}
+              {label[t]} &middot; {counts[t]}
             </button>
           ))}
         </div>
+        {!goal.signedIn && (
+          <p className="text-[13px] text-muted">
+            Saved on this device only.{" "}
+            <Link href="/login?next=/profile" className="font-bold">Sign in</Link> to keep them everywhere and make one your goal.
+          </p>
+        )}
       </div>
-      {active.content}
+
+      {type === "careers" && (careers.length === 0 ? empty : (
+        <div className={grid}>
+          {careers.map((c) => (
+            <div key={c.slug} className={cell}>
+              <CareerCard career={c} />
+              <GoalAction type="career" slug={c.slug} name={c.title} {...goal} />
+            </div>
+          ))}
+        </div>
+      ))}
+      {type === "colleges" && (colleges.length === 0 ? empty : (
+        <div className={grid}>
+          {colleges.map((c) => (
+            <div key={c.slug} className={cell}>
+              <CollegeCard college={c} />
+              <GoalAction type="college" slug={c.slug} name={c.name} {...goal} />
+            </div>
+          ))}
+        </div>
+      ))}
+      {type === "exams" && (exams.length === 0 ? empty : (
+        <div className={grid}>
+          {exams.map((e) => (
+            <div key={e.slug} className={cell}>
+              <ExamCard exam={e} />
+              <GoalAction type="exam" slug={e.slug} name={e.name} {...goal} />
+            </div>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }
 
-/**
- * Interests and skills editing, shown only when logged in -- both are
- * account fields (UpdateInterestsRequest / /api/me/skills), so there's
- * nothing meaningful to show or edit here for an anonymous visitor.
- */
-function AccountPanel({ user, onLogout }: { user: { name: string; email: string; createdAt: string; interests: string[] }; onLogout: () => void }) {
-  const [interests, setInterests] = useState<string[]>(user.interests);
-  const [newInterest, setNewInterest] = useState("");
-  const [interestsSaving, setInterestsSaving] = useState(false);
+// -------------------------------------------------------------- assessment
 
-  const [skills, setSkills] = useState<UserSkill[]>([]);
-  const [skillsReady, setSkillsReady] = useState(false);
-  const [availableSkills, setAvailableSkills] = useState<Skill[]>([]);
-  const [skillSlugToAdd, setSkillSlugToAdd] = useState("");
-  const [proficiencyToAdd, setProficiencyToAdd] = useState(PROFICIENCY_LEVELS[0]);
-  const [yearsToAdd, setYearsToAdd] = useState("");
-  const [skillSaving, setSkillSaving] = useState(false);
+function AssessmentPanel({ done, topCategories, recommended, ...goal }: {
+  done: boolean;
+  topCategories: Category[];
+  recommended: Career[];
+} & GoalActionProps) {
+  if (!done) {
+    return (
+      <div className={`${CARD} py-10 flex flex-col items-center gap-3 text-center`}>
+        <h2 className="font-display font-extrabold text-navy text-[20px]">Not sure what to aim for yet?</h2>
+        <p className="text-[14px] text-muted max-w-[460px]">
+          Answer a few questions about what you enjoy and we&rsquo;ll suggest careers that fit.
+          {goal.signedIn ? " You can make any of them your goal." : ""}
+        </p>
+        <Link href="/assessment" className={BTN_PRIMARY}>Take the career assessment</Link>
+      </div>
+    );
+  }
+
+  const categoriesBySlug = indexBySlug(topCategories);
+  return (
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display font-extrabold text-navy text-[20px]">Careers that fit you</h2>
+          <p className="text-[13.5px] text-muted mt-1">From your career assessment.</p>
+        </div>
+        <Link href="/assessment" className={BTN_SECONDARY}>Retake assessment</Link>
+      </div>
+      <div className="flex flex-wrap gap-2.5">
+        {topCategories.map((cat) => (
+          <span key={cat.slug} className={`inline-flex items-center gap-2 text-[12.5px] font-bold px-3.5 py-2 rounded-full ${cat.color}`}>
+            <Icon name={cat.icon} className="w-3.5 h-3.5" />
+            {cat.name}
+          </span>
+        ))}
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {recommended.map((c) => (
+          <div key={c.slug} className="flex flex-col gap-2.5">
+            <CareerCard career={c} category={categoriesBySlug.get(c.categorySlug)} />
+            <GoalAction type="career" slug={c.slug} name={c.title} {...goal} />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ----------------------------------------------------------------- account
+
+// Streams are chosen after 10th; someone after 12th is still in theirs.
+// Past school the field means nothing, so it's hidden and cleared.
+const STAGES_WITH_STREAM = new Set(["after-10th", "after-12th"]);
+
+function AccountPanel({ user, onLogout }: { user: User; onLogout: () => void }) {
+  return (
+    <div className="flex flex-wrap items-start gap-5">
+      <AboutYou />
+      <div className="flex-1 basis-[340px] min-w-0 flex flex-col gap-5">
+        <Interests initial={user.interests} />
+        <div className={`${CARD} flex flex-wrap items-center justify-between gap-3`}>
+          <div className="min-w-0">
+            <p className="font-display font-extrabold text-navy text-[15px]">Signed in</p>
+            <p className="text-[13px] text-muted [overflow-wrap:anywhere]">{user.email}</p>
+          </div>
+          <button type="button" onClick={onLogout} className={`${BTN_SECONDARY} !text-red`}>Log out</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AboutYou() {
+  const { showToast } = useToast();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [stages, setStages] = useState<Stage[]>([]);
+  const [streams, setStreams] = useState<Stream[]>([]);
+  const [failed, setFailed] = useState(false);
+  const [stage, setStage] = useState("");
+  const [stream, setStream] = useState("");
+  const [location, setLocation] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setInterests(user.interests);
-  }, [user.interests]);
-
-  useEffect(() => {
-    let cancelled = false;
-    async function load() {
-      const [mySkills, allSkills] = await Promise.all([getMySkills(), getSkills()]);
-      if (cancelled) return;
-      setSkills(mySkills);
-      setAvailableSkills(allSkills);
-      setSkillsReady(true);
-    }
-    load().catch(() => {
-      if (!cancelled) setSkillsReady(true);
-    });
-    return () => {
-      cancelled = true;
-    };
+    let alive = true;
+    Promise.all([getMyProfile(), getStages(), getStreams()])
+      .then(([p, st, sr]) => {
+        if (!alive) return;
+        setProfile(p);
+        setStages(st);
+        setStreams(sr);
+        setStage(p.educationStageSlug ?? "");
+        setStream(p.streamSlug ?? "");
+        setLocation(p.location ?? "");
+      })
+      .catch(() => { if (alive) setFailed(true); });
+    return () => { alive = false; };
   }, []);
 
-  async function handleAddInterest(e: React.FormEvent) {
+  const showStream = STAGES_WITH_STREAM.has(stage);
+
+  async function save(e: React.FormEvent) {
     e.preventDefault();
-    const value = newInterest.trim();
-    if (!value || interests.includes(value)) {
-      setNewInterest("");
-      return;
-    }
-    const next = [...interests, value];
-    setInterestsSaving(true);
+    if (!profile) return;
+    setSaving(true);
     try {
-      await updateMyInterests(next);
-      setInterests(next);
-      setNewInterest("");
-    } catch {
-      // Leave the input as-is so the person can retry.
+      // The endpoint replaces the whole profile, so fields this form doesn't
+      // show are sent back exactly as they were loaded.
+      const saved = await updateMyProfile({
+        ...profile,
+        educationStageSlug: stage || null,
+        streamSlug: showStream && stream ? stream : null,
+        location: location.trim() || null,
+      });
+      setProfile(saved);
+      showToast("Saved", "success");
+    } catch (err) {
+      showToast(getFriendlyErrorMessage(err), "error");
     } finally {
-      setInterestsSaving(false);
+      setSaving(false);
     }
   }
-
-  async function handleRemoveInterest(value: string) {
-    const next = interests.filter((i) => i !== value);
-    setInterestsSaving(true);
-    try {
-      await updateMyInterests(next);
-      setInterests(next);
-    } finally {
-      setInterestsSaving(false);
-    }
-  }
-
-  async function handleAddSkill(e: React.FormEvent) {
-    e.preventDefault();
-    if (!skillSlugToAdd) return;
-    setSkillSaving(true);
-    try {
-      const years = yearsToAdd.trim() ? Number(yearsToAdd) : undefined;
-      const saved = await upsertMySkill(skillSlugToAdd, proficiencyToAdd, years);
-      setSkills((prev) => [...prev.filter((s) => s.skillSlug !== saved.skillSlug), saved]);
-      setSkillSlugToAdd("");
-      setYearsToAdd("");
-    } finally {
-      setSkillSaving(false);
-    }
-  }
-
-  async function handleRemoveSkill(skillSlug: string) {
-    setSkills((prev) => prev.filter((s) => s.skillSlug !== skillSlug));
-    try {
-      await removeMySkill(skillSlug);
-    } catch {
-      // Re-fetch isn't worth the complexity here -- worst case the skill
-      // reappears next time this panel mounts.
-    }
-  }
-
-  const addableSkills = availableSkills.filter(
-    (s) => !skills.some((mine) => mine.skillSlug === s.slug)
-  );
 
   return (
-    <div className="rounded-3xl border border-line p-6 sm:p-7 bg-white">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
-        <div>
-          <h2 className="font-display font-extrabold text-navy text-xl">My Account</h2>
-          <p className="text-[13px] text-subtle mt-1">
-            {user.email} &middot; Member since {formatDate(user.createdAt)}
-          </p>
-        </div>
-        <button
-          onClick={onLogout}
-          className="text-[13px] font-bold text-ink/70 border border-line rounded-xl px-4 py-2.5 hover:border-navy/30 transition-colors self-start sm:self-auto"
-        >
-          Log out
-        </button>
+    <form onSubmit={save} className={`${CARD} flex-1 basis-[460px] min-w-0 flex flex-col gap-4`}>
+      <div>
+        <h2 className="font-display font-extrabold text-navy text-[18px]">About you</h2>
+        <p className="text-[13px] text-muted mt-1">Used to suggest careers, exams and colleges that fit where you are.</p>
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div>
-          <h3 className="font-display font-extrabold text-navy text-[15px] mb-3">Interests</h3>
-          <div className="flex flex-wrap gap-2 mb-3">
-            {interests.length > 0 ? (
-              interests.map((interest) => (
-                <span
-                  key={interest}
-                  className="inline-flex items-center gap-1.5 text-[12px] font-semibold px-3 py-1.5 rounded-full bg-bg-soft text-ink/70 border border-line"
-                >
-                  {interest}
-                  <button
-                    onClick={() => handleRemoveInterest(interest)}
-                    disabled={interestsSaving}
-                    aria-label={`Remove ${interest}`}
-                    className="text-subtle hover:text-red transition-colors"
-                  >
-                    <Icon name="close" className="w-3 h-3" />
-                  </button>
-                </span>
-              ))
-            ) : (
-              <p className="text-[13px] text-subtle">No interests added yet.</p>
+      {failed ? (
+        <p className="text-[13px] text-muted">We couldn&rsquo;t load your details. Refresh the page to try again.</p>
+      ) : (
+        <>
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
+            <label className="flex flex-col gap-1.5">
+              <span className={LABEL}>Where you are now</span>
+              <select value={stage} onChange={(e) => setStage(e.target.value)} disabled={!profile} className={INPUT}>
+                <option value="">Not set</option>
+                {stages.map((s) => <option key={s.slug} value={s.slug}>{s.name}</option>)}
+              </select>
+            </label>
+            {showStream && (
+              <label className="flex flex-col gap-1.5">
+                <span className={LABEL}>Stream</span>
+                <select value={stream} onChange={(e) => setStream(e.target.value)} disabled={!profile} className={INPUT}>
+                  <option value="">Not set</option>
+                  {streams.map((s) => <option key={s.slug} value={s.slug}>{s.name}</option>)}
+                </select>
+              </label>
             )}
+            <label className="flex flex-col gap-1.5">
+              <span className={LABEL}>Location</span>
+              <input value={location} maxLength={160} onChange={(e) => setLocation(e.target.value)} disabled={!profile}
+                placeholder="e.g. Patna, Bihar" className={INPUT} />
+            </label>
           </div>
-          <form onSubmit={handleAddInterest} className="flex gap-2">
-            <Input
-              value={newInterest}
-              onChange={(e) => setNewInterest(e.target.value)}
-              placeholder="e.g. Data Science"
-              className="flex-1"
-              aria-label="Add an interest"
-            />
-            <Button type="submit" disabled={interestsSaving || !newInterest.trim()}>
-              Add
-            </Button>
-          </form>
-        </div>
+          <button type="submit" disabled={!profile || saving} className={`${BTN_PRIMARY} self-start`}>Save</button>
+        </>
+      )}
+    </form>
+  );
+}
 
-        <div>
-          <h3 className="font-display font-extrabold text-navy text-[15px] mb-3">Skills</h3>
-          {skillsReady && skills.length > 0 && (
-            <div className="flex flex-col gap-2 mb-3">
-              {skills.map((s) => (
-                <div
-                  key={s.skillSlug}
-                  className="flex items-center justify-between gap-3 text-[13px] px-3.5 py-2.5 rounded-xl bg-bg-soft border border-line"
-                >
-                  <span className="font-semibold text-ink/80">
-                    {s.skillName}
-                    {s.proficiencyLevel && (
-                      <span className="text-subtle font-medium"> &middot; {s.proficiencyLevel}</span>
-                    )}
-                    {typeof s.yearsOfExperience === "number" && (
-                      <span className="text-subtle font-medium"> &middot; {s.yearsOfExperience}y</span>
-                    )}
-                  </span>
-                  <button
-                    onClick={() => handleRemoveSkill(s.skillSlug)}
-                    aria-label={`Remove ${s.skillName}`}
-                    className="text-subtle hover:text-red transition-colors shrink-0"
-                  >
-                    <Icon name="close" className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
-          {skillsReady && skills.length === 0 && (
-            <p className="text-[13px] text-subtle mb-3">No skills added yet.</p>
-          )}
-          {skillsReady && addableSkills.length > 0 && (
-            <form onSubmit={handleAddSkill} className="grid grid-cols-1 sm:grid-cols-[1.4fr_1fr_0.7fr_auto] gap-2">
-              <Select
-                value={skillSlugToAdd}
-                onChange={(e) => setSkillSlugToAdd(e.target.value)}
-                aria-label="Skill"
-              >
-                <option value="">Select a skill&hellip;</option>
-                {addableSkills.map((s) => (
-                  <option key={s.slug} value={s.slug}>
-                    {s.name}
-                  </option>
-                ))}
-              </Select>
-              <Select
-                value={proficiencyToAdd}
-                onChange={(e) => setProficiencyToAdd(e.target.value)}
-                aria-label="Proficiency"
-              >
-                {PROFICIENCY_LEVELS.map((level) => (
-                  <option key={level} value={level}>
-                    {level}
-                  </option>
-                ))}
-              </Select>
-              <Input
-                type="number"
-                min={0}
-                max={60}
-                value={yearsToAdd}
-                onChange={(e) => setYearsToAdd(e.target.value)}
-                placeholder="Years"
-                aria-label="Years of experience"
-              />
-              <Button type="submit" disabled={skillSaving || !skillSlugToAdd}>
-                Add
-              </Button>
-            </form>
-          )}
-        </div>
+function Interests({ initial }: { initial: string[] }) {
+  const { showToast } = useToast();
+  const [interests, setInterests] = useState<string[]>(initial);
+  const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  async function write(next: string[], onDone?: () => void) {
+    setSaving(true);
+    try {
+      await updateMyInterests(next);
+      setInterests(next);
+      onDone?.();
+    } catch (err) {
+      showToast(getFriendlyErrorMessage(err), "error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function add(e: React.FormEvent) {
+    e.preventDefault();
+    const value = text.trim();
+    if (!value) return;
+    if (interests.some((i) => i.toLowerCase() === value.toLowerCase())) {
+      setText("");
+      return;
+    }
+    write([...interests, value], () => setText(""));
+  }
+
+  return (
+    <div className={`${CARD} flex flex-col gap-3.5`}>
+      <div>
+        <h2 className="font-display font-extrabold text-navy text-[18px]">Interests</h2>
+        <p className="text-[13px] text-muted mt-1">Shapes your recommendations.</p>
       </div>
+      {interests.length > 0 ? (
+        <ul className="flex flex-wrap gap-2">
+          {interests.map((i) => (
+            <li key={i} className="inline-flex items-center text-[13px] font-semibold text-[#6e4620] bg-blue-soft rounded-full pl-3">
+              {i}
+              <button type="button" onClick={() => write(interests.filter((x) => x !== i))} disabled={saving}
+                aria-label={`Remove ${i}`} className="w-9 h-9 flex items-center justify-center rounded-full hover:text-navy disabled:opacity-50">
+                <Icon name="close" className="w-3 h-3" />
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="text-[13px] text-muted">No interests added yet.</p>
+      )}
+      <form onSubmit={add} className="flex gap-2 items-end">
+        <label className="flex-1 min-w-0 flex flex-col gap-1.5">
+          <span className={LABEL}>Add an interest</span>
+          <input value={text} maxLength={60} onChange={(e) => setText(e.target.value)} placeholder="e.g. Space science" className={INPUT} />
+        </label>
+        <button type="submit" disabled={saving || !text.trim()} className={BTN_SECONDARY}>Add</button>
+      </form>
     </div>
   );
 }

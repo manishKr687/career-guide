@@ -5,7 +5,7 @@ import ProfileView from "@/components/profile/ProfileView";
 
 export const metadata: Metadata = {
   title: "My Career",
-  description: "Your career journey: assessment results, saved careers and colleges, and progress.",
+  description: "Your goal and learning log, saved careers, colleges and exams, assessment results and account.",
 };
 
 export default function ProfilePage() {
@@ -15,7 +15,7 @@ export default function ProfilePage() {
         kicker="Account"
         kickerColor="bg-green-soft text-green"
         title="My Career"
-        description="Every action across the platform rolls up into your personal profile."
+        description="Your goal, what you're learning, and everything you've saved — in one place."
       />
       <Container className="pb-24 pt-6">
         <ProfileView />

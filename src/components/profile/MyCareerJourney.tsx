@@ -18,7 +18,6 @@ import {
   addGoalFocus,
   addGoalStation,
   addLearningLog,
-  getJourney,
   removeGoalFocus,
   removeGoalStation,
   removeLearningLog,
@@ -121,28 +120,38 @@ const BTN_SECONDARY = "min-h-[44px] px-4 rounded-xl border border-line bg-white 
 const INPUT = "min-h-[44px] w-full rounded-xl border border-[#ddd6cb] bg-white px-3 text-[14px] text-ink placeholder:text-subtle";
 const LABEL = "text-[12.5px] font-bold text-navy";
 
-export default function MyCareerJourney() {
+/** A goal picked elsewhere on the page (a saved item, an assessment match), waiting for the user to confirm. */
+export type PendingGoal = { type: GoalType; slug: string; name: string };
+
+export function goalKicker(type: GoalType): string {
+  return KICKER[type];
+}
+
+/**
+ * The page owns the journey (its header shows the goal too) and passes it
+ * down; this component renders it and sends every change back through
+ * onChange with the server's answer.
+ */
+export default function MyCareerJourney({
+  journey, loadError, onChange, pending, onPendingDone,
+}: {
+  journey: Journey | null;
+  loadError: boolean;
+  onChange: (j: Journey) => void;
+  pending: PendingGoal | null;
+  onPendingDone: () => void;
+}) {
   const { showToast } = useToast();
-  const [journey, setJourney] = useState<Journey | null>(null);
-  const [loadError, setLoadError] = useState(false);
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState(false);
   const [lineEdit, setLineEdit] = useState(false);
-
-  useEffect(() => {
-    let alive = true;
-    getJourney()
-      .then((j) => { if (alive) setJourney(j); })
-      .catch(() => { if (alive) setLoadError(true); });
-    return () => { alive = false; };
-  }, []);
 
   /** Runs one action; on success the page shows the server's answer. */
   async function act(run: () => Promise<Journey>, onDone?: () => void): Promise<boolean> {
     if (busy) return false;
     setBusy(true);
     try {
-      setJourney(await run());
+      onChange(await run());
       onDone?.();
       return true;
     } catch (e) {
@@ -155,9 +164,8 @@ export default function MyCareerJourney() {
 
   if (loadError) {
     return (
-      <section className={CARD} aria-labelledby="your-line">
-        <h2 id="your-line" className="font-display font-extrabold text-navy text-xl">Your line</h2>
-        <p className="text-[13.5px] text-muted mt-2">We couldn&rsquo;t load your goal just now. Refresh the page to try again.</p>
+      <section className={CARD} aria-label="Your line">
+        <p className="text-[13.5px] text-muted">We couldn&rsquo;t load your goal just now. Refresh the page to try again.</p>
       </section>
     );
   }
@@ -166,23 +174,36 @@ export default function MyCareerJourney() {
   }
 
   const goal = journey.goal;
+  const pendingIsCurrent = pending && goal && goal.type === pending.type && goal.slug === pending.slug;
 
   return (
-    <section aria-labelledby="your-line" className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <span className="text-[12px] font-bold tracking-[0.08em] uppercase text-blue">My Career</span>
-          <h2 id="your-line" className="font-display font-extrabold text-navy text-[28px] leading-tight mt-1">Your line</h2>
-          <p className="text-[14px] text-muted mt-1 max-w-2xl">
-            Where you are, what you are learning, and what to do next — for whatever you are working towards.
-          </p>
+    <section aria-label="Your line" className="flex flex-col gap-6">
+      {pending && !pendingIsCurrent && (
+        <div role="region" aria-label="Confirm your new goal" className="rounded-3xl border border-[#e2c9a8] bg-blue-soft p-5 flex flex-wrap items-center gap-4">
+          <div className="flex-1 basis-[300px] min-w-0">
+            <p className="font-display font-extrabold text-navy text-[16px]">
+              {goal ? `Make ${pending.name} your goal?` : `Set ${pending.name} as your goal?`}
+            </p>
+            <p className="text-[13.5px] text-muted mt-1">
+              {goal
+                ? "Your line and focus list are rebuilt for it. Your learning log and streak stay."
+                : "We'll build your line and focus list from the catalogue."}
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            <button type="button" className={BTN_PRIMARY} disabled={busy}
+              onClick={() => act(() => setGoal(pending.type, pending.slug, null), () => {
+                onPendingDone();
+                showToast(`${pending.name} is now your goal.`, "success");
+              })}>
+              {goal ? "Switch goal" : "Set goal"}
+            </button>
+            <button type="button" className={BTN_SECONDARY} onClick={onPendingDone}>
+              {goal ? `Keep ${goal.name}` : "Not now"}
+            </button>
+          </div>
         </div>
-        {goal && (
-          <a href="#learning-log" className={`${BTN_PRIMARY} inline-flex items-center`}>
-            + Log learning
-          </a>
-        )}
-      </div>
+      )}
 
       {(!goal || editing) && (
         <GoalPicker

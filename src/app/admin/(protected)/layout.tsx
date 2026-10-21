@@ -50,6 +50,10 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
+    heading: "My Career",
+    links: [{ href: "/admin/goal-lines", label: "Goal lines", icon: "train" }],
+  },
+  {
     heading: "Places",
     links: [
       { href: "/admin/universities", label: "Universities", icon: "bank" },

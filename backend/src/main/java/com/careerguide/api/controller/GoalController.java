@@ -48,6 +48,18 @@ public class GoalController {
         return goalService.setGoal(userId(request), body);
     }
 
+    /** Takes the goal's updated line, keeping passed stations (by name) and the user's own. */
+    @PostMapping("/goal/line/refresh")
+    public JourneyDto refreshLine(HttpServletRequest request) {
+        return goalService.refreshLine(userId(request));
+    }
+
+    /** Keeps the user's line as it is and stops offering the updated one. */
+    @PostMapping("/goal/line/keep")
+    public JourneyDto keepLine(HttpServletRequest request) {
+        return goalService.keepLine(userId(request));
+    }
+
     @PostMapping("/goal/stations")
     public JourneyDto addStation(HttpServletRequest request, @Valid @RequestBody AddGoalStationRequest body) {
         return goalService.addStation(userId(request), body);

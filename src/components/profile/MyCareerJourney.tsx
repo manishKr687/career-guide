@@ -5,19 +5,15 @@ import Icon from "@/components/ui/Icon";
 import { useToast } from "@/components/ui/Toast";
 import { ApiError } from "@/lib/api";
 import { getFriendlyErrorMessage } from "@/lib/errors";
-import { getCareers } from "@/data/careers";
-import { getExams } from "@/data/exams";
-import { getColleges } from "@/data/colleges";
-import { getDegrees } from "@/data/degrees";
-import { getJobRoles } from "@/data/jobRoles";
-import { getIndustries } from "@/data/industries";
-import { getCertifications } from "@/data/certifications";
+import { GOAL_TYPES as TYPES, GoalOption as Option, loadGoalOptions as loadOptions } from "@/lib/goalOptions";
 import {
   GoalType,
   Journey,
   addGoalFocus,
   addGoalStation,
   addLearningLog,
+  keepGoalLine,
+  refreshGoalLine,
   removeGoalFocus,
   removeGoalStation,
   removeLearningLog,
@@ -34,17 +30,6 @@ import {
  * the page re-renders from that, so it never drifts from what is saved.
  */
 
-const TYPES: { type: GoalType; group: "study" | "work"; title: string; example: string; noun: string }[] = [
-  { type: "career", group: "study", title: "A career", example: "e.g. Computer Science & Engineering", noun: "career" },
-  { type: "exam", group: "study", title: "An exam", example: "e.g. JEE Main, NEET-UG", noun: "exam" },
-  { type: "college", group: "study", title: "A college", example: "e.g. IIT Madras", noun: "college" },
-  { type: "degree", group: "study", title: "A degree", example: "e.g. B.Tech", noun: "degree" },
-  { type: "job_role", group: "work", title: "A new job role", example: "e.g. Data Analyst", noun: "job role" },
-  { type: "company", group: "work", title: "A company", example: "e.g. Larsen & Toubro", noun: "company" },
-  { type: "sector", group: "work", title: "A sector", example: "e.g. Healthcare", noun: "sector" },
-  { type: "certification", group: "work", title: "A certification", example: "e.g. AWS Solutions Architect", noun: "certification" },
-];
-
 const KICKER: Record<GoalType, string> = {
   career: "Heading to", exam: "Preparing for", college: "Aiming for", degree: "Planning",
   job_role: "Moving into", company: "Aiming for", sector: "Moving into", certification: "Getting",
@@ -59,23 +44,6 @@ const LEVEL_ON = [
 ];
 const GRID = ["#ece6dc", "#e2c9a8", "#c08f5d", "#8a5a2b"];
 const MAX_FOCUS = 6;
-
-type Option = { slug: string; name: string };
-
-/** One fetcher per goal type, for the picker's list. */
-async function loadOptions(type: GoalType): Promise<Option[]> {
-  const byName = (a: Option, b: Option) => a.name.localeCompare(b.name);
-  switch (type) {
-    case "career": return (await getCareers()).map((c) => ({ slug: c.slug, name: c.title })).sort(byName);
-    case "exam": return (await getExams()).map((e) => ({ slug: e.slug, name: e.name })).sort(byName);
-    case "college": return (await getColleges()).map((c) => ({ slug: c.slug, name: c.name })).sort(byName);
-    case "degree": return (await getDegrees()).map((d) => ({ slug: d.slug, name: d.title })).sort(byName);
-    case "job_role": return (await getJobRoles()).map((r) => ({ slug: r.slug, name: r.name })).sort(byName);
-    case "company": return (await getIndustries()).filter((i) => !i.isSector).map((i) => ({ slug: i.slug, name: i.name })).sort(byName);
-    case "sector": return (await getIndustries()).filter((i) => i.isSector).map((i) => ({ slug: i.slug, name: i.name })).sort(byName);
-    case "certification": return (await getCertifications()).map((c) => ({ slug: c.slug, name: c.name })).sort(byName);
-  }
-}
 
 function fmt(m: number): string {
   const h = Math.floor(m / 60);
@@ -400,12 +368,31 @@ function Line({ journey, busy, lineEdit, setLineEdit, act }: {
       <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
           <h3 className="font-display font-extrabold text-navy text-[18px]">The line to {goalName}</h3>
-          <p className="text-[13px] text-muted mt-1">Built from the catalogue. Tap a station when you pass it.</p>
+          <p className="text-[13px] text-muted mt-1">Tap a station when you pass it.</p>
         </div>
         <button type="button" onClick={() => setLineEdit(!lineEdit)} aria-pressed={lineEdit} className={BTN_SECONDARY}>
           {lineEdit ? "Done editing" : "Edit line"}
         </button>
       </div>
+      {journey.lineUpdated && (
+        <div role="region" aria-label="Updated line available"
+          className="mb-5 rounded-2xl border border-[#e2c9a8] bg-blue-soft p-4 flex flex-wrap items-center gap-3">
+          <div className="flex-1 basis-[280px] min-w-0">
+            <p className="text-[14.5px] font-bold text-navy">The line to {goalName} has been updated</p>
+            <p className="text-[13px] text-muted mt-0.5">
+              Stations you&rsquo;ve passed stay ticked, and stations you added stay on your line.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2.5">
+            <button type="button" className={BTN_PRIMARY} disabled={busy} onClick={() => act(refreshGoalLine)}>
+              Use the new line
+            </button>
+            <button type="button" className={BTN_SECONDARY} disabled={busy} onClick={() => act(keepGoalLine)}>
+              Keep mine
+            </button>
+          </div>
+        </div>
+      )}
       <div className="overflow-x-auto pb-1">
         <ol className="relative flex justify-between" style={{ minWidth: `${Math.max(640, stations.length * 140)}px` }}>
           <div aria-hidden="true" className="absolute left-[22px] right-[22px] top-[21px] h-[3px]"

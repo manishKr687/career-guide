@@ -275,6 +275,8 @@ export interface Journey {
   weekMinutes: number;
   readiness: number;
   mocks: { loggedOn: string; score: number; scoreMax: number }[];
+  /** The goal's line has changed since this user's copy was made (an admin edited it). */
+  lineUpdated: boolean;
 }
 
 const JSON_HEADERS = { "Content-Type": "application/json" };
@@ -287,6 +289,16 @@ export function setGoal(type: GoalType, slug: string, targetMonth: string | null
   return meFetch<Journey>("/api/me/goal", {
     method: "PUT", headers: JSON_HEADERS, body: JSON.stringify({ type, slug, targetMonth }),
   });
+}
+
+/** Takes the goal's updated line; passed stations (by name) and the user's own are kept. */
+export function refreshGoalLine(): Promise<Journey> {
+  return meFetch<Journey>("/api/me/goal/line/refresh", { method: "POST" });
+}
+
+/** Keeps the user's line and stops offering the updated one. */
+export function keepGoalLine(): Promise<Journey> {
+  return meFetch<Journey>("/api/me/goal/line/keep", { method: "POST" });
 }
 
 export function addGoalStation(name: string): Promise<Journey> {

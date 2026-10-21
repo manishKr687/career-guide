@@ -285,7 +285,120 @@ class GoalServiceTest {
         assertThatThrownBy(() -> service.removeLog(USER, 5L)).isInstanceOf(NotFoundException.class);
     }
 
+    // ------------------------------------------------------- admin-set lines
+
+    @Test
+    void aNewGoalRecordsWhichLineItStartedFrom() {
+        when(catalog.resolve("exam", "jee-main")).thenReturn(blueprint(3, List.of()));
+        when(catalog.lineSource("exam", "jee-main")).thenReturn("admin:3");
+        when(goals.findById(USER)).thenReturn(Optional.empty());
+
+        service.setGoal(USER, new SetGoalRequest("exam", "jee-main", null));
+
+        ArgumentCaptor<UserGoal> saved = ArgumentCaptor.forClass(UserGoal.class);
+        verify(goals).saveAndFlush(saved.capture());
+        assertThat(saved.getValue().getLineSource()).isEqualTo("admin:3");
+    }
+
+    @Test
+    void theJourneyFlagsALineThatChangedSinceTheUsersCopy() {
+        UserGoal goal = goal("auto");
+        when(goals.findById(USER)).thenReturn(Optional.of(goal));
+        when(catalog.resolve("exam", "jee-main")).thenReturn(blueprint(3, List.of()));
+        when(catalog.lineSource("exam", "jee-main")).thenReturn("admin:2");
+
+        assertThat(service.journey(USER).lineUpdated()).isTrue();
+
+        goal.setLineSource("admin:2");
+        assertThat(service.journey(USER).lineUpdated()).isFalse();
+    }
+
+    @Test
+    void aGoalFromBeforeLineSourcesIsNeverOfferedANewLine() {
+        when(goals.findById(USER)).thenReturn(Optional.of(goal(null)));
+        when(catalog.resolve("exam", "jee-main")).thenReturn(blueprint(3, List.of()));
+
+        assertThat(service.journey(USER).lineUpdated()).isFalse();
+        verify(catalog, never()).lineSource(any(), any());
+    }
+
+    @Test
+    void takingTheNewLineKeepsPassedStationsByNameAndTheUsersOwnBeforeTheGoal() {
+        UserGoal goal = goal("auto");
+        when(goals.findById(USER)).thenReturn(Optional.of(goal));
+        when(stations.findAllByUserIdOrderByPositionAscIdAsc(USER)).thenReturn(List.of(
+                named("Check eligibility", 0, true, false),
+                named("Register", 1, false, false),
+                named("Coaching classes", 2, true, true),
+                named("Exam day", 3, false, false)));
+        when(catalog.resolve("exam", "jee-main")).thenReturn(new GoalCatalog.Blueprint("JEE Main", List.of(),
+                List.of(seed("CHECK ELIGIBILITY"), seed("Session 1"), seed("Session 2"), seed("JoSAA counselling")),
+                List.of(), List.of(), "own", List.of(), null, null));
+        when(catalog.lineSource("exam", "jee-main")).thenReturn("admin:1");
+
+        service.refreshLine(USER);
+
+        verify(stations).deleteAllForUser(USER);
+        ArgumentCaptor<UserGoalStation> saved = ArgumentCaptor.forClass(UserGoalStation.class);
+        verify(stations, times(5)).save(saved.capture());
+        assertThat(saved.getAllValues()).extracting(UserGoalStation::getName)
+                .containsExactly("CHECK ELIGIBILITY", "Session 1", "Session 2", "Coaching classes", "JoSAA counselling");
+        assertThat(saved.getAllValues()).extracting(UserGoalStation::getPosition).containsExactly(0, 1, 2, 3, 4);
+        // Passed before, matched by name whatever its case; the user's own keeps its tick and stays theirs.
+        assertThat(saved.getAllValues()).extracting(UserGoalStation::isDone).containsExactly(true, false, false, true, false);
+        assertThat(saved.getAllValues()).extracting(UserGoalStation::isCustom).containsExactly(false, false, false, true, false);
+        assertThat(goal.getLineSource()).isEqualTo("admin:1");
+    }
+
+    @Test
+    void theUsersOwnStationsGiveWayWhenTheNewLineIsLong() {
+        when(goals.findById(USER)).thenReturn(Optional.of(goal("auto")));
+        when(stations.findAllByUserIdOrderByPositionAscIdAsc(USER)).thenReturn(List.of(
+                named("Mine 1", 0, false, true), named("Mine 2", 1, false, true), named("Goal", 2, false, false)));
+        when(catalog.resolve("exam", "jee-main")).thenReturn(blueprint(11, List.of()));
+        when(catalog.lineSource("exam", "jee-main")).thenReturn("admin:4");
+
+        service.refreshLine(USER);
+
+        ArgumentCaptor<UserGoalStation> saved = ArgumentCaptor.forClass(UserGoalStation.class);
+        verify(stations, times(12)).save(saved.capture());
+        assertThat(saved.getAllValues()).extracting(UserGoalStation::getName).contains("Mine 1").doesNotContain("Mine 2");
+        assertThat(saved.getAllValues().get(11).getName()).isEqualTo("S10");
+    }
+
+    @Test
+    void keepingTheLineStopsTheOffer() {
+        UserGoal goal = goal("auto");
+        when(goals.findById(USER)).thenReturn(Optional.of(goal));
+        when(catalog.lineSource("exam", "jee-main")).thenReturn("admin:2");
+        when(catalog.resolve("exam", "jee-main")).thenReturn(blueprint(3, List.of()));
+
+        assertThat(service.keepLine(USER).lineUpdated()).isFalse();
+        assertThat(goal.getLineSource()).isEqualTo("admin:2");
+        verify(stations, never()).deleteAllForUser(anyLong());
+    }
+
     // ---------------------------------------------------------------- helpers
+
+    private static UserGoal goal(String lineSource) {
+        UserGoal g = new UserGoal(USER);
+        g.setGoalType("exam");
+        g.setTargetSlug("jee-main");
+        g.setTargetName("JEE Main");
+        g.setLineSource(lineSource);
+        return g;
+    }
+
+    private static UserGoalStation named(String name, int position, boolean done, boolean custom) {
+        UserGoalStation s = new UserGoalStation(USER, position, name, "Kind", "", null, custom);
+        s.setDone(done);
+        ReflectionTestUtils.setField(s, "id", (long) position + 100);
+        return s;
+    }
+
+    private static GoalCatalog.StationSeed seed(String name) {
+        return new GoalCatalog.StationSeed(name, "Kind", "", null);
+    }
 
     private static UserLearningLogEntry entry(LocalDate on, int minutes) {
         return new UserLearningLogEntry(USER, on, "note", "Physics", minutes, null, null);

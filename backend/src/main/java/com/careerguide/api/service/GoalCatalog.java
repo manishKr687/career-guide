@@ -8,9 +8,12 @@ import com.careerguide.api.dto.ExamDto;
 import com.careerguide.api.dto.GoalSkillDto;
 import com.careerguide.api.dto.IndustryDto;
 import com.careerguide.api.dto.JobRoleDto;
+import com.careerguide.api.entity.GoalLine;
 import com.careerguide.api.mapper.DtoMapper;
 import com.careerguide.api.repository.CareerRepository;
 import com.careerguide.api.repository.ExamRepository;
+import com.careerguide.api.repository.GoalLineRepository;
+import com.careerguide.api.repository.GoalLineStationRepository;
 import com.careerguide.api.repository.SkillRepository;
 import com.careerguide.api.web.NotFoundException;
 import org.springframework.stereotype.Component;
@@ -53,7 +56,13 @@ public class GoalCatalog {
             String mockTarget,
             Integer mockMax
     ) {
+        Blueprint withStations(List<StationSeed> line) {
+            return new Blueprint(name, facts, line, suggestedSkills, seedFocus, focusMode, logTargets, mockTarget, mockMax);
+        }
     }
+
+    /** What a user's goal records when its stations are the catalogue's own. */
+    public static final String SOURCE_AUTO = "auto";
 
     static final String FOCUS_SKILLS = "skills";
     static final String FOCUS_OWN = "own";
@@ -71,11 +80,16 @@ public class GoalCatalog {
     private final CareerRepository careerRepository;
     private final ExamRepository examRepository;
     private final SkillRepository skillRepository;
+    private final GoalLineRepository lineRepository;
+    private final GoalLineStationRepository lineStationRepository;
 
     public GoalCatalog(CareerService careerService, ExamService examService, CollegeService collegeService,
                        DegreeService degreeService, JobRoleService jobRoleService, IndustryService industryService,
                        CertificationService certificationService, CareerRepository careerRepository,
-                       ExamRepository examRepository, SkillRepository skillRepository) {
+                       ExamRepository examRepository, SkillRepository skillRepository,
+                       GoalLineRepository lineRepository, GoalLineStationRepository lineStationRepository) {
+        this.lineRepository = lineRepository;
+        this.lineStationRepository = lineStationRepository;
         this.careerService = careerService;
         this.examService = examService;
         this.collegeService = collegeService;
@@ -88,9 +102,30 @@ public class GoalCatalog {
         this.skillRepository = skillRepository;
     }
 
-    /** Throws NotFoundException (404) when the slug is not a {@code type} in the catalogue. */
+    /**
+     * The goal as a user starts it: the catalogue's blueprint, with the admin's
+     * line for this item in place of the generated one when there is one.
+     * Throws NotFoundException (404) when the slug is not a {@code type} in the catalogue.
+     */
     @Transactional(readOnly = true)
     public Blueprint resolve(String type, String slug) {
+        Blueprint auto = automatic(type, slug);
+        return lineRepository.findByGoalTypeAndTargetSlug(type, slug)
+                .map(line -> auto.withStations(lineStationRepository.findAllByLineIdOrderByPositionAsc(line.getId()).stream()
+                        .map(s -> new StationSeed(s.getName(), s.getKind(), s.getDetail(), s.getNextStep()))
+                        .toList()))
+                .orElse(auto);
+    }
+
+    /** Where {@link #resolve} takes this item's stations from today: {@link #SOURCE_AUTO} or {@code admin:<version>}. */
+    @Transactional(readOnly = true)
+    public String lineSource(String type, String slug) {
+        return lineRepository.findByGoalTypeAndTargetSlug(type, slug).map(GoalLine::source).orElse(SOURCE_AUTO);
+    }
+
+    /** The blueprint built from the catalogue alone, ignoring any admin line. Same 404 as {@link #resolve}. */
+    @Transactional(readOnly = true)
+    public Blueprint automatic(String type, String slug) {
         return switch (type) {
             case "career" -> career(careerService.findBySlug(slug));
             case "exam" -> exam(examService.findBySlug(slug));

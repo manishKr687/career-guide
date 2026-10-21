@@ -164,6 +164,64 @@ export function adminDeleteCounsellingRequest(id: number): Promise<void> {
   return adminFetch<void>(`/api/admin/counselling-requests/${id}`, { method: "DELETE" });
 }
 
+// --- Goal lines: the stations a My Career goal starts from, per catalogue
+// item. Keyed by (goal type, slug) rather than a slug alone, so it has its
+// own calls like the inbox above.
+
+export interface GoalLineStation {
+  name: string;
+  kind: string;
+  detail: string | null;
+  nextStep: string | null;
+}
+
+export interface AdminGoalLine {
+  type: string;
+  slug: string;
+  name: string;
+  custom: boolean;
+  version: number | null;
+  updatedAt: string | null;
+  /** People with this item as their goal right now. */
+  users: number;
+  stations: GoalLineStation[];
+  automatic: GoalLineStation[];
+}
+
+export interface GoalLineSummary {
+  type: string;
+  slug: string;
+  name: string;
+  stations: number;
+  version: number;
+  updatedAt: string;
+  users: number;
+}
+
+const goalLinePath = (type: string, slug: string) =>
+  `/api/admin/goal-lines/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`;
+
+export function adminListGoalLines(): Promise<GoalLineSummary[]> {
+  return adminFetch<GoalLineSummary[]>("/api/admin/goal-lines", { method: "GET" });
+}
+
+export function adminGetGoalLine(type: string, slug: string): Promise<AdminGoalLine> {
+  return adminFetch<AdminGoalLine>(goalLinePath(type, slug), { method: "GET" });
+}
+
+export function adminSaveGoalLine(type: string, slug: string, stations: GoalLineStation[]): Promise<AdminGoalLine> {
+  return adminFetch<AdminGoalLine>(goalLinePath(type, slug), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ stations }),
+  });
+}
+
+/** Removes the custom line; the item goes back to the automatic one. */
+export function adminResetGoalLine(type: string, slug: string): Promise<AdminGoalLine> {
+  return adminFetch<AdminGoalLine>(goalLinePath(type, slug), { method: "DELETE" });
+}
+
 // --- Dashboard: one aggregate payload rather than counting entity lists in
 // the browser. See AdminDashboardService for why the shape differs from the
 // content DTOs.

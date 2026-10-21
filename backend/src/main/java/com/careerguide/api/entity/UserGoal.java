@@ -37,6 +37,10 @@ public class UserGoal {
     @Column(name = "target_month")
     private LocalDate targetMonth;
 
+    /** 'auto' or 'admin:&lt;version&gt;' -- see V149. Null for goals set before it. */
+    @Column(name = "line_source", length = 32)
+    private String lineSource;
+
     @Column(name = "updated_at", insertable = false, updatable = false)
     private Instant updatedAt;
 
@@ -82,6 +86,14 @@ public class UserGoal {
 
     public void setTargetMonth(LocalDate targetMonth) {
         this.targetMonth = targetMonth;
+    }
+
+    public String getLineSource() {
+        return lineSource;
+    }
+
+    public void setLineSource(String lineSource) {
+        this.lineSource = lineSource;
     }
 
     public Instant getUpdatedAt() {

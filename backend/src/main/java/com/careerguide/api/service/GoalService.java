@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -100,7 +101,7 @@ public class GoalService {
 
         UserGoal goal = goals.findById(userId).orElse(null);
         if (goal == null) {
-            return new JourneyDto(null, List.of(), List.of(), recent, minutesByDay, streak, week, 0, List.of());
+            return new JourneyDto(null, List.of(), List.of(), recent, minutesByDay, streak, week, 0, List.of(), false);
         }
 
         GoalDto goalDto = goalDto(goal);
@@ -127,8 +128,12 @@ public class GoalService {
             mocks = scored.subList(Math.max(0, scored.size() - MOCKS), scored.size());
         }
 
+        // A goal set before line sources were recorded (null) is never offered one.
+        boolean lineUpdated = goal.getLineSource() != null
+                && !goal.getLineSource().equals(catalog.lineSource(goal.getGoalType(), goal.getTargetSlug()));
+
         return new JourneyDto(goalDto, stationDtos, focusDtos, recent, minutesByDay, streak, week,
-                readiness(line, items), mocks);
+                readiness(line, items), mocks, lineUpdated);
     }
 
     /**
@@ -174,6 +179,7 @@ public class GoalService {
         goal.setTargetSlug(request.slug());
         goal.setTargetName(b.name().length() > 160 ? b.name().substring(0, 160) : b.name());
         goal.setTargetMonth(request.targetMonth() == null ? null : YearMonth.parse(request.targetMonth()).atDay(1));
+        if (changed) goal.setLineSource(catalog.lineSource(request.type(), request.slug()));
         goals.saveAndFlush(goal);
 
         if (changed) {
@@ -187,6 +193,56 @@ public class GoalService {
                     .forEach(sk -> focus.save(new UserGoalFocus(userId, sk.name(), sk.slug())));
         }
         return journey(userId);
+    }
+
+    /**
+     * Swaps in the goal's current line, keeping what the user did with theirs:
+     * a station they had passed stays passed when the new line has one of the
+     * same name, and stations they added themselves are kept, just before the
+     * goal. If the two together pass the station limit, the user's own
+     * stations nearest the end are the ones left out.
+     */
+    @Transactional
+    public JourneyDto refreshLine(Long userId) {
+        UserGoal goal = goals.findById(userId).orElseThrow(() -> new NotFoundException("Set a goal first"));
+        GoalCatalog.Blueprint b = catalog.resolve(goal.getGoalType(), goal.getTargetSlug());
+        List<UserGoalStation> old = stations.findAllByUserIdOrderByPositionAscIdAsc(userId);
+
+        Set<String> passed = old.stream().filter(s -> !s.isCustom() && s.isDone())
+                .map(s -> s.getName().toLowerCase(Locale.ROOT)).collect(Collectors.toSet());
+        List<GoalCatalog.StationSeed> seeds = b.stations();
+        List<UserGoalStation> own = old.stream().filter(UserGoalStation::isCustom)
+                .limit(Math.max(0, MAX_STATIONS - seeds.size())).toList();
+
+        stations.deleteAllForUser(userId);
+        int position = 0;
+        for (int i = 0; i < seeds.size() - 1; i++) {
+            position = saveSeed(userId, position, seeds.get(i), passed);
+        }
+        for (UserGoalStation s : own) {
+            UserGoalStation copy = new UserGoalStation(userId, position++, s.getName(), s.getKind(), s.getDetail(), s.getNextStep(), true);
+            copy.setDone(s.isDone());
+            stations.save(copy);
+        }
+        if (!seeds.isEmpty()) saveSeed(userId, position, seeds.get(seeds.size() - 1), passed);
+
+        goal.setLineSource(catalog.lineSource(goal.getGoalType(), goal.getTargetSlug()));
+        return journey(userId);
+    }
+
+    /** Keeps the user's own line and stops offering the new one. */
+    @Transactional
+    public JourneyDto keepLine(Long userId) {
+        UserGoal goal = goals.findById(userId).orElseThrow(() -> new NotFoundException("Set a goal first"));
+        goal.setLineSource(catalog.lineSource(goal.getGoalType(), goal.getTargetSlug()));
+        return journey(userId);
+    }
+
+    private int saveSeed(Long userId, int position, GoalCatalog.StationSeed s, Set<String> passed) {
+        UserGoalStation station = new UserGoalStation(userId, position, s.name(), s.kind(), s.detail(), s.nextStep(), false);
+        station.setDone(passed.contains(s.name().toLowerCase(Locale.ROOT)));
+        stations.save(station);
+        return position + 1;
     }
 
     // -------------------------------------------------------------- stations
